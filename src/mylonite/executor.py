@@ -5,6 +5,7 @@ Reads one request as JSON on stdin and writes one JSON result to stdout. It star
 service's own read operation, and checks the target's contract.
 """
 
+import hashlib
 import importlib
 import json
 import random
@@ -21,6 +22,19 @@ from .scheduler import (Divergence, HintPolicy, PrefixPolicy, RandomPolicy, Repl
                         next_prefix, soundness_problems, trace_hash)
 
 PROXY = ("127.0.0.1", 6380)
+# Raised when the proxy or store, not the service, fails: the execution is inconclusive.
+HARNESS_FAILURES = (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError)
+
+
+_shared = {}
+
+
+def shared_controller(store, delta_q):
+    """One proxy per executor process, shared by every variant's context."""
+    if "ctl" not in _shared:
+        _shared["ctl"] = Controller(delta_q=delta_q)
+        Proxy(PROXY, store, _shared["ctl"]).start()
+    return _shared["ctl"]
 
 
 class Context:
@@ -29,8 +43,7 @@ class Context:
         self.module = importlib.import_module(self.target["variants"][request["variant"]])
         self.store = tuple(request["store"])
         self.round_timeout = request.get("round_timeout_s", 10)
-        self.ctl = Controller(delta_q=request.get("delta_q_ms", 300) / 1000)
-        Proxy(PROXY, self.store, self.ctl).start()
+        self.ctl = shared_controller(self.store, request.get("delta_q_ms", 300) / 1000)
 
 
 def reset(ctx):
@@ -48,36 +61,74 @@ def observe(ctx, client):
             for value in ctx.target["domains"][spec["for_each"]]}
 
 
-def execute_once(ctx, workload, policy):
+def state_digest(ctx):
+    """Digest of the whole store, read directly (not through the proxy). Greybox signal for M3+."""
+    admin = redis.Redis(host=ctx.store[0], port=ctx.store[1])
+    try:
+        items = []
+        for key in sorted(admin.scan_iter(count=1000)):
+            kind = admin.type(key)
+            kind = kind.decode() if isinstance(kind, bytes) else kind
+            if kind == "string":
+                value = admin.get(key)
+            elif kind == "hash":
+                value = sorted(admin.hgetall(key).items())
+            elif kind == "set":
+                value = sorted(admin.smembers(key))
+            elif kind == "list":
+                value = admin.lrange(key, 0, -1)
+            elif kind == "zset":
+                value = admin.zrange(key, 0, -1, withscores=True)
+            else:
+                value = None
+            items.append([key, kind, value])
+        return hashlib.sha256(repr(items).encode()).hexdigest()[:16]
+    finally:
+        admin.close()
+
+
+def execute_once(ctx, workload, policy, digests=False):
     started = time.perf_counter()
     svc, ctl = ctx.module, ctx.ctl
     reset(ctx)
     setup_client = svc.connect(*PROXY)
+    setup_outcomes, setup_failure = [], None
     try:
         for call in workload["setup"]:
-            getattr(svc, call["op"])(setup_client, **call["args"])
+            try:  # a setup call the service rejects is part of the workload, not a harness error
+                getattr(svc, call["op"])(setup_client, **call["args"])
+                setup_outcomes.append("ok")
+            except HARNESS_FAILURES as exc:
+                setup_failure = f"setup: {type(exc).__name__}: {exc}"
+                break
+            except Exception as exc:
+                setup_outcomes.append(type(exc).__name__)
         pre = observe(ctx, setup_client)
     finally:
         setup_client.close()
+    state_before = state_digest(ctx) if digests else None
 
     calls = workload["concurrent"]
     raw = [None] * len(calls)
 
     def run_op(k):
-        value, error = None, None
+        value, error, harness = None, None, False
         try:
             client = svc.connect(*PROXY)
             try:
                 value = getattr(svc, calls[k]["op"])(client, **calls[k]["args"])
             finally:
                 client.close()
+        except HARNESS_FAILURES as exc:
+            error, harness = type(exc).__name__, True
         except Exception as exc:  # the service's failure is data for the oracle
             error = type(exc).__name__
-        raw[k] = {"op": calls[k]["op"], "args": calls[k]["args"], "value": value, "error": error}
+        raw[k] = {"op": calls[k]["op"], "args": calls[k]["args"], "value": value, "error": error,
+                  "harness_failure": harness}
         ctl.op_done(k)
 
     decisions, steps, threads = [], [], []
-    forced, harness_error = 0, None
+    forced, harness_error = 0, setup_failure
     deadline = time.monotonic() + ctx.round_timeout
     ctl.begin_round(len(calls))
     try:
@@ -118,13 +169,16 @@ def execute_once(ctx, workload, policy):
         observer.close()
 
     problems = soundness_problems(events)
+    if harness_error is None and any(r and r["harness_failure"] for r in raw):
+        harness_error = "proxy or store failure during the round"
     ops = [dict(r, status=oracle.classify(r, ctx.target["contract"])) for r in raw if r]
     if harness_error or problems or len(ops) != len(calls):
         verdict, details = oracle.INCONCLUSIVE, []
     else:
         verdict, details = oracle.check(ctx.target["contract"], ops, pre, post)
-    return {
+    record = {
         "workload": workload,
+        "setup_outcomes": setup_outcomes,
         "decisions": decisions,
         "steps": steps,
         "verdict": verdict,
@@ -137,8 +191,39 @@ def execute_once(ctx, workload, policy):
         "harness_error": harness_error,
         "trace": [e for e in events if e["event"] in ("admit", "exec")],
         "trace_hash": trace_hash(decisions, events),
-        "ms": round((time.perf_counter() - started) * 1000, 2),
     }
+    if hasattr(policy, "stats"):
+        record["policy_stats"] = policy.stats()
+    if digests:
+        record["state_before"], record["state_after"] = state_before, state_digest(ctx)
+    record["ms"] = round((time.perf_counter() - started) * 1000, 2)
+    return record
+
+
+def profile(ctx, setup, call):
+    """Run ``call`` alone after ``setup`` and report the store commands it issued, in order.
+    One search execution. Used by the systematic baseline (M3+) to find conflicting pairs."""
+    record = execute_once(ctx, {"setup": setup, "concurrent": [call]}, PrefixPolicy([]),
+                          digests=True)
+    op = record["ops"][0] if record["ops"] else {"error": "missing"}
+    return {"commands": [[e["cmd"], e["key"]] for e in record["trace"] if e["event"] == "exec"],
+            "outcome": op.get("error") or "ok", "setup_outcomes": record["setup_outcomes"],
+            "state_before": record["state_before"], "state_after": record["state_after"],
+            "verdict": record["verdict"], "harness_error": record["harness_error"],
+            "ms": record["ms"]}
+
+
+def make_policy(spec):
+    kind = spec["kind"]
+    if kind == "prefix":
+        return PrefixPolicy(spec["prefix"])
+    if kind == "random":
+        return RandomPolicy(spec["seed"])
+    if kind == "hint":
+        return HintPolicy(spec["hint"])
+    if kind == "replay":
+        return ReplayPolicy(spec["decisions"])
+    raise ValueError(f"unknown policy {kind!r}")
 
 
 def explore(ctx, workload, max_schedules, stop_on_violation, first_policy=None):
@@ -214,7 +299,8 @@ def run_job(ctx, job):
 
 def passthrough_check(ctx, workload, repeat):
     """The proxy in pass-through must change nothing: run the workload's calls one at a time
-    through the proxy and directly against the store, and compare the observations."""
+    through the proxy and directly against the store, and compare every call's result or error
+    and the final observations."""
     svc = ctx.module
     mismatches = 0
     for _ in range(repeat):
@@ -223,9 +309,13 @@ def passthrough_check(ctx, workload, repeat):
             reset(ctx)
             client = svc.connect(*endpoint)
             try:
+                outcomes = []
                 for call in workload["setup"] + workload["concurrent"]:
-                    getattr(svc, call["op"])(client, **call["args"])
-                observations.append(observe(ctx, client))
+                    try:  # results and rejections must match too, not only the final state
+                        outcomes.append(["ok", getattr(svc, call["op"])(client, **call["args"])])
+                    except Exception as exc:
+                        outcomes.append(["error", type(exc).__name__])
+                observations.append([outcomes, observe(ctx, client)])
             finally:
                 client.close()
         mismatches += observations[0] != observations[1]
@@ -247,7 +337,34 @@ def egress_probe():
     return findings
 
 
+def serve():
+    """JSON-lines session (one request per line in, one response per line out), so a host-side
+    trial runner can drive every method through one execution counter. First line: settings."""
+    settings = json.loads(sys.stdin.readline())
+    contexts = {}
+    print(json.dumps({"ready": True, "egress_probe": egress_probe(),
+                      "python": sys.version.split()[0], "redis_py": redis.__version__}), flush=True)
+    for line in sys.stdin:
+        request = json.loads(line)
+        try:
+            variant = request["variant"]
+            if variant not in contexts:
+                contexts[variant] = Context({**settings, "variant": variant})
+            ctx = contexts[variant]
+            if request["op"] == "execute":
+                out = execute_once(ctx, request["workload"], make_policy(request["policy"]))
+            elif request["op"] == "profile":
+                out = profile(ctx, request["setup"], request["call"])
+            else:
+                raise ValueError(f"unknown op {request['op']!r}")
+        except Exception as exc:  # reported to the host, which stops the trial
+            out = {"error": f"{type(exc).__name__}: {exc}"}
+        print(json.dumps(out), flush=True)
+
+
 def main():
+    if "--serve" in sys.argv:
+        return serve()
     request = json.load(sys.stdin)
     ctx = Context(request)
     result = {"egress_probe": egress_probe(), "variant": request["variant"],

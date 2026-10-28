@@ -344,9 +344,11 @@ Only workload choice and policy differ. This is what makes the comparison in
   exercised in the smoke test.)
 - No recursion and nesting ≤ 10. Traces and graphs are sent as flat lists with integer ids.
 - The schema is **generated from the catalog** for each target: `op` is an `enum` of catalog
-  operation names, the hint `command` enum is generated from the commands observed for that
-  target, and `args` is an object holding the union of all argument names, each nullable.
-  Per-operation argument checks happen in the validator.
+  operation names, and `args` is an object holding the union of all argument names, each
+  nullable. The hint `command` enum is the proxy's full gated vocabulary
+  (`resp.HINT_VOCABULARY`), the same for every target, so the schema reveals nothing about which
+  commands a target uses (EVALUATION_PLAN.md rule 5). Per-operation argument checks happen in the
+  validator (`space.workload_problems`).
 - Non-recursive `$ref`/`$defs` are allowed (≤ 200,000 nodes after inlining).
   `minItems`/`maxItems`/`maxLength`/`pattern` are not documented, so they are enforced locally.
 - Responses API: `text.format`; Chat Completions: `response_format`. Sending `response_format`
@@ -392,6 +394,18 @@ Provisional `PlannerOutput` for the cart catalog (abridged):
 "quantity": integer|null } }`. Length limits (`maxItems`, `maxLength`) are enforced locally
 whether or not the API honors them.
 
+### 8.3a Model view and contamination controls (D-021)
+
+The request body is built only by `planner.build_request` from a declared view:
+- catalog, domains, limits and observation;
+- the contract without its provenance fields;
+- the `model_view` files under their display names, normalized by parsing and unparsing, which
+  drops comments and every bare string statement;
+- feedback on the trial's own experiments, from an allow-list of fields.
+
+`audit.assert_clean` checks every body before it is sent. `tests/test_contamination.py` checks
+that nothing outside the view can change the body (EVALUATION_PLAN.md rule 6).
+
 ### 8.4 Prompt-injection posture
 
 Source code is placed in clearly delimited blocks and described as untrusted data. That wording
@@ -412,9 +426,13 @@ says so on screen.
   container**, which runs the proxy, scheduler, executor, and oracle. Nothing on that network has
   egress or a published port.
 - The host orchestrator is the only process with internet access and the API key. It starts the
-  executor with `docker run -i`, writes the experiment JSON to its stdin, and reads size-capped
-  JSON results from its stdout. Our source is mounted read-only; nothing else from the host is
-  mounted.
+  executor with `docker run -i` and talks to it over stdin and stdout only. Our source is mounted
+  read-only; nothing else from the host is mounted. There are two modes:
+  - **One-shot** (`run_executor`): one request in, one result out.
+  - **Session** (`ExecutorSession`, `executor.py --serve`): one JSON line per request and per
+    response. The host-side trial runner (`methods.Trial`) drives every method through it, so
+    one place counts every execution (D-022). Each response is size-capped. A dead container
+    fails the pending request at once.
 - Hardened flags from `THREAT_MODEL.md` §6 on every container. A Compose lint rejects
   `privileged`, `network_mode: host`, `cap_add`, `docker.sock`, and writable bind mounts.
   Any per-image exception is recorded in `DECISIONS.md`.

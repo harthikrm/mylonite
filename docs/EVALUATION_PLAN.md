@@ -39,13 +39,22 @@ A negative answer to RQ1 is a valid result and will be reported as one.
 - **Verified violation:** replays **20/20** from fresh resets with identical trace hashes, and,
   where a corrected version exists, the **same workload explored exhaustively** on it produces no
   violation. Anything below 20/20 is "reproducible k/20" and is not counted as verified.
+  Workloads with more than 5,000 schedules on the corrected version are checked on the first
+  5,000 depth-first schedules plus 2,000 random ones and reported as **verified (bounded)**
+  (`methods.verify`). Verification runs are never charged to a method.
 - **Distinct bug:** for benchmark targets, attributed by fix toggles: the violation disappears
   when only that bug's fix is applied. For real-world targets, attributed by violated clause plus
   root-cause line, judged by two team members independently before they see which method found
   it.
-- **Budget:** `B_exec` search executions per trial, plus a wall-clock cap per trial that
-  includes model latency. Both values are set by the pilot. Starting values: `B_exec = 300`,
-  15 minutes.
+- **Budget:** `B_exec` search executions per trial, plus a cap on **method seconds** per trial,
+  plus a cap of `K` schedules per explored workload (M3+ pairs, M4 experiments). Pilot values:
+  `B_exec = 1000`, 900 s, `K = 50` (`experiments/2026-10-29-pilot/config.json`). Success is
+  also reported at 100 and 300 executions, read off E₁. The plan's starting value was 300; it
+  was raised before any run on D3 because breadth-first M3+ cannot reach D3's precondition
+  within 300 (D-023).
+- **Method seconds:** trial wall-clock time minus harness overhead (process and container round
+  trips, measured per request as round trip minus the executor's own timing) and minus
+  verification. Model latency and the method's own computation are included.
 - **Trial:** one independent search by one method on one target with its own seed. For Muse,
   this means a fresh planning session.
 
@@ -57,9 +66,9 @@ Only workload choice and scheduling policy vary.
 | ID | Method | Workload choice | Schedule | Status |
 |---|---|---|---|---|
 | M0 | **Stress** | Random over catalog × domains | Real concurrency; the proxy records the command order it saw so that a hit can be replayed | Required. What practitioners do today. |
-| M1 | **Random** | Random | `random(seed)` | Required |
-| M3+ | **Conflict-directed systematic, with greybox setup search** | Profile each operation through the proxy to get per-key read/write sets; grow setup sequences that reach new keys or commands; enumerate conflicting pairs and triples with colliding arguments | `exhaustive` | Required. **The strongest non-LLM baseline.** |
-| M4 | **Muse** | Model proposals with feedback; no failing schedules or traces from other methods ever in the prompt | `hint → exhaustive` | Required |
+| M1 | **Random** | Per execution: 0–6 setup calls and 2–4 concurrent calls, lengths uniform, each call's operation and arguments uniform | `random(seed)` | Required |
+| M3+ | **Conflict-directed systematic, with greybox setup search** | Breadth-first over setup states. At each state, profile every catalog call alone through the proxy (one execution each) to get its command sequence with key digests. A call whose behavior (operation, command names, outcome) is new and which leads to a new store-state digest extends the frontier (≤ 6 setup calls). Then every pair of calls whose profiles admit an unserializable interleaving (`methods.unserializable_pair`: the two-transaction conflict-cycle condition) is explored. Pairs with a conflict on a key read by the contract's observation are explored first, one per command signature; the rest are deferred until the frontier is exhausted, never dropped (`methods.pair_priority`, D-023). Seeds only shuffle call and pair order. Pairs only; triples are not implemented. Novelty ignores argument values, so M3+ builds one state per new behavior (for example, a single restock quantity) | `exhaustive`, ≤ `K` per pair | Required. **The strongest non-LLM baseline.** |
+| M4 | **Muse** | Up to 5 planning rounds per trial. Each round makes one call returning ≤ 3 experiments; each valid experiment runs hint-first, then depth-first. A hint lists store commands in the order they should run; an operation's earlier, unlisted commands run as needed to reach the listed one (`scheduler.HintPolicy`). The next round's request adds feedback on the model's own experiments only (`planner.feedback_entry`: workload, schedules explored, outcome, command names and observations of the first schedule) | `hint → exhaustive`, ≤ `K` per experiment | Required |
 | A2 | Muse without source | Catalog and domains only | `hint → exhaustive` | Required. Is reading code what helps? |
 | M2 | PCT | Random | `pct(seed, d=2,3)` | If time allows |
 | A1 | Muse workloads, random schedules | Model | `random(seed)` | If time allows (RQ2) |
@@ -73,12 +82,34 @@ Only workload choice and scheduling policy vary.
 3. The same seed list is used for every method. 20 trials for **every** method.
 4. Prompt audit: the evaluation harness asserts that no prompt contains a recorded failing
    decision list, trace, or held-out source.
-5. Hint `command` enums are generated per target from the commands seen while running each
-   catalog operation once, alone, in pass-through. They are never taken from a search run or a
-   failing trace. (The Oct 28 tracer took them from its witness; changed for the pilot.)
-6. Planner input hygiene: source files are presented under neutral paths, and no prompt carries
-   words that label the target as a test case or its variant (`buggy`, `fixed`, `fixture`,
-   `mutant`, fixture IDs). The prompt audit (rule 4) checks for these words too.
+5. The hint `command` enum is the proxy's full gated-command vocabulary
+   (`resp.HINT_VOCABULARY`), identical for every target. It never comes from a search run or a
+   trace. (The Oct 28 tracer took it from its witness; replaced.)
+6. **Model view.** The model sees only what `planner.build_request` assembles:
+   - catalog, domains, limits and observation;
+   - the contract's correctness conditions, without provenance fields;
+   - the files declared under `model_view`, shown under their declared display names, with
+     comments and every bare string statement removed (`planner.model_view_source`);
+   - feedback on its own experiments.
+
+   `audit.assert_clean` runs on every request before it is sent. It checks three things:
+   - no search artifacts (schedule labels, digests, verdict words, result keys);
+   - no test-case labels, harness paths or fixture IDs in target-dependent text;
+   - no identifier or line that exists only in the corrected variant.
+
+   `tests/test_contamination.py` checks the flow itself:
+   - changing anything outside the view leaves the request byte-for-byte unchanged, and changing
+     anything inside it does not;
+   - only the declared files are read;
+   - every detector fires on a planted positive;
+   - a contaminated request is refused before any model call.
+7. **Shared space and accounting.** Every method builds workloads from `space.py` (same
+   catalog, domains, limits, validator). Every execution, including M3+ profiling, goes through
+   `methods.Trial`, which counts it against the same `B_exec` and method-seconds cap. M3+ pairs
+   and M4 experiments share the per-workload cap `K`. The contract is checked by the same oracle
+   on every execution.
+8. Every method's first violation goes through the same `methods.verify`. Verification runs are
+   not charged and are reported separately.
 
 ## 4. Targets
 
@@ -86,8 +117,8 @@ Only workload choice and scheduling policy vary.
 
 | ID | Target | Contract source | Bug |
 |---|---|---|---|
-| D2 | Python counter fixture (redis-py, per-connection) | Fixture spec: "every successful increment is counted" | `GET` then `SET` lost update. Corrected: `INCR`. |
-| D3 | Python precondition fixture (≥ 8 operations) | Fixture spec | Check-then-act that needs a specific setup state |
+| D2 | Python counter fixture (redis-py, per-connection) | "A member's balance equals the sum of the points of all successful award calls for that member." | `GET` then `SET` lost update. Corrected: `INCRBY`. |
+| D3 | Python inventory fixture (8 operations, 24 calls; `fixtures/dev/d3_inventory/DESIGN.md`) | "A product's stock, as returned by stock(sku), is never negative." | Check-then-act in `purchase` (`GET` stock → compare → `DECRBY`). Reachable only after `create`, `restock`, `publish`; then two purchases that each fit and together exceed the stock. Corrected: check and decrement in one `EVAL`. Validated without search in `experiments/2026-10-28-d3-fixture/`. |
 | D4 | Node fixture (ioredis, multiplexed) | Fixture spec | Lost update over one shared connection |
 | D1 | **OTel Demo cart, built from source at tag `3.1.0`**, scenario A | Issue #3824 and the `AddItem` API meaning (quantity is added) | Concurrent `AddItem` lost update. Corrected: cart built with PR #3825's cart changes. Public bug, possibly memorized: never a discovery claim. |
 | D-ctl | Correct and weak-contract variants of D2–D4 | Fixture spec | None; must PASS |
@@ -99,9 +130,12 @@ Only workload choice and scheduling policy vary.
   transaction replaced by a Lua script).
 - **Preferred sources:** real before/after Redis race fixes from open-source history (Q-E3),
   wrapped in a minimal service. Otherwise, services written for the purpose.
-- **Author:** not the prompt author. If the team is one person, a sealed-seed mutation script is
-  applied to correct base services written **before** any prompt work. The seed is revealed only
-  at evaluation time.
+- **Author:** not the prompt author. If the team is one person: `docs/HELDOUT_PROTOCOL.md`
+  (proposed, D-020). In short:
+  - base services are written after the method freeze;
+  - bugs are injected mechanically at sites chosen by a public randomness beacon;
+  - evaluation is blind and automated;
+  - every target is reported.
 - **Timing:** sealed by Oct 31, 23:59 ET at the latest. Its SHA-256 is committed before the
   first held-out run; it is published only after the evaluation.
 - **Composition rules, fixed now:**
@@ -131,9 +165,10 @@ Only workload choice and scheduling policy vary.
 | Risk | Control |
 |---|---|
 | Muse memorized #3824 | D1 is development only. **Memorization probe:** ask Muse, with no code, what concurrency bug the OTel demo cart has, and record the answer. Catalog names (`CartService/AddItem`) cannot be obfuscated, so A3-style renaming is not used on D1. |
-| Prompt tuned to the test set | Prompt and schemas frozen Oct 31, 23:59 ET; SHA-256 recorded in every result file. Held-out results with any other hash are discarded. |
+| Prompt tuned to the test set | Prompt, schemas and method code frozen before any held-out code exists (`HELDOUT_PROTOCOL.md` C1). The prompt fingerprint **and the SHA-256 of every file under `src/`** are recorded in every result manifest. Held-out results with any other hashes are discarded. |
+| Author priors in the instructions | `planner.HYPOTHESIS_KINDS` names `lost_update` and `check_then_act`, which are exactly D2's and D3's bug classes and the classes the held-out mutation operators produce. It is the same for every target, but it is the author's prior. Disclosed; A2 does not remove it. |
 | Held-out leakage | Sealed archive outside the repository; hash committed first; prompt audit (fairness rule 4). |
-| Labels in planner input | Fairness rules 5 and 6. Found in the Oct 28 tracer: a "buggy variant" docstring (removed before the call), a `fixtures/dev/` path, and a witness-derived command enum. |
+| Labels and answers in planner input | Fairness rules 5–6. All three leaks found in the Oct 28 tracer are closed:<br>• the "buggy variant" docstring (bare strings are now removed);<br>• the `fixtures/dev/` path (display names now);<br>• the witness-derived command enum (target-independent now).<br>The noninterference tests also found that later bare strings in a function survived the first normalizer; fixed. |
 | Confirmation bias | Verdicts come from the contract oracle and replay only; distinct bugs come from fix toggles. |
 | Benchmarks that favor the model | Composition rules fixed above before authoring, including the mandatory shallow third. All targets reported. |
 | Cherry-picking | Every trial logged; the analysis script is committed before the held-out run. |
@@ -178,7 +213,9 @@ Secondary:
 
 ## 9. Pilot value checkpoint (Oct 29)
 
-- Targets D2 and D3. Methods M1, M3+, M4. 5 trials each.
+- Targets D2 and D3. Methods M1, M3+, M4. 5 trials each (seeds 1–5). Pre-registered config:
+  `experiments/2026-10-29-pilot/config.json`. Readiness review and pass/fail criteria:
+  `experiments/2026-10-29-pilot/READINESS.md`.
 - Purpose: measure execution time, model latency, and tokens; calibrate `B_exec` and the
   wall-clock cap; and give the owner an early look at whether M4 is competitive at all.
 - **Owner decision after the pilot:** continue as planned, re-scope, or re-frame the claim (for
@@ -188,6 +225,16 @@ Secondary:
 
 - Shallow targets, including D1: M1 and M3+ find the bug within a handful of executions. M4 ties
   on executions and loses on cost.
+- D3, M1: censored in every trial. Computed before running: ≈ 2.6 × 10⁻⁶ per execution, about
+  0.08% chance within 300 (`experiments/2026-10-28-d3-fixture/`).
+- D3, M3+: an independent reviewer's in-memory emulation of the executor (not the real system)
+  predicts the following:
+  - Before D-023, censored at 300 in 20/20 seeds, finding it at 421–791 executions.
+  - With contract-directed priority, 16/20 found within 300, at 161–285.
+  - Expected verified in most or all trials within 1,000.
+
+  On D3 the question is how M4 compares with M3+ on executions and on cost. M1 tells us little
+  there.
 - Precondition targets: M4 beats M1. Against M3+ it is uncertain, and this is the comparison that
   decides RQ1.
 - Schedule hints: little effect.
@@ -215,4 +262,24 @@ Secondary:
 
 ## Deviations
 
-None yet.
+None yet (nothing has been frozen).
+
+### Pre-pilot amendments (2026-10-28, before any method ran on D3)
+
+- Fairness rules 5–8 rewritten or added. M1, M3+ and M4 specified as implemented.
+- Budget: per-workload cap `K` and method seconds defined. Verification (bounded) defined.
+- D2's contract statement reworded to state the property rather than the failure ("no award may
+  be lost under concurrency"); its clause was renamed `balance_matches_awards`. Same oracle, same
+  semantics.
+- D3 defined and validated. The M1 prediction was recorded.
+- The held-out author rule points to the sole-developer protocol (proposed).
+- After an independent pre-pilot review (`experiments/2026-10-29-pilot/READINESS.md` §4):
+  - M3+ got contract-directed pair priority (D-023), a disclosed change that strengthens the
+    baseline;
+  - `B_exec` went from 300 to 1,000, with Success@100/300/1,000;
+  - hint semantics are fixed (steps were silently skipped);
+  - model-written text is no longer echoed in feedback;
+  - any error ends only its own trial;
+  - there is a model retry rule;
+  - non-smoke runs are refused on a dirty tree;
+  - commands the proxy does not schedule are flagged as soundness problems.

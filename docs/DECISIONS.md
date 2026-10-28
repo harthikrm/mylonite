@@ -150,3 +150,55 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
 - Date: 2026-10-27. Status: **Open**.
 - Needed by Oct 28: who is on the team (≤ 4 for Indie), who owns W1–W4, and who authors the
   held-out set (must not be the prompt author). Solo fallback: sealed-seed mutation script.
+- 2026-10-28: the owner may be the sole developer. The proposed held-out protocol for that case
+  is D-020.
+
+## D-020 Sole-developer held-out protocol
+- Date: 2026-10-28. Status: **Proposed** (owner decision needed before the freeze).
+- Decision: `docs/HELDOUT_PROTOCOL.md`. In short:
+  - freeze methods and prompt first;
+  - write correct base services and their contracts after the freeze;
+  - inject bugs mechanically at sites chosen by a public randomness beacon (drand);
+  - evaluate blind and automatically;
+  - report every target, with one pre-registered exclusion rule.
+- Consequences:
+  - Independence is not claimed.
+  - Two owner choices are attached: moving the method freeze to Oct 31 12:00 ET, and the
+    Python-only injection scope (which relaxes §4.2's multiplexed-client rule).
+  - A mutation script must be built and tested before the freeze.
+
+## D-021 The model sees a declared view, checked by an audit and noninterference tests
+- Date: 2026-10-28. Status: **Accepted** (technical; closes the three leaks the tracer found).
+- Decision: `planner.build_request` is the only way to build a request (ARCHITECTURE.md §8.3a).
+  `audit.assert_clean` gates every call. The contamination tests treat information flow as the
+  property to test, not keywords.
+- Consequences:
+  - Planner prompt is now version `planner-v1-2026-10-28`.
+  - The tracer's Muse phase (`planner-v0`) can only be re-run at commit `750c51e`.
+
+## D-022 One host-side trial runner for every method
+- Date: 2026-10-28. Status: **Accepted** (technical).
+- Decision: M1, M3+ and M4 run as host-side strategies over a persistent executor session.
+  `methods.Trial` is the only code that counts executions, enforces the budgets, and calls
+  verification.
+- Consequences:
+  - Equal accounting holds by construction.
+  - M3+ profiling counts as executions.
+  - Method seconds exclude harness round trips and verification, which are reported separately.
+
+## D-023 M3+ explores contract-relevant pairs first; pilot budget 1,000
+- Date: 2026-10-28. Status: **Accepted** (technical; **disclosed post-emulation change**).
+- Context: an independent review emulated the executor in memory. Breadth-first M3+ spent its
+  300-execution budget on D3's lifecycle pairs (`publish`, `retire`, `restock`), whose conflicts
+  never touch stock, before profiling the state where the bug becomes reachable. Both baselines
+  would then be censored on D3 by construction.
+- Decision:
+  - At each state, M3+ first explores pairs that conflict on a key read by the contract's own
+    observation operation, one per command signature. The rest are deferred until the frontier
+    is exhausted, never dropped. This uses only M3+'s own profiles and the shared contract.
+  - The pilot budget becomes 1,000, with Success@100/300/1,000 reported.
+- Consequences:
+  - The change was made after learning of a weakness on a development fixture. It strengthens
+    the baseline, the conservative direction for any claim about M4.
+  - M3+ is frozen with everything else at C1, before held-out code exists.
+

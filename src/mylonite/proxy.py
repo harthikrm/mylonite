@@ -71,6 +71,12 @@ class Controller:
                 self.cv.wait()
             return held
 
+    def ungated(self, conn, name):
+        """A command outside the gated set arrived during a round (checked by soundness)."""
+        with self.cv:
+            if self.active:
+                self.event("ungated", conn=conn, cmd=name)
+
     def executed(self, held, args_digest, reply_digest):
         with self.cv:
             self.event("exec", op=held.op, conn=held.conn, cmd=held.name, key=held.key_digest,
@@ -193,13 +199,14 @@ class Proxy:
                          or name in resp.BLOCK_OPENERS) and not in_block
                 held = None
                 if gated:
-                    key = parts[1] if len(parts) > 1 else b""
-                    held = self.ctl.gate(conn_id, name, digest(key))
+                    held = self.ctl.gate(conn_id, name, digest(resp.command_key(parts)))
                     self.ctl.exec_lock.acquire()
                     if name in resp.BLOCK_OPENERS:
                         in_block = True  # keep the lock until the block closes
                 elif not in_block:
                     self._count(name)
+                    if name not in resp.HOUSEKEEPING:
+                        self.ctl.ungated(conn_id, name)
 
                 upstream.sendall(frame)
                 reply = self._read_reply(upstream, upbuf, client)

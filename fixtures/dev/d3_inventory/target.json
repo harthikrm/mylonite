@@ -1,0 +1,39 @@
+{
+  "target": "d3-inventory",
+  "variants": {
+    "buggy": "fixtures.dev.d3_inventory.service",
+    "fixed": "fixtures.dev.d3_inventory.service_fixed"
+  },
+  "model_view": {"files": {"service.py": "fixtures/dev/d3_inventory/service.py"}},
+  "operations": {
+    "create": {"args": {"sku": {"domain": "sku"}}},
+    "restock": {"args": {"sku": {"domain": "sku"}, "qty": {"domain": "qty"}}},
+    "publish": {"args": {"sku": {"domain": "sku"}}},
+    "unpublish": {"args": {"sku": {"domain": "sku"}}},
+    "retire": {"args": {"sku": {"domain": "sku"}}},
+    "purchase": {"args": {"sku": {"domain": "sku"}, "qty": {"domain": "qty"}}},
+    "stock": {"args": {"sku": {"domain": "sku"}}},
+    "status": {"args": {"sku": {"domain": "sku"}}}
+  },
+  "domains": {
+    "sku": ["s1", "s2"],
+    "qty": [1, 2, 3]
+  },
+  "observe": {"op": "stock", "arg": "sku", "for_each": "sku"},
+  "contract": {
+    "statement": "A product's stock, as returned by stock(sku), is never negative.",
+    "source": "fixtures/dev/d3_inventory/service.py module docstring",
+    "approved_by": "team (fixture authored by us), 2026-10-28",
+    "invariants": [{"id": "stock_non_negative", "kind": "non_negative"}],
+    "atomic_groups": [],
+    "allowed_anomalies": [],
+    "status_semantics": {
+      "create": {"no_effect": ["Conflict"]},
+      "restock": {"no_effect": ["NotFound", "Unavailable"]},
+      "publish": {"no_effect": ["NotFound", "Conflict", "InsufficientStock"]},
+      "unpublish": {"no_effect": ["NotFound", "Conflict"]},
+      "retire": {"no_effect": ["NotFound", "Conflict"]},
+      "purchase": {"no_effect": ["NotFound", "Unavailable", "InsufficientStock"]}
+    }
+  }
+}

@@ -48,25 +48,33 @@ class ReplayPolicy:
 
 
 class HintPolicy:
-    """Follow a model hint [{op_index, command}] where it is a legal choice; else first choice."""
+    """Follow a model hint [{op_index, command}]: the listed commands run in the listed order.
+    To reach a step, the operation is admitted if needed and its earlier commands run first.
+    A step whose operation finishes without issuing the command is skipped. Then first choice."""
 
     def __init__(self, hint):
         self.hint = list(hint)
-        self.followed = 0
-        self.skipped = 0
+        self.followed = self.skipped = self.advanced = 0
 
     def choose(self, step, choices, held):
         while self.hint:
             op, command = self.hint[0]["op_index"], self.hint[0]["command"]
-            if f"exec:{op}" in choices and held.get(op) == command:
-                self.hint.pop(0)
-                self.followed += 1
+            if f"exec:{op}" in choices:
+                if held.get(op) == command:
+                    self.hint.pop(0)
+                    self.followed += 1
+                else:
+                    self.advanced += 1  # an earlier command of the same operation
                 return f"exec:{op}"
             if f"admit:{op}" in choices:
                 return f"admit:{op}"
             self.hint.pop(0)
             self.skipped += 1
         return choices[0]
+
+    def stats(self):
+        return {"hint_followed": self.followed, "hint_skipped": self.skipped + len(self.hint),
+                "hint_advanced": self.advanced}
 
 
 def next_prefix(steps):
@@ -106,4 +114,6 @@ def soundness_problems(events):
                 queue.pop(0)  # per-connection FIFO: the oldest arrival is the one executed
         elif e["event"] == "unattributed":
             problems.append(f"unattributed {e['cmd']} on conn {e['conn']}")
+        elif e["event"] == "ungated":
+            problems.append(f"unscheduled {e['cmd']} on conn {e['conn']}")
     return problems

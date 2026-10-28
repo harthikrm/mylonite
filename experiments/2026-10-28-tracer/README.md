@@ -119,3 +119,17 @@ strict JSON schema: operations, argument values and command names are enums. Pro
    - Baseline numbers were not affected: no baseline job used a guided first schedule.
 9. **Memorization cannot be ruled out here.** `GET`-then-`SET` is the textbook lost update. D2
    says nothing about whether Muse reasons about unfamiliar code.
+
+## Reproducing
+
+- The recorded numbers come from commit `750c51e`; re-run there for an exact reproduction.
+- The baseline phase has not been re-run since. Later commits touch what it uses:
+  - The executor's one-shot mode is kept.
+  - The pass-through check now also compares each call's result.
+  - The D2 spec gained a `model_view`.
+  - D2's contract clause was renamed, with the same semantics.
+
+  Re-running it at HEAD would overwrite `results.json`.
+- The Muse phase used planner `planner-v0-2026-10-28`, with a witness-derived command enum and
+  the raw source path. The planner API has since changed (D-021). Re-run that phase at commit
+  `750c51e`.

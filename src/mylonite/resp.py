@@ -26,6 +26,21 @@ BLOCK_OPENERS = frozenset({"MULTI", "WATCH"})
 BLOCK_CLOSERS = frozenset({"EXEC", "DISCARD", "UNWATCH"})
 SCRIPTS = frozenset({"EVAL", "EVALSHA", "EVAL_RO", "EVALSHA_RO", "FCALL", "FCALL_RO"})
 PUBSUB = frozenset({"SUBSCRIBE", "PSUBSCRIBE", "SSUBSCRIBE"})
+# Connection housekeeping that may pass unscheduled during a round. Any other command that is
+# not gated is a soundness problem: it would run outside the scheduler's control.
+HOUSEKEEPING = frozenset({"HELLO", "CLIENT", "SELECT", "AUTH", "PING", "ECHO", "QUIT", "RESET",
+                          "READONLY", "READWRITE", "COMMAND"})
+# Commands that may modify their key. Scripts and blocks count as writes (conservative).
+WRITES = frozenset({
+    "SET", "SETNX", "SETEX", "PSETEX", "GETSET", "GETDEL", "MSET", "MSETNX", "INCR", "INCRBY",
+    "INCRBYFLOAT", "DECR", "DECRBY", "APPEND", "DEL", "UNLINK", "EXPIRE", "PEXPIRE", "EXPIREAT",
+    "PEXPIREAT", "PERSIST", "HSET", "HSETNX", "HMSET", "HDEL", "HINCRBY", "HINCRBYFLOAT",
+    "LPUSH", "RPUSH", "LPOP", "RPOP", "LREM", "LSET", "SADD", "SREM", "SPOP",
+    "ZADD", "ZREM", "ZINCRBY",
+}) | SCRIPTS | BLOCK_OPENERS
+# Every command name a schedule hint may refer to. Target-independent, so the planner schema
+# carries no information about which commands a particular target uses.
+HINT_VOCABULARY = tuple(sorted(GATED | SCRIPTS | BLOCK_OPENERS))
 
 
 class Incomplete(Exception):
@@ -92,3 +107,10 @@ def command_parts(frame):
 
 def command_name(parts):
     return parts[0].decode("ascii", "replace").upper() if parts else ""
+
+
+def command_key(parts):
+    """The key a command acts on: the first key for scripts (after numkeys), else argument 1."""
+    if command_name(parts) in SCRIPTS and len(parts) > 3:
+        return parts[3] if int(parts[2]) > 0 else b""
+    return parts[1] if len(parts) > 1 else b""

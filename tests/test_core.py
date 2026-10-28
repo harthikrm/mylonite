@@ -100,6 +100,13 @@ class EnumerationTest(unittest.TestCase):
         self.assertEqual(hint.choose(1, ["admit:0", "exec:1"], {1: "GET"}), "exec:1")
         self.assertEqual(hint.followed, 1)
 
+    def test_hint_runs_earlier_commands_of_the_same_operation(self):
+        hint = HintPolicy([{"op_index": 0, "command": "GET"}])
+        self.assertEqual(hint.choose(0, ["admit:0", "admit:1"], {}), "admit:0")
+        self.assertEqual(hint.choose(1, ["admit:1", "exec:0"], {0: "HGET"}), "exec:0")
+        self.assertEqual(hint.choose(2, ["admit:1", "exec:0"], {0: "GET"}), "exec:0")
+        self.assertEqual(hint.stats(), {"hint_followed": 1, "hint_skipped": 0, "hint_advanced": 1})
+
 
 class PlannerSchemaTest(unittest.TestCase):
     """The generated schema must satisfy Meta's documented strict-mode rules."""
@@ -110,7 +117,7 @@ class PlannerSchemaTest(unittest.TestCase):
         self.planner = planner
         root = Path(__file__).resolve().parents[1]
         self.target = json.loads((root / "fixtures/dev/d2_counter/target.json").read_text())
-        self.schema = planner.plan_schema(self.target, ["GET", "SET"])
+        self.schema = planner.plan_schema(self.target)
 
     def walk(self, node, depth=0):
         self.assertLessEqual(depth, 10)
@@ -139,7 +146,7 @@ class PlannerSchemaTest(unittest.TestCase):
              "schedule_hint": [{"op_index": 0, "command": "GET"}], "expected_effect": ""},
             {"hypothesis_id": "H2", "setup": [], "concurrent": [call("m9", 1), call("m1", 1)],
              "schedule_hint": [], "expected_effect": ""}]}
-        valid, problems = self.planner.validate(plan, self.target, ["GET", "SET"])
+        valid, problems = self.planner.validate(plan, self.target)
         self.assertEqual(len(valid), 1)
         self.assertEqual(problems[0]["experiment"], 1)
 
@@ -150,7 +157,11 @@ class ExploreTest(unittest.TestCase):
     def test_guided_hit_is_not_exhausted(self):
         import types
         from unittest import mock
-        sys.modules.setdefault("redis", types.ModuleType("redis"))  # the executor imports it
+        if "redis" not in sys.modules:  # the executor imports it; the host has no redis package
+            stub = types.ModuleType("redis")
+            stub.exceptions = types.SimpleNamespace(ConnectionError=type("CE", (Exception,), {}),
+                                                    TimeoutError=type("TE", (Exception,), {}))
+            sys.modules["redis"] = stub
         from mylonite import executor
         hit = {"verdict": oracle.VIOLATION, "steps": [(0, 1)]}
         with mock.patch.object(executor, "execute_once", return_value=hit):
@@ -159,12 +170,177 @@ class ExploreTest(unittest.TestCase):
         self.assertFalse(exhausted)
 
 
+class ValidatorRobustnessTest(unittest.TestCase):
+    def test_malformed_plan_is_dropped_not_crashed(self):
+        from mylonite import planner
+        target = load_target("d2_counter")
+        valid, problems = planner.validate({"experiments": [{"concurrent": []}]}, target)
+        self.assertEqual(valid, [])
+        self.assertEqual(planner.issue_codes(problems[0]["issues"]), ["malformed_experiment"])
+
+    def test_shared_argument_names_get_the_union_of_domains(self):
+        from mylonite import planner
+        target = {"operations": {"a": {"args": {"n": {"domain": "x"}}},
+                                 "b": {"args": {"n": {"domain": "y"}}}},
+                  "domains": {"x": [1, 2], "y": [2, 3]}}
+        args = planner.plan_schema(target)["properties"]["experiments"]["items"]["properties"]
+        enum = args["setup"]["items"]["properties"]["args"]["properties"]["n"]["anyOf"][0]["enum"]
+        self.assertEqual(enum, [1, 2, 3])
+
+
+class M3PlusOrderTest(unittest.TestCase):
+    """Contract-relevant pairs first; everything else later, never dropped."""
+
+    class FakeTrial:
+        PROFILES = {"w": [["GET", "o"], ["SET", "o"]], "x": [["GET", "u"], ["SET", "u"]],
+                    "r": [["GET", "o"]]}
+
+        def __init__(self):
+            import collections
+            self.explored, self.stats = [], collections.Counter()
+
+        def profile(self, setup, call):
+            return {"commands": self.PROFILES[call["op"]], "outcome": "ok",
+                    "state_before": "s0", "state_after": "s0"}
+
+        def explore(self, workload, cap, first_policy=None):
+            self.explored.append(tuple(c["op"] for c in workload["concurrent"]))
+            return [], True
+
+    def test_observed_key_pairs_come_first(self):
+        from mylonite import methods
+        target = {"operations": {op: {"args": {}} for op in "wxr"}, "domains": {},
+                  "observe": {"op": "r", "arg": None, "for_each": None}}
+        trial = self.FakeTrial()
+        methods.run_m3plus(trial, target, 1, {"schedules_per_experiment": 5})
+        self.assertEqual(trial.explored, [("w", "w"), ("x", "x")])
+        self.assertEqual(trial.stats["m3_pairs_deferred"], 1)
+
+
 class SoundnessTest(unittest.TestCase):
+    def test_flags_unscheduled_commands(self):
+        events = [{"seq": 1, "event": "ungated", "conn": 3, "cmd": "RENAME"}]
+        self.assertEqual(soundness_problems(events), ["unscheduled RENAME on conn 3"])
+
     def test_flags_exec_without_arrival(self):
         events = [{"seq": 1, "event": "exec", "conn": 3, "op": 0}]
         self.assertTrue(soundness_problems(events))
         events = [{"seq": 1, "event": "arrive", "conn": 3}, {"seq": 2, "event": "exec", "conn": 3}]
         self.assertFalse(soundness_problems(events))
+
+
+def load_target(name):
+    import json
+    return json.loads((Path(__file__).resolve().parents[1] / f"fixtures/dev/{name}/target.json")
+                      .read_text())
+
+
+class SpaceTest(unittest.TestCase):
+    def test_d3_catalog_and_limits(self):
+        import random
+        from mylonite import space
+        target = load_target("d3_inventory")
+        self.assertEqual(len(target["operations"]), 8)
+        self.assertEqual(len(space.op_calls(target)), 24)
+        rng = random.Random(1)
+        for _ in range(200):
+            workload = space.random_workload(target, rng)
+            self.assertEqual(space.workload_problems(target, workload), [])
+        too_big = {"setup": [], "concurrent": [{"op": "stock", "args": {"sku": "s1"}}] * 5}
+        self.assertIn("concurrent size", space.workload_problems(target, too_big))
+
+
+class NonNegativeTest(unittest.TestCase):
+    def test_state_invariant(self):
+        contract = {"invariants": [{"id": "c", "kind": "non_negative"}]}
+        self.assertEqual(oracle.check(contract, [], {"s1": 1}, {"s1": 0, "s2": 3})[0], oracle.PASS)
+        verdict, details = oracle.check(contract, [], {"s1": 1}, {"s1": -1, "s2": 0})
+        self.assertEqual(verdict, oracle.VIOLATION)
+        self.assertEqual(details[0]["failures"], [{"key": "s1", "observed": -1}])
+
+
+class ScriptKeyTest(unittest.TestCase):
+    def test_eval_key_is_first_declared_key(self):
+        parts = [b"EVAL", b"return 1", b"2", b"stock:s1", b"sold:s1", b"3"]
+        self.assertEqual(resp.command_key(parts), b"stock:s1")
+        self.assertEqual(resp.command_key([b"GET", b"k"]), b"k")
+
+
+class ModelViewTest(unittest.TestCase):
+    def test_comments_and_docstrings_removed(self):
+        from mylonite import planner
+        text = '"""Module doc."""\n# comment\ndef f(x):\n    """Doc."""\n    return x  # trailing\n'
+        self.assertEqual(planner.model_view_source(text), "def f(x):\n    return x\n")
+
+
+class PairFilterTest(unittest.TestCase):
+    """M3+ explores a pair only if some interleaving is not conflict-serializable."""
+
+    def test_cases(self):
+        from mylonite.methods import unserializable_pair as u
+        get_set = [["GET", "k"], ["SET", "k"]]
+        self.assertTrue(u(get_set, get_set))                         # lost update
+        self.assertFalse(u([["SET", "k"]], [["SET", "k"]]))           # single commands
+        self.assertFalse(u([["GET", "x"], ["SET", "y"]], [["SET", "x"]]))  # one conflict only
+        self.assertFalse(u([["GET", "k"]], [["GET", "k"]]))           # reads never conflict
+        purchase = [["HGET", "p"], ["GET", "s"], ["DECRBY", "s"], ["INCRBY", "n"]]
+        self.assertTrue(u(purchase, purchase))                       # check-then-act
+        restock, retire = [["HGET", "p"], ["INCRBY", "s"]], [["HGET", "p"], ["HSET", "p"]]
+        self.assertFalse(u(restock, retire))
+
+
+class FakeSession:
+    """Stands in for the executor: buggy executions return the queued verdicts."""
+
+    def __init__(self, verdicts, replay_hash="h"):
+        self.verdicts, self.replay_hash = list(verdicts), replay_hash
+
+    def request(self, req):
+        policy = req.get("policy", {})
+        base = {"ms": 1.0, "steps": [], "soundness_problems": [], "trace": [], "ops": [],
+                "pre": {}, "post": {}, "setup_outcomes": [], "workload": req.get("workload"),
+                "decisions": ["admit:0"], "violations": []}
+        if req["variant"] == "fixed":
+            return {**base, "verdict": "PASS", "trace_hash": "f"}, 0.002
+        if policy.get("kind") == "replay":
+            return {**base, "verdict": "VIOLATION", "trace_hash": self.replay_hash}, 0.002
+        return {**base, "verdict": self.verdicts.pop(0), "trace_hash": "h"}, 0.002
+
+
+class TrialAccountingTest(unittest.TestCase):
+    CFG = {"replays": 20, "corrected_exhaustive_cap": 10, "corrected_bounded_random": 5}
+    PRICES = {"input": 1.25, "cached": 0.15, "output": 4.25, "compute_per_second": 0.0}
+    TARGET = {"target": "t", "variants": {"buggy": "b", "fixed": "f"}}
+
+    def trial(self, session, executions=5):
+        from mylonite.methods import Trial
+        return Trial(session, self.TARGET, {"executions": executions, "method_seconds": 60},
+                     self.CFG, self.PRICES, lambda event: None)
+
+    def test_budget_is_enforced_per_execution(self):
+        from mylonite.methods import BudgetExhausted
+        trial = self.trial(FakeSession(["PASS"] * 10), executions=5)
+        with self.assertRaises(BudgetExhausted):
+            while True:
+                trial.execute({"setup": [], "concurrent": []}, {"kind": "prefix", "prefix": []})
+        self.assertEqual(trial.executions, 5)
+
+    def test_first_verified_violation_is_counted(self):
+        from mylonite.methods import Found
+        trial = self.trial(FakeSession(["PASS", "PASS", "VIOLATION"]))
+        with self.assertRaises(Found) as caught:
+            for _ in range(3):
+                trial.execute({"setup": [], "concurrent": []}, {"kind": "prefix", "prefix": []})
+        self.assertEqual(caught.exception.executions, 3)
+        self.assertEqual(caught.exception.verification["replay_violations"], 20)
+        self.assertEqual(caught.exception.verification["corrected"]["mode"], "exhaustive")
+
+    def test_unreliable_replay_is_not_verified(self):
+        trial = self.trial(FakeSession(["VIOLATION", "PASS"], replay_hash="other"))
+        trial.execute({"setup": [], "concurrent": []}, {"kind": "prefix", "prefix": []})
+        trial.execute({"setup": [], "concurrent": []}, {"kind": "prefix", "prefix": []})
+        self.assertEqual(len(trial.unverified), 1)
+        self.assertEqual(trial.executions, 2)
 
 
 if __name__ == "__main__":

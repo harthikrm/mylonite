@@ -196,6 +196,62 @@ Details in `experiments/2026-10-28-tracer/README.md`.
 - OBSERVATION: `executor.explore` misreported a guided-first-schedule hit as `exhausted`. Fixed,
   with a test; errata recorded in the tracer's `results.json`.
 
+## 2026-10-28: Pre-pilot integrity work
+
+- DECISION (D-021): the model sees only a declared view.
+  - Contamination is tested as information flow: changing anything outside the view (corrected
+    variant, paths, IDs, provenance, stray result files, comments, docstrings, schedules in
+    feedback) must leave the request byte-for-byte unchanged.
+  - Keyword and overlap detectors are a second layer, each tested on a planted positive.
+- OBSERVATION: the noninterference test found a gap in the first normalizer. Only a function's
+  first docstring was dropped, so a later bare string reached the model. All bare string
+  statements are now dropped.
+- OBSERVATION: the same tests found that the result-key detector missed escaped quotes inside the
+  JSON body. Fixed: the raw message is scanned too.
+- DECISION (D-022): one host-side trial runner for M1, M3+ and M4, over a persistent executor
+  session. M3+ is implemented:
+  - breadth-first over setup states;
+  - per-state profiling of every call (charged);
+  - pairs filtered by the two-transaction conflict-cycle condition.
+- OBSERVATION: the harness had two crash paths, both now fixed:
+  - setup calls that raise (common in random D3 workloads) crashed executions;
+  - the pass-through check crashed on rejected calls. It now records them, and compares each
+    call's result or error as well as the final state.
+- OBSERVATION: D3 fixture validated without any search method (author-constructed witness):
+  - 0/50 pass-through mismatches;
+  - 150/150 serial runs PASS on both variants;
+  - the witness replays 20/20, and 120 of 192 schedules of its workload violate;
+  - every setup step is necessary;
+  - the corrected `EVAL` variant passes exhaustively.
+- PREDICTION (before any method ran on D3): M1 finds D3 with probability ≈ 0.08% within 300
+  executions (exact computation over an abstract model). Only M4 vs M3+ is informative on D3.
+- OBSERVATION: harness smoke runs, which are not pilot data:
+  - D2 with a stub model: all three methods found and verified the bug;
+  - D3 at a budget of 30: all censored, as expected;
+  - a replayed M4 trial reproduced its witness hash exactly.
+- PROPOSAL (D-020): sole-developer held-out protocol (`docs/HELDOUT_PROTOCOL.md`). Awaiting the
+  owner's decision.
+- OBSERVATION (independent pre-pilot review, a fresh agent given the code rather than my
+  conclusions):
+  - Its in-memory emulation of the executor reproduced the D3 validation numbers exactly.
+  - It showed breadth-first M3+ censored at 300 executions on D3 in 20/20 seeds, finding it at
+    421–791. A hand count agrees: lifecycle pairs at depth 2 cost about 250 schedules.
+  - My earlier claim that "on D3 only M4 vs M3+ is informative" was therefore wrong at
+    B_exec = 300.
+- DECISION (D-023, disclosed): M3+ explores contract-relevant pairs first; the pilot budget is
+  1,000, with Success@100/300/1,000.
+- OBSERVATION: the same review found more problems, all fixed with tests:
+  - hint steps were silently skipped when an operation's first command was not the hinted one,
+    which would have made "hints have little effect" true by construction;
+  - feedback echoed model-written text, which could trip the audit and end an M4 trial;
+  - one transient error could end the whole pilot without writing results;
+  - the summary median ignored censored trials;
+  - the read spy covered only `Path.read_text`.
+- OBSERVATION: protocol gaps the review raised are addressed in `HELDOUT_PROTOCOL.md`: backdating
+  (external timestamp now mandatory), bases shaped against M3+ (base specs fixed at C1), mutant
+  style (decoy rewrites), C6 labeling, blindness and crash rules, and the `WATCH` operator the
+  harness cannot expose.
+
 ## Open threads carried into Phase 1
 
 See `OPEN_QUESTIONS.md`. Most urgent: G0 smoke tests, cart startup dependencies, team roster,

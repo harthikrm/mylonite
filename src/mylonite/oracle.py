@@ -32,7 +32,13 @@ def counter_conserved(clause, ops, pre, post):
     return failures
 
 
-INVARIANTS = {"counter_conserved": counter_conserved}
+def non_negative(clause, ops, pre, post):
+    """Every observed value is >= 0 after the round. A state invariant: no history needed."""
+    return [{"key": key, "observed": value} for key, value in sorted(post.items())
+            if value is not None and value < 0]
+
+
+INVARIANTS = {"counter_conserved": counter_conserved, "non_negative": non_negative}
 
 
 def classify(op_result, contract):

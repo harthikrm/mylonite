@@ -4,8 +4,12 @@ The policy is fixed here, in code: nothing a model emits can change images, moun
 networks or limits. The executor talks to the host only through stdin and stdout.
 """
 
+import collections
 import json
+import queue
 import subprocess
+import threading
+import time
 import uuid
 from pathlib import Path
 
@@ -69,9 +73,88 @@ class Sandbox:
             raise ValueError("executor output exceeds the size cap")
         return json.loads(out.stdout)
 
+    def executor_command(self, container):
+        return ["docker", "run", "--rm", "-i", "--name", container, "--network", self.network,
+                *HARDENED, "--tmpfs", "/tmp:rw,size=16m,noexec", "--user", "65534:65534",
+                "-v", f"{self.repo / 'src'}:/app/src:ro",
+                "-v", f"{self.repo / 'fixtures'}:/app/fixtures:ro", EXECUTOR_IMAGE]
+
+    def session(self, target, delta_q_ms=300, round_timeout_s=10):
+        return ExecutorSession(self, target, delta_q_ms, round_timeout_s)
+
+    def image_ids(self):
+        """Provenance for run manifests: the exact images used."""
+        executor = docker("image", "inspect", "--format", "{{.Id}}", EXECUTOR_IMAGE).stdout.strip()
+        return {"executor": executor, "valkey": VALKEY_IMAGE}
+
     def inspect_policy(self):
         """Evidence for the security checklist: the flags Docker actually applied."""
         fmt = ("{{.Name}} net={{.HostConfig.NetworkMode}} ro={{.HostConfig.ReadonlyRootfs}} "
                "user={{.Config.User}} capdrop={{.HostConfig.CapDrop}} pids={{.HostConfig.PidsLimit}} "
                "mem={{.HostConfig.Memory}} mounts={{len .Mounts}} privileged={{.HostConfig.Privileged}}")
         return docker("inspect", "--format", fmt, self.store).stdout.strip()
+
+
+class ExecutorSession:
+    """One long-lived executor container on the internal network, speaking JSON lines: one
+    request in, one response out. Same hardening and mounts as ``run_executor``."""
+
+    def __init__(self, box, target, delta_q_ms, round_timeout_s, request_timeout_s=300):
+        self.box, self.request_timeout = box, request_timeout_s
+        self.settings = {"target": target, "store": [box.store, 6379],
+                         "delta_q_ms": delta_q_ms, "round_timeout_s": round_timeout_s}
+        self.container = f"{box.name}-exec-{uuid.uuid4().hex[:8]}"
+        self.lines, self.stderr = queue.Queue(), collections.deque(maxlen=200)
+        self.proc, self.ready, self.broken = None, None, False
+
+    def __enter__(self):
+        self.proc = subprocess.Popen(self.box.executor_command(self.container) + ["--serve"],
+                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE, text=True, bufsize=1)
+        threading.Thread(target=self._pump, args=(self.proc.stdout, self.lines.put, True),
+                         daemon=True).start()
+        threading.Thread(target=self._pump, args=(self.proc.stderr, self.stderr.append, False),
+                         daemon=True).start()
+        self.ready = self._send(self.settings)
+        return self
+
+    def __exit__(self, *exc):
+        try:
+            self.proc.stdin.close()
+            self.proc.wait(timeout=10)
+        except (OSError, subprocess.TimeoutExpired):
+            subprocess.run(["docker", "kill", self.container], capture_output=True)
+            self.proc.kill()
+
+    @staticmethod
+    def _pump(stream, sink, mark_eof):
+        for line in stream:
+            sink(line)
+        if mark_eof:
+            sink(None)  # the executor exited: fail the pending request now, not at the timeout
+
+    def _send(self, obj):
+        if self.broken:  # after a timeout, responses could be off by one: never reuse
+            raise RuntimeError("executor session is broken; start a new one")
+        self.proc.stdin.write(json.dumps(obj) + "\n")
+        self.proc.stdin.flush()
+        try:
+            line = self.lines.get(timeout=self.request_timeout)
+        except queue.Empty:
+            self.broken = True
+            raise RuntimeError(f"executor timed out; stderr: {''.join(self.stderr)[-2000:]}")
+        if line is None:
+            self.broken = True
+            raise RuntimeError(f"executor exited; stderr: {''.join(self.stderr)[-2000:]}")
+        if len(line) > MAX_RESULT_BYTES:
+            raise ValueError("executor response exceeds the size cap")
+        out = json.loads(line)
+        if "error" in out:
+            raise RuntimeError(f"executor error: {out['error']}")
+        return out
+
+    def request(self, obj):
+        """Returns (response, round-trip seconds)."""
+        started = time.monotonic()
+        out = self._send(obj)
+        return out, time.monotonic() - started

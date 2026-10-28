@@ -4,22 +4,52 @@
     "buggy": "fixtures.dev.d2_counter.service",
     "fixed": "fixtures.dev.d2_counter.service_fixed"
   },
-  "source_files": ["fixtures/dev/d2_counter/service.py"],
+  "model_view": {
+    "files": {
+      "service.py": "fixtures/dev/d2_counter/service.py"
+    }
+  },
   "operations": {
-    "award": {"args": {"member": {"domain": "member"}, "points": {"domain": "points"}}},
-    "balance": {"args": {"member": {"domain": "member"}}}
+    "award": {
+      "args": {
+        "member": {
+          "domain": "member"
+        },
+        "points": {
+          "domain": "points"
+        }
+      }
+    },
+    "balance": {
+      "args": {
+        "member": {
+          "domain": "member"
+        }
+      }
+    }
   },
   "domains": {
-    "member": ["m1", "m2"],
-    "points": [1, 2]
+    "member": [
+      "m1",
+      "m2"
+    ],
+    "points": [
+      1,
+      2
+    ]
   },
-  "observe": {"op": "balance", "arg": "member", "for_each": "member"},
+  "observe": {
+    "op": "balance",
+    "arg": "member",
+    "for_each": "member"
+  },
   "contract": {
-    "source": "fixtures/dev/d2_counter/service.py module docstring: every successful award adds exactly `points`; no award may be lost under concurrency",
+    "statement": "A member's balance equals the sum of the points of all successful award calls for that member.",
+    "source": "fixtures/dev/d2_counter/service.py module docstring",
     "approved_by": "team (fixture authored by us), 2026-10-28",
     "invariants": [
       {
-        "id": "no_lost_award",
+        "id": "balance_matches_awards",
         "kind": "counter_conserved",
         "op": "award",
         "key_arg": "member",
@@ -28,6 +58,10 @@
     ],
     "atomic_groups": [],
     "allowed_anomalies": [],
-    "status_semantics": {"award": {"no_effect": []}}
+    "status_semantics": {
+      "award": {
+        "no_effect": []
+      }
+    }
   }
 }

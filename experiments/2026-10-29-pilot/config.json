@@ -1,0 +1,58 @@
+{
+  "experiment": "2026-10-29 pilot value checkpoint (EVALUATION_PLAN.md \u00a79)",
+  "status": "pre-registered 2026-10-28, before any M1, M3+ or M4 run on D3",
+  "targets": [
+    "fixtures/dev/d2_counter/target.json",
+    "fixtures/dev/d3_inventory/target.json"
+  ],
+  "methods": [
+    "M1",
+    "M3+",
+    "M4"
+  ],
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "budget": {
+    "executions": 1000,
+    "method_seconds": 900,
+    "schedules_per_experiment": 50
+  },
+  "M4": {
+    "max_rounds": 5,
+    "include_source": true,
+    "reasoning_effort": "medium"
+  },
+  "verification": {
+    "replays": 20,
+    "corrected_exhaustive_cap": 5000,
+    "corrected_bounded_random": 2000
+  },
+  "executor": {
+    "delta_q_ms": 300,
+    "round_timeout_s": 10
+  },
+  "prices": {
+    "input": 1.25,
+    "cached": 0.15,
+    "output": 4.25,
+    "compute_per_second": 1.11e-05
+  },
+  "model_cost_cap_usd": 10.0,
+  "notes": {
+    "prices": "USD per 1M tokens, Spark Standard; compute at a nominal $0.04 per vCPU-hour of execution time",
+    "space": "every method: setup <= 6 calls, 2-4 concurrent calls, catalog x domains (src/mylonite/space.py)",
+    "seeds": "M1 seeds workload and schedule draws; M3+ seeds only the order of calls and pairs; M4 has no usable seed (sampling at temperature 1.0), so each trial is a fresh planning session",
+    "budget": "B_exec raised from the plan's starting 300 to 1000 before any run on D3: an emulation showed breadth-first M3+ needs more than 300 on D3 (READINESS.md). Success is also reported at 100 and 300.",
+    "model_retries": "up to 3 attempts on transport errors, HTTP 429 and 5xx (waits 5 s, 15 s); failed attempts count as model latency"
+  },
+  "report_success_at": [
+    100,
+    300,
+    1000
+  ]
+}

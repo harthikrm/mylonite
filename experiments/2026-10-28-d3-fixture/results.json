@@ -1,0 +1,333 @@
+{
+ "target": "d3-inventory",
+ "run": "2026-10-28T05:26:51-0500",
+ "witness": {
+  "author_constructed": true,
+  "workload": {
+   "setup": [
+    {
+     "op": "create",
+     "args": {
+      "sku": "s1"
+     }
+    },
+    {
+     "op": "restock",
+     "args": {
+      "sku": "s1",
+      "qty": 1
+     }
+    },
+    {
+     "op": "publish",
+     "args": {
+      "sku": "s1"
+     }
+    }
+   ],
+   "concurrent": [
+    {
+     "op": "purchase",
+     "args": {
+      "sku": "s1",
+      "qty": 1
+     }
+    },
+    {
+     "op": "purchase",
+     "args": {
+      "sku": "s1",
+      "qty": 1
+     }
+    }
+   ]
+  },
+  "hint": [
+   {
+    "op_index": 0,
+    "command": "HGET"
+   },
+   {
+    "op_index": 1,
+    "command": "HGET"
+   },
+   {
+    "op_index": 0,
+    "command": "GET"
+   },
+   {
+    "op_index": 1,
+    "command": "GET"
+   },
+   {
+    "op_index": 0,
+    "command": "DECRBY"
+   },
+   {
+    "op_index": 1,
+    "command": "DECRBY"
+   }
+  ],
+  "verdict": "VIOLATION",
+  "decisions": [
+   "admit:0",
+   "exec:0",
+   "admit:1",
+   "exec:1",
+   "exec:0",
+   "exec:1",
+   "exec:0",
+   "exec:1",
+   "exec:0",
+   "exec:1"
+  ],
+  "pre": {
+   "s1": 1,
+   "s2": 0
+  },
+  "post": {
+   "s1": -1,
+   "s2": 0
+  },
+  "violations": [
+   {
+    "clause": "stock_non_negative",
+    "failures": [
+     {
+      "key": "s1",
+      "observed": -1
+     }
+    ]
+   }
+  ],
+  "policy_stats": {
+   "hint_followed": 6,
+   "hint_skipped": 0,
+   "hint_advanced": 0
+  },
+  "replay_20": {
+   "violations": 20,
+   "distinct_trace_hashes": 1,
+   "matches": true
+  },
+  "exhaustive_buggy": {
+   "schedules": 192,
+   "exhausted": true,
+   "verdicts": {
+    "PASS": 72,
+    "VIOLATION": 120
+   },
+   "first_violation_at": 6
+  },
+  "random_schedules_500": {
+   "VIOLATION": 154,
+   "PASS": 346
+  }
+ },
+ "egress_probe": {
+  "tcp_1.1.1.1:443": "blocked (OSError)",
+  "dns_pypi.org": "blocked (gaierror)"
+ },
+ "passthrough_check": {
+  "runs": 50,
+  "mismatches": 0
+ },
+ "serial_runs": {
+  "buggy": {
+   "PASS": 150
+  },
+  "fixed": {
+   "PASS": 150
+  }
+ },
+ "setup_necessity": {
+  "first_0_of_3_setup_calls": {
+   "schedules": 6,
+   "exhausted": true,
+   "verdicts": {
+    "PASS": 6
+   },
+   "first_violation_at": null
+  },
+  "first_1_of_3_setup_calls": {
+   "schedules": 6,
+   "exhausted": true,
+   "verdicts": {
+    "PASS": 6
+   },
+   "first_violation_at": null
+  },
+  "first_2_of_3_setup_calls": {
+   "schedules": 6,
+   "exhausted": true,
+   "verdicts": {
+    "PASS": 6
+   },
+   "first_violation_at": null
+  }
+ },
+ "corrected_variant": [
+  {
+   "workload": {
+    "setup": [
+     {
+      "op": "create",
+      "args": {
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "restock",
+      "args": {
+       "sku": "s1",
+       "qty": 1
+      }
+     },
+     {
+      "op": "publish",
+      "args": {
+       "sku": "s1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "purchase",
+      "args": {
+       "sku": "s1",
+       "qty": 1
+      }
+     },
+     {
+      "op": "purchase",
+      "args": {
+       "sku": "s1",
+       "qty": 1
+      }
+     }
+    ]
+   },
+   "schedules": 6,
+   "exhausted": true,
+   "verdicts": {
+    "PASS": 6
+   },
+   "first_violation_at": null
+  },
+  {
+   "workload": {
+    "setup": [
+     {
+      "op": "create",
+      "args": {
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "restock",
+      "args": {
+       "sku": "s1",
+       "qty": 3
+      }
+     },
+     {
+      "op": "publish",
+      "args": {
+       "sku": "s1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "purchase",
+      "args": {
+       "sku": "s1",
+       "qty": 2
+      }
+     },
+     {
+      "op": "purchase",
+      "args": {
+       "sku": "s1",
+       "qty": 2
+      }
+     }
+    ]
+   },
+   "schedules": 6,
+   "exhausted": true,
+   "verdicts": {
+    "PASS": 6
+   },
+   "first_violation_at": null
+  },
+  {
+   "workload": {
+    "setup": [
+     {
+      "op": "create",
+      "args": {
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "restock",
+      "args": {
+       "sku": "s1",
+       "qty": 2
+      }
+     },
+     {
+      "op": "publish",
+      "args": {
+       "sku": "s1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "purchase",
+      "args": {
+       "sku": "s1",
+       "qty": 1
+      }
+     },
+     {
+      "op": "purchase",
+      "args": {
+       "sku": "s1",
+       "qty": 1
+      }
+     },
+     {
+      "op": "purchase",
+      "args": {
+       "sku": "s1",
+       "qty": 1
+      }
+     }
+    ]
+   },
+   "schedules": 90,
+   "exhausted": true,
+   "verdicts": {
+    "PASS": 90
+   },
+   "first_violation_at": null
+  }
+ ],
+ "prediction_m1": {
+  "method": "exact probability, under M1's draw, that the setup leaves a product live with stock q and two concurrent purchases each fit q but together exceed it (abstract serial model; concurrent calls that change the state are ignored), times the witness's violating fraction under random schedules",
+  "p_violable_workload_exact": 8.592084586564519e-06,
+  "monte_carlo_check": {
+   "samples": 200000,
+   "hits": 1,
+   "p": 5e-06
+  },
+  "p_violating_schedule": 0.308,
+  "p_per_execution": 2.6463620526618717e-06,
+  "expected_executions": 377877.24434536055,
+  "p_found_within_300": 0.0007935946034051122,
+  "caveat": "approximate: ignores enabling or disabling calls inside the concurrent round and uses the two-purchase witness's schedule fraction for every workload"
+ }
+}

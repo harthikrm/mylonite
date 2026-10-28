@@ -1,4 +1,4 @@
-"""Loyalty-points service backed by Valkey (development fixture D2, corrected variant).
+"""Loyalty-points service backed by Valkey (corrected).
 
 Same contract as ``service.py``; ``award`` uses the store's atomic increment.
 """
