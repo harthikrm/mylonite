@@ -136,6 +136,16 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
 - Consequence: `ARCHITECTURE.md` §5–§6 and §9, `EVALUATION_PLAN.md`, `ROADMAP.md`, and
   `THREAT_MODEL.md` were rewritten to match.
 
+## D-019 Pass RESP3 through instead of refusing HELLO 3
+- Date: 2026-10-28. Status: **Accepted** (technical correction found by the tracer).
+- Context: the review proposed refusing `HELLO 3` so clients stay on RESP2. In the tracer,
+  redis-py 8.1 (the current release) sent `HELLO 3` on connect and raised an error instead of
+  falling back.
+- Decision: the proxy frames RESP3 and passes `HELLO` through unchanged. Push frames are forwarded
+  to the client as-is.
+- Consequence: unmodified services using RESP3 clients work. Client-side-caching invalidation
+  pushes are forwarded but not scheduled.
+
 ## D-017 Team size, roles, and held-out author
 - Date: 2026-10-27. Status: **Open**.
 - Needed by Oct 28: who is on the team (≤ 4 for Indie), who owns W1–W4, and who authors the

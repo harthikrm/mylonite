@@ -1,0 +1,33 @@
+{
+  "target": "d2-loyalty-points",
+  "variants": {
+    "buggy": "fixtures.dev.d2_counter.service",
+    "fixed": "fixtures.dev.d2_counter.service_fixed"
+  },
+  "source_files": ["fixtures/dev/d2_counter/service.py"],
+  "operations": {
+    "award": {"args": {"member": {"domain": "member"}, "points": {"domain": "points"}}},
+    "balance": {"args": {"member": {"domain": "member"}}}
+  },
+  "domains": {
+    "member": ["m1", "m2"],
+    "points": [1, 2]
+  },
+  "observe": {"op": "balance", "arg": "member", "for_each": "member"},
+  "contract": {
+    "source": "fixtures/dev/d2_counter/service.py module docstring: every successful award adds exactly `points`; no award may be lost under concurrency",
+    "approved_by": "team (fixture authored by us), 2026-10-28",
+    "invariants": [
+      {
+        "id": "no_lost_award",
+        "kind": "counter_conserved",
+        "op": "award",
+        "key_arg": "member",
+        "amount_arg": "points"
+      }
+    ],
+    "atomic_groups": [],
+    "allowed_anomalies": [],
+    "status_semantics": {"award": {"no_effect": []}}
+  }
+}

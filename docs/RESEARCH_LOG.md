@@ -168,6 +168,34 @@ so quotations from those pages are close to verbatim but not guaranteed. Items m
   instructions to the fetching agent, which the agent ignored. This is a reminder that any text
   pulled into a prompt can carry instructions (`THREAT_MODEL.md` T1).
 
+## 2026-10-28: Tracer bullet, first observations
+
+Details in `experiments/2026-10-28-tracer/README.md`.
+- OBSERVATION: the executor and Valkey on a Docker `internal: true` network have no egress (TCP
+  and DNS blocked). Container-name DNS inside the network works.
+- OBSERVATION: the proxy in pass-through changed no outcome in 50 paired runs.
+- OBSERVATION: fixture D2's lost update was found by exhaustive search (12/20 schedules violate,
+  first at #2) and replayed 20/20 with one trace hash. The `INCRBY` variant passed 18/18
+  exhaustively explored schedules.
+- OBSERVATION: random workload + random schedule found it in a median of 11 executions (1–42) over
+  20 trials. About 6 ms per execution.
+- OBSERVATION: redis-py 8.1 negotiates RESP3 and does not fall back when `HELLO 3` is refused. The
+  review's "refuse HELLO 3" proposal was wrong for current clients; the proxy now frames RESP3
+  (D-019).
+- OBSERVATION: one Muse planner call (`muse-spark-1.3`, `reasoning_effort: medium`, 9.34 s,
+  1,156 + 2,823 tokens, $0.0134):
+  - correctly named the lost update with correct line references;
+  - proposed 3 experiments, all valid, each violating on its first execution;
+  - all 3 verified: rerun with the same hash, replay 20/20, corrected variant exhaustive PASS
+    (6, 90, 6 schedules).
+- INTERPRETATION: on D2 Muse wins on executions (1 vs random median 11) and loses on
+  wall-clock (≈ 140×) and dollars. As predicted for a shallow bug; this is not evidence for RQ1.
+- OBSERVATION: three leaks in the planner input: a "buggy variant" docstring (removed before the
+  call), the `fixtures/dev/` path, and a command enum taken from the witness. EVALUATION_PLAN.md
+  fairness rules 5–6 added; they must be implemented before the Oct 29 pilot.
+- OBSERVATION: `executor.explore` misreported a guided-first-schedule hit as `exhausted`. Fixed,
+  with a test; errata recorded in the tracer's `results.json`.
+
 ## Open threads carried into Phase 1
 
 See `OPEN_QUESTIONS.md`. Most urgent: G0 smoke tests, cart startup dependencies, team roster,

@@ -1,0 +1,751 @@
+{
+ "baseline": {
+  "egress_probe": {
+   "tcp_1.1.1.1:443": "blocked (OSError)",
+   "dns_pypi.org": "blocked (gaierror)"
+  },
+  "sandbox_policy": "/mylonite-d2-valkey net=mylonite-d2-net ro=true user=999:1000 capdrop=[ALL] pids=256 mem=536870912 mounts=0 privileged=false",
+  "passthrough_check": {
+   "runs": 50,
+   "mismatches": 0
+  },
+  "systematic_exhaustive": {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 1
+      }
+     },
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 1
+      }
+     }
+    ]
+   },
+   "schedules": 20,
+   "exhausted": true,
+   "violating_schedules": 12,
+   "first_violation_at": 2,
+   "forced_decisions": 0,
+   "soundness_problems": 0
+  },
+  "witness": {
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace": [
+    {
+     "seq": 1,
+     "event": "admit",
+     "op": 0
+    },
+    {
+     "seq": 3,
+     "event": "admit",
+     "op": 1
+    },
+    {
+     "seq": 5,
+     "event": "exec",
+     "op": 0,
+     "conn": 56,
+     "cmd": "GET",
+     "key": "5a1f5f966272cade",
+     "args": "8bfbd20cd22c16d0",
+     "reply": "8b85c3cbc421795c"
+    },
+    {
+     "seq": 7,
+     "event": "exec",
+     "op": 1,
+     "conn": 57,
+     "cmd": "GET",
+     "key": "5a1f5f966272cade",
+     "args": "8bfbd20cd22c16d0",
+     "reply": "8b85c3cbc421795c"
+    },
+    {
+     "seq": 9,
+     "event": "exec",
+     "op": 0,
+     "conn": 56,
+     "cmd": "SET",
+     "key": "5a1f5f966272cade",
+     "args": "a91b1f3b7627dd25",
+     "reply": "4fe64db76d55e725"
+    },
+    {
+     "seq": 10,
+     "event": "exec",
+     "op": 1,
+     "conn": 57,
+     "cmd": "SET",
+     "key": "5a1f5f966272cade",
+     "args": "a91b1f3b7627dd25",
+     "reply": "4fe64db76d55e725"
+    }
+   ],
+   "pre": {
+    "m1": 0,
+    "m2": 0
+   },
+   "post": {
+    "m1": 1,
+    "m2": 0
+   },
+   "ops": [
+    {
+     "op": "award",
+     "args": {
+      "member": "m1",
+      "points": 1
+     },
+     "value": 1,
+     "error": null,
+     "status": "ok"
+    },
+    {
+     "op": "award",
+     "args": {
+      "member": "m1",
+      "points": 1
+     },
+     "value": 1,
+     "error": null,
+     "status": "ok"
+    }
+   ],
+   "violations": [
+    {
+     "clause": "no_lost_award",
+     "failures": [
+      {
+       "key": "m1",
+       "observed_delta": 1,
+       "allowed_deltas": [
+        2
+       ]
+      }
+     ]
+    }
+   ],
+   "trace_hash": "717a4cf0dc916a53b2573b82ea0c1fb880991fb7b9fe15b040b0bbaa2ef4b398"
+  },
+  "replay_20": {
+   "violations": 20,
+   "runs": 20,
+   "distinct_trace_hashes": 1,
+   "matches_witness": true
+  },
+  "random_search": {
+   "trials": 20,
+   "budget": 300,
+   "found": 20,
+   "executions_to_first_violation": [
+    6,
+    9,
+    16,
+    17,
+    6,
+    6,
+    19,
+    13,
+    17,
+    13,
+    4,
+    31,
+    18,
+    8,
+    1,
+    42,
+    7,
+    2,
+    6,
+    28
+   ],
+   "median": 11.0
+  },
+  "corrected_variant": [
+   {
+    "workload": {
+     "setup": [],
+     "concurrent": [
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 1
+       }
+      },
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 1
+       }
+      }
+     ]
+    },
+    "schedules": 6,
+    "exhausted": true,
+    "verdicts": {
+     "PASS": 6,
+     "VIOLATION": 0,
+     "INCONCLUSIVE": 0
+    }
+   },
+   {
+    "workload": {
+     "setup": [],
+     "concurrent": [
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 1
+       }
+      },
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 2
+       }
+      }
+     ]
+    },
+    "schedules": 6,
+    "exhausted": true,
+    "verdicts": {
+     "PASS": 6,
+     "VIOLATION": 0,
+     "INCONCLUSIVE": 0
+    }
+   },
+   {
+    "workload": {
+     "setup": [
+      {
+       "op": "award",
+       "args": {
+        "member": "m2",
+        "points": 2
+       }
+      }
+     ],
+     "concurrent": [
+      {
+       "op": "award",
+       "args": {
+        "member": "m2",
+        "points": 1
+       }
+      },
+      {
+       "op": "balance",
+       "args": {
+        "member": "m2"
+       }
+      }
+     ]
+    },
+    "schedules": 6,
+    "exhausted": true,
+    "verdicts": {
+     "PASS": 6,
+     "VIOLATION": 0,
+     "INCONCLUSIVE": 0
+    }
+   }
+  ],
+  "ms_per_execution_mean": 5.88
+ },
+ "updated": "2026-10-28T02:37:52-0500",
+ "muse": {
+  "status": "ran",
+  "model": "muse-spark-1.3",
+  "prompt_version": "planner-v0-2026-10-28",
+  "latency_s": 9.34,
+  "usage": {
+   "completion_tokens": 2823,
+   "prompt_tokens": 1156,
+   "total_tokens": 3979,
+   "completion_tokens_details": {
+    "reasoning_tokens": 2161
+   },
+   "prompt_tokens_details": {
+    "cached_tokens": 0
+   }
+  },
+  "cost_usd": 0.01344,
+  "hypotheses": [
+   {
+    "code_refs": [
+     {
+      "line": 16,
+      "path": "fixtures/dev/d2_counter/service.py"
+     },
+     {
+      "line": 17,
+      "path": "fixtures/dev/d2_counter/service.py"
+     },
+     {
+      "line": 18,
+      "path": "fixtures/dev/d2_counter/service.py"
+     }
+    ],
+    "id": "H1",
+    "kind": "lost_update",
+    "operations": [
+     "award"
+    ],
+    "rationale": "award does GET points:{member}, adds locally, then SET - no INCR or transaction. Concurrent awards to same member can read same old value and overwrite each other, losing one update.",
+    "shared_state": "points:{member}"
+   }
+  ],
+  "valid_experiments": 3,
+  "rejected_experiments": [],
+  "experiments": [
+   {
+    "workload": {
+     "setup": [],
+     "concurrent": [
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 1
+       }
+      },
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 2
+       }
+      }
+     ]
+    },
+    "hint": [
+     {
+      "command": "GET",
+      "op_index": 0
+     },
+     {
+      "command": "GET",
+      "op_index": 1
+     },
+     {
+      "command": "SET",
+      "op_index": 0
+     },
+     {
+      "command": "SET",
+      "op_index": 1
+     }
+    ],
+    "summary": {
+     "executions": 1,
+     "first_violation_at": 1,
+     "verdicts": {
+      "PASS": 0,
+      "VIOLATION": 1,
+      "INCONCLUSIVE": 0
+     },
+     "distinct_trace_hashes": 1,
+     "forced_decisions": 0,
+     "soundness_problems": 0,
+     "exhausted": false,
+     "ms_total": 11.04,
+     "hint_followed": 4,
+     "hint_skipped": 0
+    },
+    "witness_trace_hash": "a38d654375a96471285a1ca8987ddf59944c9911409e0f2a882747823e324681"
+   },
+   {
+    "workload": {
+     "setup": [],
+     "concurrent": [
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 2
+       }
+      },
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 2
+       }
+      },
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 2
+       }
+      }
+     ]
+    },
+    "hint": [
+     {
+      "command": "GET",
+      "op_index": 0
+     },
+     {
+      "command": "GET",
+      "op_index": 1
+     },
+     {
+      "command": "GET",
+      "op_index": 2
+     },
+     {
+      "command": "SET",
+      "op_index": 0
+     },
+     {
+      "command": "SET",
+      "op_index": 1
+     },
+     {
+      "command": "SET",
+      "op_index": 2
+     }
+    ],
+    "summary": {
+     "executions": 1,
+     "first_violation_at": 1,
+     "verdicts": {
+      "PASS": 0,
+      "VIOLATION": 1,
+      "INCONCLUSIVE": 0
+     },
+     "distinct_trace_hashes": 1,
+     "forced_decisions": 0,
+     "soundness_problems": 0,
+     "exhausted": false,
+     "ms_total": 7.79,
+     "hint_followed": 6,
+     "hint_skipped": 0
+    },
+    "witness_trace_hash": "a3bcec6a2ddb5ae4c998239e7588321edd1ab53aca9f476ceeafdcdccc3f3765"
+   },
+   {
+    "workload": {
+     "setup": [
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 2
+       }
+      }
+     ],
+     "concurrent": [
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 1
+       }
+      },
+      {
+       "op": "award",
+       "args": {
+        "member": "m1",
+        "points": 1
+       }
+      }
+     ]
+    },
+    "hint": [
+     {
+      "command": "GET",
+      "op_index": 0
+     },
+     {
+      "command": "GET",
+      "op_index": 1
+     },
+     {
+      "command": "SET",
+      "op_index": 0
+     },
+     {
+      "command": "SET",
+      "op_index": 1
+     }
+    ],
+    "summary": {
+     "executions": 1,
+     "first_violation_at": 1,
+     "verdicts": {
+      "PASS": 0,
+      "VIOLATION": 1,
+      "INCONCLUSIVE": 0
+     },
+     "distinct_trace_hashes": 1,
+     "forced_decisions": 0,
+     "soundness_problems": 0,
+     "exhausted": false,
+     "ms_total": 6.15,
+     "hint_followed": 4,
+     "hint_skipped": 0
+    },
+    "witness_trace_hash": "3e6f3a2b3394a369dd360d66ca7764783fdc1ec463f949c1009a812947c8321d"
+   }
+  ],
+  "executions_to_first_violation": 1,
+  "errata": [
+   "2026-10-28: summary.exhausted was reported true for these hint-first runs; executor.explore returned exhausted=True when the guided schedule hit a violation. Fixed (tests/test_core.py ExploreTest) and corrected here to false. witness_trace_hash backfilled from runs/tracer-20261028-023606/muse_runs.json."
+  ]
+ },
+ "muse_verification": [
+  {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 1
+      }
+     },
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 2
+      }
+     }
+    ]
+   },
+   "rerun_first_violation_at": 1,
+   "witness": {
+    "decisions": [
+     "admit:0",
+     "exec:0",
+     "admit:1",
+     "exec:1",
+     "exec:0",
+     "exec:1"
+    ],
+    "trace_hash": "a38d654375a96471285a1ca8987ddf59944c9911409e0f2a882747823e324681",
+    "pre": {
+     "m1": 0,
+     "m2": 0
+    },
+    "post": {
+     "m1": 2,
+     "m2": 0
+    },
+    "violations": [
+     {
+      "clause": "no_lost_award",
+      "failures": [
+       {
+        "key": "m1",
+        "observed_delta": 2,
+        "allowed_deltas": [
+         3
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "matches_original_hash": true,
+   "replay_20": {
+    "violations": 20,
+    "distinct_trace_hashes": 1
+   },
+   "corrected_variant": {
+    "schedules": 6,
+    "exhausted": true,
+    "verdicts": {
+     "PASS": 6,
+     "VIOLATION": 0,
+     "INCONCLUSIVE": 0
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 2
+      }
+     },
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 2
+      }
+     },
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 2
+      }
+     }
+    ]
+   },
+   "rerun_first_violation_at": 1,
+   "witness": {
+    "decisions": [
+     "admit:0",
+     "exec:0",
+     "admit:1",
+     "exec:1",
+     "admit:2",
+     "exec:2",
+     "exec:0",
+     "exec:1",
+     "exec:2"
+    ],
+    "trace_hash": "a3bcec6a2ddb5ae4c998239e7588321edd1ab53aca9f476ceeafdcdccc3f3765",
+    "pre": {
+     "m1": 0,
+     "m2": 0
+    },
+    "post": {
+     "m1": 2,
+     "m2": 0
+    },
+    "violations": [
+     {
+      "clause": "no_lost_award",
+      "failures": [
+       {
+        "key": "m1",
+        "observed_delta": 2,
+        "allowed_deltas": [
+         6
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "matches_original_hash": true,
+   "replay_20": {
+    "violations": 20,
+    "distinct_trace_hashes": 1
+   },
+   "corrected_variant": {
+    "schedules": 90,
+    "exhausted": true,
+    "verdicts": {
+     "PASS": 90,
+     "VIOLATION": 0,
+     "INCONCLUSIVE": 0
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  {
+   "workload": {
+    "setup": [
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 2
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 1
+      }
+     },
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 1
+      }
+     }
+    ]
+   },
+   "rerun_first_violation_at": 1,
+   "witness": {
+    "decisions": [
+     "admit:0",
+     "exec:0",
+     "admit:1",
+     "exec:1",
+     "exec:0",
+     "exec:1"
+    ],
+    "trace_hash": "3e6f3a2b3394a369dd360d66ca7764783fdc1ec463f949c1009a812947c8321d",
+    "pre": {
+     "m1": 2,
+     "m2": 0
+    },
+    "post": {
+     "m1": 3,
+     "m2": 0
+    },
+    "violations": [
+     {
+      "clause": "no_lost_award",
+      "failures": [
+       {
+        "key": "m1",
+        "observed_delta": 1,
+        "allowed_deltas": [
+         2
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "matches_original_hash": true,
+   "replay_20": {
+    "violations": 20,
+    "distinct_trace_hashes": 1
+   },
+   "corrected_variant": {
+    "schedules": 6,
+    "exhausted": true,
+    "verdicts": {
+     "PASS": 6,
+     "VIOLATION": 0,
+     "INCONCLUSIVE": 0
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  }
+ ]
+}

@@ -73,7 +73,12 @@ Only workload choice and scheduling policy vary.
 3. The same seed list is used for every method. 20 trials for **every** method.
 4. Prompt audit: the evaluation harness asserts that no prompt contains a recorded failing
    decision list, trace, or held-out source.
-5. Hint `command` enums are generated per target from that target's observed commands.
+5. Hint `command` enums are generated per target from the commands seen while running each
+   catalog operation once, alone, in pass-through. They are never taken from a search run or a
+   failing trace. (The Oct 28 tracer took them from its witness; changed for the pilot.)
+6. Planner input hygiene: source files are presented under neutral paths, and no prompt carries
+   words that label the target as a test case or its variant (`buggy`, `fixed`, `fixture`,
+   `mutant`, fixture IDs). The prompt audit (rule 4) checks for these words too.
 
 ## 4. Targets
 
@@ -128,6 +133,7 @@ Only workload choice and scheduling policy vary.
 | Muse memorized #3824 | D1 is development only. **Memorization probe:** ask Muse, with no code, what concurrency bug the OTel demo cart has, and record the answer. Catalog names (`CartService/AddItem`) cannot be obfuscated, so A3-style renaming is not used on D1. |
 | Prompt tuned to the test set | Prompt and schemas frozen Oct 31, 23:59 ET; SHA-256 recorded in every result file. Held-out results with any other hash are discarded. |
 | Held-out leakage | Sealed archive outside the repository; hash committed first; prompt audit (fairness rule 4). |
+| Labels in planner input | Fairness rules 5 and 6. Found in the Oct 28 tracer: a "buggy variant" docstring (removed before the call), a `fixtures/dev/` path, and a witness-derived command enum. |
 | Confirmation bias | Verdicts come from the contract oracle and replay only; distinct bugs come from fix toggles. |
 | Benchmarks that favor the model | Composition rules fixed above before authoring, including the mandatory shallow third. All targets reported. |
 | Cherry-picking | Every trial logged; the analysis script is committed before the held-out run. |

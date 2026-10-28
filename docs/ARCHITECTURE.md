@@ -124,11 +124,12 @@ allowed out-of-order execution within one connection; that is removed.
   SELECT COMMAND`) are never held *by policy*. They still wait behind any held command ahead of
   them on the same connection, because per-connection order is never broken.
 - Connections that enter pub/sub mode switch to raw pass-through.
-- `HELLO 3` is refused with an error so that clients stay on RESP2.
+- RESP3 is framed and passed through. redis-py 8.1 negotiates RESP3 (`HELLO 3`) by default and
+  fails instead of falling back when refused (observed 2026-10-28, D-019). RESP3 push frames are
+  forwarded to the client and never treated as replies.
 - Unknown commands are passed through and reported.
-- Framing uses a small, framing-only RESP2 parser that forwards the original bytes unchanged. It
-  is tested against commands encoded by redis-py, and hiredis is a cross-check if it is
-  installed.
+- Framing uses a small, framing-only RESP2/RESP3 parser that forwards the original bytes
+  unchanged (`src/mylonite/resp.py`, unit-tested).
 
 ### 5.2 Ordering rules
 
