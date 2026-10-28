@@ -21,6 +21,9 @@ each page; the Cerebral Valley rules through plain HTTP GETs of the public HTML.
 | Meta Model API Terms of Service (updated Oct 9, 2026) | https://dev.meta.ai/legal/terms-of-service | Applies to every API call. |
 | Meta Acceptable Use Policy | https://dev.meta.ai/legal/acceptable-use-policy | Relevant to a testing tool (see §5). |
 | Geographic Use Policy (updated Oct 12, 2026) | https://dev.meta.ai/legal/geographic-use-policy | Restricted territories. |
+| Participant guide | Provided by the team (not a public URL we have read) | Source of the public-repo, video, new-contribution, and judging-stage rules in §4–§5. Recorded as **team-reported**; keep a copy with the team's records. |
+| Hackathon Discord | https://cerebralvalley.ai/e/meta-ai-developer-hackathon/discord | Organizer Q&A for Q-H1. |
+| Meta Model API cookbook | https://github.com/meta-models/meta-model-cookbook (MIT) | Read 2026-10-28; confirms the API usage patterns in §6. |
 
 No Devpost page was found. Third-party listings exist but some show wrong times; ignore them.
 
@@ -49,6 +52,13 @@ No Devpost page was found. Third-party listings exist but some show wrong times;
   (rules).
 
 ## 4. Judging criteria (rules) and what each implies for Mylonite
+
+**Judging stages (participant guide, team-reported):** (1) baseline viability and Meta model
+usage; (2) scored evaluation under the official rubric; (3) final judging of the top five
+projects per track. Stage 1 is a gate. Muse's role must be unmistakable and functional in the
+first 30 seconds of the video and in the README's first screen, whatever the comparison
+results turn out to be. The numerical weights below come from the Official Rules page;
+re-verify them against the complete rubric before relying on them.
 
 | Criterion | Weight | What the rules emphasize | Mylonite implication |
 |---|---|---|---|
@@ -82,13 +92,23 @@ Our boundary, to be safe:
 worldwide, royalty-free, non-exclusive license to the Submission "for any purpose", and shared
 materials are not confidential (rules). Do not include anything we cannot license that way.
 
-**Public repository.** No explicit public-repository requirement was found in the rules text
-(Q-H2). The team brief assumes one. Plan: keep the repo private until the team approves, then
-publish before submission with a license (Apache-2.0 proposed, see `DECISIONS.md`), after a final
-secret scan. Pushing requires explicit team approval.
+**Public repository: required** (participant guide, team-reported; the public Official Rules
+text does not state it). Plan: keep the repository local until the team approves, then publish
+before submission with a license (Apache-2.0 proposed, `DECISIONS.md` D-016), after a secret
+scan of the full history. Creating the remote and pushing require explicit team approval.
 
-**Demo video.** No length or format was found in the rules (Q-H3). The team target is a
-**three-minute** video; we design for that.
+**Demo video: three minutes, required** (participant guide, team-reported). Format details are
+still unknown (Q-H3).
+
+**New contributions must be identified** (participant guide, team-reported). The submitted work
+must clearly demonstrate new functionality built during the hackathon, and the demo must say
+what is new. Plan: a README section "Built during the hackathon" listing our components,
+separate from "Used, not built": OpenTelemetry Demo, Valkey, the OpenAI-compatible SDK, and any
+other library. The video names both on screen.
+
+**Discouraged categories** (participant guide, team-reported): generic RAG tools, basic
+chatbots, and other overused categories. Mylonite is neither, but the pitch must not
+present Muse as a chat front-end.
 
 **Acceptable Use Policy.** The AUP prohibits using the service to "identify, scan for, or exploit
 vulnerabilities in any system… without proper authorization" and building offensive cyber
@@ -103,29 +123,33 @@ and pitch must say this plainly; we must not demo against third-party live syste
 | Model IDs: `muse-spark-1.3` ("recommended for new work"), `muse-spark-1.2`, `muse-spark-1.1`, `muse-wonder-1.0` (preview), Contributor variants `muse-spark-1.3-contributor`, `muse-spark-1.2-contributor`. 1,048,576-token context; text output. | https://dev.meta.ai/docs/models | Default model: `muse-spark-1.3` Standard. Muse Wonder only as an ablation if budget allows. |
 | Base URL `https://api.meta.ai/v1`; `Authorization: Bearer $MODEL_API_KEY`; keys start `LLM_`, per team, shared rate limits. | https://dev.meta.ai/docs/overview, https://dev.meta.ai/docs/authentication | Key only in the host environment variable `MODEL_API_KEY`; `.env` is git-ignored. |
 | Endpoints: `/v1/responses` (recommended), `/v1/chat/completions` (OpenAI-compatible), `/v1/messages` (Anthropic-compatible). No Meta-branded SDK; docs use the OpenAI SDK, Anthropic SDK, or LiteLLM. | https://dev.meta.ai/docs/protocols, https://dev.meta.ai/docs/sdks | Use the OpenAI Python SDK against Meta's base URL, or plain HTTPS. No other provider is configured. |
-| Structured output: `response_format: {type: "json_schema", ...}` (Chat Completions) / `text.format` (Responses); constrained decoding, output "guaranteed to conform". Strict mode needs a plain-object root, no `allOf`/`oneOf`, `additionalProperties: false`, every property required. No recursive schemas; nesting ≤ 10; ≤ 5,000 properties; ≤ 1,000 enum values. | https://dev.meta.ai/docs/structured-output | Our planner schemas must be flat (id references instead of trees) and use nullable fields instead of optional ones. We still validate locally. (re-verify the strict-mode constraints) |
+| Structured output: `response_format: {type: "json_schema", json_schema: {name, schema, strict}}` (Chat Completions) / `text.format` (Responses; sending `response_format` there returns 400). Decoding is constrained, so output is "guaranteed to conform", and `strict: false` currently behaves the same. Strict mode: root must be a plain object (no top-level `anyOf`/`oneOf`/`allOf`/`enum`/`not`); `allOf`/`oneOf` banned anywhere; **`anyOf` allowed below the root**; every object `additionalProperties: false`; `required` lists every key. `$ref`/`$defs` usable if non-recursive (≤ 200,000 nodes after inlining). Limits: depth 10, 5,000 properties, 120,000 schema-string characters, 1,000 enum values. `minItems`/`maxItems`/`maxLength`/`pattern` not mentioned. | https://dev.meta.ai/docs/structured-output (re-read 2026-10-28); cookbook `01_api_fundamentals/04_structured_output.ipynb` | Planner schemas: flat lists with id references; nullable fields as `anyOf` with `null` below the root; enforce length limits locally. |
+| Prompt caching is automatic on identical leading tokens; `usage.prompt_tokens_details.cached_tokens` reports hits; an optional stable `prompt_cache_key` raises hit rates. | Cookbook `01_api_fundamentals/05_prompt_caching.ipynb` | Put rules, catalog, and source first and the per-call feedback last. |
 | Tool calling supported, but `tool_choice` only `"auto"` on Chat Completions/Responses; tool `strict` "does not guarantee" argument validity. | https://dev.meta.ai/docs/tool-calling | Use structured output, not tool calls, for planner actions. |
 | `seed` deprecated and best-effort; temperature default 1.0 and the model "is tuned to run at the default"; reasoning cannot be disabled (`reasoning_effort`: minimal…max). | https://dev.meta.ai/docs/protocols/chat-completions, https://dev.meta.ai/docs/reasoning | Model output is not reproducible. Every result we report must be reproducible from the **recorded plan**, not by re-querying the model. Repeat model-guided trials to measure variance. |
 | Pricing per 1M tokens (cached input / input / output): Spark Standard $0.15 / $1.25 / $4.25; Spark Contributor $0.002 / $0.10 / $0.20; Wonder $0.20 / $4.00 / $20.00. Rate limits per team: Spark Standard and Wonder 3,000 RPM / 4M TPM; Contributor 150 RPM / 3M TPM. Reasoning tokens are billed as output. | https://dev.meta.ai/docs/pricing-rate-limits, https://dev.meta.ai/docs/reasoning | Track tokens per call; report cost per verified bug. |
-| Hackathon credit: $150 of Model API credit, valid for a 10-day window. A payment method is required before any request. Credit terms PDF returned 403. | Rules; https://dev.meta.ai/help/accounts-and-login/sign-up | Budget below. Whether credits cover Wonder/Contributor is unknown (Q-H4). |
+| Hackathon credit: $150 of Model API credit, valid for a 10-day window (confirmed by the team as received). A payment method is required before any request. Credit terms PDF returned 403. | Rules; https://dev.meta.ai/help/accounts-and-login/sign-up | Budget below. Whether credits cover Wonder/Contributor is unknown (Q-H4). |
+| Other credits (team-reported): $200 Claude API credit tied to the team's existing Claude setup (may carry project restrictions); Modal, Baseten, Fireworks possible, subject to approval. | Team | Claude assists development. It is **not** part of Mylonite's runtime and not a planner baseline unless the team decides otherwise and the rules allow it (`DECISIONS.md` D-008). |
 | Standard mode: content "not used to train Meta models". Contributor mode: may be used for training; the ToS forbids submitting confidential code to Contributor. Responses API `store` defaults to true, no retention period stated; Zero Data Retention by sales request only; AUP-flagged content may be kept up to 2 years. | https://dev.meta.ai/docs/models, https://dev.meta.ai/legal/terms-of-service, https://dev.meta.ai/docs/protocols/responses, https://dev.meta.ai/help/policies-and-privacy/zero-data-retention | Use **Standard** mode. Set `store: false` on the Responses API if supported (verify). Send only open-source target code. |
 | ToS: you own inputs and outputs; you warrant IP rights to what you submit; no using outputs to train competing models; 18+. | https://dev.meta.ai/legal/terms-of-service | Compatible with our plan (no training). |
 
 **Budget estimate (provisional).** One planner call ≈ 30k input tokens (source excerpts and
 catalog) + 6k output tokens including reasoning ≈ $0.0375 + $0.0255 ≈ **$0.063** on Spark
 Standard. A naive evaluation of 12 targets × 20 trials × up to 10 planner calls = 2,400 calls ≈
-**$151**, i.e. the entire $150 credit. The evaluation is therefore sized at 10 Muse trials and
-≤ 5 calls per trial, ≈ $125 total including ablations, development, and the demo
-(`EVALUATION_PLAN.md` §11). Further savings: cache the static prompt prefix (cached input is
+**$151**, i.e. the entire $150 credit. The evaluation is therefore sized at ≤ 5 calls per trial under an owner-approved cap of
+≈ $100 in total, including ablations, development, and the demo (`EVALUATION_PLAN.md` §12). Further savings: cache the static prompt prefix (cached input is
 ~8× cheaper). Recompute after measuring real token counts on Oct 28.
 
 ## 7. Submission checklist
 
 Content
-- [ ] Public (or organizer-accessible) repository URL, after team approval to publish.
+- [ ] Public repository URL (required), published after team approval and a full-history
+      secret scan.
 - [ ] README: what Mylonite does, the hypothesis, results with confidence intervals, how to
       reproduce the demo, known limitations, licenses of dependencies, AI-assistant disclosure.
-- [ ] Demo video ≤ 3:00 (team target), showing a live, verified result and the baseline comparison.
+- [ ] README section "Built during the hackathon" vs "Used, not built".
+- [ ] Demo video, 3:00 (required), naming the new contributions on screen and showing Muse's
+      role in the first 30 seconds, a verified result, and the baseline comparison.
 - [ ] Clear statement of which Meta models are used and how (model IDs, mode, what they decide).
 - [ ] All team members named (≤ 4) by the Representative; each confirms eligibility.
 - [ ] Track selected: Indie Developer (pending team confirmation).
@@ -143,7 +167,9 @@ Logistics
 
 ## 8. Open compliance questions
 
-Tracked in `OPEN_QUESTIONS.md` as Q-H1 … Q-H5: the problem statements behind the Impact
-criterion; a public-repository requirement; demo video length/format; whether credits cover
-Muse Wonder; and whether code written before Oct 27 (none exists) or AI coding assistants
-need disclosure beyond what we already plan.
+Tracked in `OPEN_QUESTIONS.md` as Q-H1 … Q-H6: the problem statements behind the Impact
+criterion; the public-repository deadline (required per the participant guide); demo video
+format; whether credits cover Muse Wonder; API territory eligibility; and the grace period.
+Useful event: **Oct 28, 12–1 PM ET, "Agents 102: Best Practices for Verifiable Agents"**
+(team-reported). It bears directly on D-003 and D-007; attend and record takeaways in
+`RESEARCH_LOG.md`.

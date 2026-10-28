@@ -35,9 +35,13 @@ each was found is in `RESEARCH_LOG.md`.
   TigerBeetle's VOPR require all nondeterminism behind injectable interfaces [P]. Antithesis
   makes arbitrary containers deterministic with a hypervisor, but is commercial with no free
   tier [P].
-- **LLM-chosen interleavings, as prototypes.** REINS (arXiv 2610.13421, Oct 2026) [P] and Fray's
-  MCP server, which exposes `get_all_threads` / `run_thread` to an LLM [P, no published
-  evaluation found].
+- **LLM-chosen interleavings.** REINS (arXiv 2610.13421, Oct 2026) [P] is a research system that
+  beats strong baselines and found real bugs. Fray's MCP server exposes `get_all_threads` /
+  `run_thread` to an LLM [P, no published evaluation found].
+- **LLM fixing a known race given a failing test.** Meta's own cookbook
+  (`02_agent_patterns/01_agent_loop_basics`, `async_counter.py`) has Muse Spark fix an asyncio
+  lost update in an agent loop with `pytest` as the oracle [P, read 2026-10-28]. Mylonite targets
+  the step before: finding and proving the race when no failing test exists.
 
 ### 1.2 What remains difficult in practice?
 
@@ -193,7 +197,7 @@ Differentiating hypotheses. None is a claim until the evaluation runs.
 
 | Work | Facts | Lesson for us |
 |---|---|---|
-| **REINS** (arXiv 2610.13421, Oct 2026) [P] https://arxiv.org/html/2610.13421 | LLM agent (Claude Sonnet 4.6) → event-order and state constraints for a controlled C/C++ scheduler. SCTBench+ConVul 48/52 vs RFF 47, SURW 46, PCT-3 44. RaceBench 769 vs SURW 731. Single run per tool; up to 153M input tokens per target; admits possible training-data exposure. | Closest prior work. We differ in level (service vs thread), what the model chooses (workload vs interleaving), and evaluation rigor. **The team should read it in full** (Q-R2). |
+| **REINS** (arXiv 2610.13421; Zhang, Pasareanu, Yang; submitted 9 Oct 2026; abstract re-checked 2026-10-28) [P] https://arxiv.org/html/2610.13421 | LLM agent (Claude Sonnet 4.6) → event-order and state constraints for a controlled C/C++ scheduler; test entries and inputs are given, not chosen. Six previously unknown real-world bugs, three confirmed by developers (abstract). SCTBench+ConVul 48/52 vs RFF 47, SURW 46, PCT-3 44. RaceBench 769 vs SURW 731. Single run per tool; up to 153M input tokens per target; admits possible training-data exposure. | Closest prior work. We differ in level (service vs thread), what the model chooses (workload vs interleaving), and evaluation rigor. **The team should read it in full** (Q-R2). |
 | Fray MCP https://github.com/cmu-pasta/fray/blob/main/docs/mcp.md [P] | LLM can drive each scheduling step. | LLM-as-scheduler is not novel. |
 | ConCovUp (arXiv 2605.09573) [A] | LLM agents generate concurrency test drivers; access-pair coverage 36.6% → 68.1%. | Supports H-W. |
 | Petri-net-guided Rust tests (arXiv 2607.21530) [A] | LLM writes tests; Loom or a scheduler explores. | Same division of labor as ours, different level. |

@@ -3,10 +3,11 @@
 **Change the order. Reveal the fault.**
 
 Mylonite is a proposed concurrency-testing tool for services that keep shared state in a data
-store. It controls the order in which a service's store commands run, checks every outcome
-against all one-at-a-time orders of the same requests, and uses Meta's Muse Spark model to decide
-which requests to race. Every failure it reports is reproduced from a recorded schedule. A model
-never decides what counts as a failure.
+store. It is designed to control the order in which a service's store commands run, to check
+each outcome against the service's stated contract, and to use Meta's Muse Spark model to decide
+which requests to race. By design, every failure it reports is reproduced from a recorded
+schedule, and a model never decides what counts as a failure. None of this has been built or
+run yet.
 
 Team **MetaMorphic**, for the Meta AI Developer Hackathon (Oct 27 – Nov 4, 2026), theme
 *Push the Frontier*, Indie Developer track (pending confirmation).
@@ -14,8 +15,10 @@ Team **MetaMorphic**, for the Meta AI Developer Hackathon (Oct 27 – Nov 4, 202
 ## Status
 
 **Phase 0 complete: research, architecture, threat model, and evaluation design. No application
-code exists yet.** Nothing described below has been run. Phase 1 starts after the team approves
-the architecture and the pre-registered evaluation plan.
+code exists yet.** Nothing described below has been run. A review on 2026-10-28
+([docs/PHASE0_REVIEW.md](docs/PHASE0_REVIEW.md)) found two design errors: within-connection
+reordering in the proxy, and serializability imposed as every target's contract. The team
+approved the corrections, and Phase 1 began with a tracer bullet on a fixture.
 
 ## The problem in one example
 
@@ -36,13 +39,14 @@ tests pass, and race detectors see nothing, because there is no data race in any
                           │ store commands
                  Mylonite proxy  ── decides the order commands reach Valkey (delay only)
                           │
- oracle: does the outcome match ANY serial order of the same requests?
-        no ──► replay the recorded schedule 20× ──► verified counterexample
+ oracle: does the outcome break the service's approved contract?
+        yes ──► replay the recorded schedule 20× ──► verified counterexample
 ```
 
 - **Delay-only control.** The proxy never alters commands. It only delays them, so every schedule
   it produces could happen in production through ordinary network delay.
-- **No written specification needed.** The service is compared with itself, run serially.
+- **Contract first.** Each target's correctness contract is approved by a human, cites its
+  source, and may be drafted by Muse. No invariant is invented.
 - **The model chooses; it never writes code that runs.** Muse's output is validated data. The
   verdict comes from deterministic code.
 
@@ -103,6 +107,7 @@ not a discovery claim. Claims about effectiveness come only from the sealed held
 | [RESEARCH_LOG.md](docs/RESEARCH_LOG.md) | Dated findings: facts, hypotheses, assumptions |
 | [HACKATHON_COMPLIANCE.md](docs/HACKATHON_COMPLIANCE.md) | Rules, Meta API terms, budget, submission checklist |
 | [OPEN_QUESTIONS.md](docs/OPEN_QUESTIONS.md) | What must be answered before and during Phase 1 |
+| [PHASE0_REVIEW.md](docs/PHASE0_REVIEW.md) | Independent review of Phase 0: errors found, proposed corrections, decisions pending |
 
 ## Repository conventions
 

@@ -18,8 +18,8 @@ way to answer it. "Blocking" means Phase 1 work that depends on it cannot start 
 | ID | Question | Needed by | How to answer |
 |---|---|---|---|
 | Q-H1 | What are the "problem statements" referenced by the Impact criterion (30%)? Does Mylonite fit one? | Oct 29 | Re-read the event page; ask organizers in the event channel. |
-| Q-H2 | Is a public repository required, and by when? | Nov 2 | Submission form (open it Nov 2) or organizers. |
-| Q-H3 | Required demo video length and format? | Nov 2 | Submission form or organizers. Planning for ≤ 3:00. |
+| Q-H2 | ~~Is a public repository required?~~ **Yes, per the participant guide (team-reported).** Remaining: must it be public at submission time or by a judging date? | Nov 2 | Submission form (open it Nov 2) or organizers. |
+| Q-H3 | ~~Required demo video length?~~ **3 minutes, required (participant guide).** Remaining: format and hosting (YouTube, upload)? | Nov 2 | Submission form or organizers. |
 | Q-H4 | Do the $150 credits cover Muse Wonder and Contributor mode? Is a payment method still required? | Oct 28 | Credit terms (the PDF returned 403); try in the console. |
 | Q-H5 | Is every team member who will call the API in a permitted territory? | Oct 28 | Each member checks the Geographic Use Policy. |
 | Q-H6 | Is the 6-hour grace period in the event page data real? | Never rely on it | Ignore; submit by 6 PM ET. |
@@ -28,10 +28,11 @@ way to answer it. "Blocking" means Phase 1 work that depends on it cannot start 
 
 | ID | Question | How to answer |
 |---|---|---|
-| Q-M1 | Does strict `json_schema` accept nullable types, `$ref`, `minItems`/`maxItems`, `maxLength`? | Day-1 smoke test with variants. |
+| Q-M1 | Partly answered from the docs (2026-10-28): `anyOf` below the root and non-recursive `$ref` are allowed in strict mode; `minItems`/`maxItems`/`maxLength`/`pattern` are not documented. Remaining: exercise the nullable `anyOf` form and see whether length keywords are rejected or ignored. | Day-1 smoke test with variants. |
 | Q-M2 | Is `store: false` honored on the Responses API? | Smoke test plus docs re-read. |
 | Q-M3 | Real token counts and latency for a planner call with ~30k tokens of C# source, at `reasoning_effort` low/medium/high. | Smoke test; then re-estimate the budget. |
-| Q-M4 | How does prompt caching work (automatic prefix caching?), and what prefix structure maximizes cache hits? | Docs and smoke test (cached-token counts in usage). |
+| Q-M4 | ~~How does prompt caching work?~~ **Answered (cookbook):** automatic on identical leading tokens; `usage.prompt_tokens_details.cached_tokens` reports hits; optional `prompt_cache_key`. | — |
+| Q-M7 | Can the Model API console set a spend cap or alert, given a payment method is attached? | Console on Day 1 (`PHASE0_REVIEW.md` A8). |
 | Q-M5 | What is `muse-spark-1.3`'s training cutoff? It determines whether #3824 (Aug 2026) could be memorized. | Docs; if unknown, assume it could be. |
 | Q-M6 | Maximum output tokens for `muse-spark-1.3`? | Docs or an error probe. |
 

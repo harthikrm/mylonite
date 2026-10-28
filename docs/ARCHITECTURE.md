@@ -1,20 +1,23 @@
 # Architecture
 
-Status: **Provisional (Phase 0).** This specifies Option B from `ARCHITECTURE_OPTIONS.md`. Items
-tagged **[UNVERIFIED]** depend on behavior we have read about but not yet executed; each is
-checked by a named Phase 1 experiment. Nothing is implemented.
+Status: **Approved direction (2026-10-28, D-004 amended by D-018).** This specifies Option B from
+`ARCHITECTURE_OPTIONS.md` with the Phase 0 review corrections. Items tagged **[UNVERIFIED]**
+depend on behavior we have read about but not yet executed; each is checked by a named Phase 1
+experiment.
 
 ## 1. One-paragraph summary
 
 Mylonite tests a service that keeps shared state in Valkey/Redis. A small proxy sits between the
 unmodified service and the store and decides when each data command reaches the store. It only
-delays commands, never alters them. A harness sends a chosen set of concurrent requests to the
-service, records what each request returned, and reads the final state through the service's own
-API. A deterministic oracle compares that outcome with the outcomes of every serial order of the
-same requests. If no serial order explains it, the run is a **non-serializable outcome**; the
-recorded schedule is replayed in a fresh environment to confirm it. Muse Spark reads the
-service's source and proposes which requests to race, with which arguments and setup, and later
-explains a confirmed trace. The model never writes code that runs and never decides a verdict.
+delays commands and never reorders commands within a connection. A harness sends a chosen set of
+concurrent requests to the service, records what each request returned, and reads the final
+state through the service's own API. A deterministic oracle checks the outcome against the
+target's **owner-approved contract**: its expected-state invariants, and serial equivalence for
+operations the contract declares atomic. A violation counts only once its recorded schedule
+replays 20/20 in fresh environments. Muse Spark reads the service's source to draft the operation
+catalog and candidate contract clauses for human approval. It proposes which requests to race,
+with which arguments and setup, and explains verified traces. The model never writes code that
+runs and never decides a verdict.
 
 ## 2. Scope
 
@@ -63,16 +66,16 @@ Out of scope (stated so nobody over-claims):
 
 | # | Component | Responsibility | Deterministic? |
 |---|---|---|---|
-| C1 | Target spec + catalog loader | Loads a human-reviewed YAML: compose file reference with pinned image digests, store endpoint, operation catalog (name, transport, argument types, example values), observation operations, volatile-field masks, allow-listed source globs. | Yes |
+| C1 | Target spec + catalog loader | Loads a human-approved YAML: compose file reference with pinned image digests, store endpoint, operation catalog (name, transport, argument types, example values), observation operations, the **contract** (§6.1), allow-listed source globs. | Yes |
 | C2 | Context builder | Reads only allow-listed source files, runs the secret deny-list and pattern scan, applies byte caps, and wraps the files as delimited untrusted data. | Yes |
 | C3 | Muse planner | One structured-output call: hypotheses + experiments. | **No** (model) |
 | C4 | Plan validator | JSON Schema check, catalog membership, argument type checks, clamps (≤ 6 setup, 2–4 concurrent ops, ≤ 16 hint steps), dedup against already-run workloads. | Yes |
 | C5 | Strategies | Produce experiments: Stress, Random, PCT, Conflict-directed systematic, Muse, plus ablations. Common interface (§7). | Seeded |
-| C6 | Executor | Resets state, runs setup sequentially, launches the concurrent round, runs observations, and collects a Jepsen-style history. | Yes, given a schedule |
-| C7 | Proxy + scheduler | Parses RESP, gates data commands, chooses execution order at decision points, records the trace (§5). | Yes, given a schedule |
-| C8 | Serial-reference engine | Runs every serial order of the operations that succeeded, each twice, to get the allowed outcome set and detect volatile fields (§6). | Yes |
-| C9 | Oracle | Masked comparison → `PASS`, `VIOLATION`, or `INCONCLUSIVE` (§6). | Yes |
-| C10 | Replay verifier | Re-runs the recorded schedule N times in fresh state; reports reproduction rate and trace-hash agreement. For benchmark targets, also runs it on the fixed variant. | Yes |
+| C6 | Executor | Runs **inside the sandbox network**. Resets state, runs setup sequentially, admits the concurrent round under the scheduler, runs observations, and collects a Jepsen-style history. Takes an experiment as JSON on stdin and writes size-capped JSON results to stdout. | Yes, given a schedule |
+| C7 | Proxy + scheduler | Frames RESP, gates data commands, keeps per-connection order, chooses admissions and cross-connection order at decision points, records the trace, and runs the soundness checker (§5). | Yes, given a schedule |
+| C8 | Serial-reference engine | Runs real-time-consistent serial orders for the contract's atomic groups, each twice (§6.3). | Yes |
+| C9 | Oracle | Contract invariants plus serial equivalence on declared fields → `PASS`, `VIOLATION(clause)`, `OBSERVATION`, or `INCONCLUSIVE` (§6). | Yes |
+| C10 | Replay verifier | Re-runs the recorded decision list 20 times from fresh resets and checks trace hashes. For targets with a corrected version, explores the same workload exhaustively on it (§6.4). | Yes |
 | C11 | Minimizer (P1) | Delta-debugs setup ops, concurrent ops, argument values, and non-default scheduling decisions; every candidate re-verified. | Yes |
 | C12 | Explainer (P1) | Muse explains a *verified* counterexample with code references; a checker confirms each reference exists. | **No**, output labeled unverified |
 | C13 | Reporter | JSON results; static HTML timeline with every untrusted string escaped. | Yes |
@@ -88,8 +91,10 @@ target: otel-demo-cart
 revision: { repo: open-telemetry/opentelemetry-demo, tag: "3.1.0",
             commit: dedc0178918e260823323b8d95005a8cb924b007 }
 images:                       # pinned by digest at Phase 1 Day 1  [UNVERIFIED digests]
-  cart: ghcr.io/open-telemetry/demo:3.1.0-cart
-  valkey: ghcr.io/valkey-io/valkey:9.1.2-alpine3.24
+  # At tag 3.1.0 the demo's .env says IMAGE_VERSION=3.0.0, so prebuilt images are not proven
+  # to match this source. Proposed (PHASE0_REVIEW.md A6): build cart from source at the commit.
+  cart: build-from-source@dedc0178918e260823323b8d95005a8cb924b007
+  valkey: ghcr.io/valkey-io/valkey:9.0.4-alpine3.23   # per .env at tag 3.1.0 (9.1.2 is main)
 store: { protocol: resp2, upstream: valkey-cart:6379 }
 source_allow: ["src/cart/src/**/*.cs", "pb/demo.proto"]
 operations:
@@ -106,129 +111,186 @@ volatile_masks: []
 
 ## 5. Proxy and scheduler semantics
 
+Corrected on 2026-10-28 (`PHASE0_REVIEW.md` R1/R1b, accepted as D-018/A1). The Phase 0 version
+allowed out-of-order execution within one connection; that is removed.
+
 ### 5.1 What is scheduled
 
-- **Gated (scheduled) commands:** data commands on keys, for example `GET SET HGET HSET HDEL
-  HINCRBY INCR INCRBY DECR DEL EXPIRE PEXPIRE SETNX GETSET LPUSH RPOP SADD SREM ZADD`.
-  `MULTI…EXEC` and `EVAL/EVALSHA/FCALL` are scheduled as **one atomic unit**. `WATCH` is
-  scheduled.
-- **Pass-through (not scheduled):** connection and admin traffic (`PING ECHO HELLO AUTH CLIENT
-  INFO CONFIG CLUSTER SELECT COMMAND`), and any connection that enters pub/sub mode. Pass-through
-  commands are recorded in the trace but never held.
-- Unknown commands are passed through and reported. They are never silently scheduled.
+- **Gated commands:** data commands on keys, for example `GET SET HGET HSET HDEL HINCRBY INCR
+  INCRBY DECR DEL EXPIRE PEXPIRE SETNX GETSET LPUSH RPOP SADD SREM ZADD`.
+- **Blocks:** `MULTI…EXEC/DISCARD`, `WATCH…EXEC/DISCARD/UNWATCH`, and `EVAL/EVALSHA/FCALL` are
+  each scheduled as one unit on their connection.
+- **Pass-through:** connection and admin commands (`PING ECHO AUTH CLIENT INFO CONFIG CLUSTER
+  SELECT COMMAND`) are never held *by policy*. They still wait behind any held command ahead of
+  them on the same connection, because per-connection order is never broken.
+- Connections that enter pub/sub mode switch to raw pass-through.
+- `HELLO 3` is refused with an error so that clients stay on RESP2.
+- Unknown commands are passed through and reported.
+- Framing uses a small, framing-only RESP2 parser that forwards the original bytes unchanged. It
+  is tested against commands encoded by redis-py, and hiredis is a cross-check if it is
+  installed.
 
-### 5.2 Delay-only rule (soundness)
+### 5.2 Ordering rules
 
-1. The proxy never drops, rewrites, duplicates, or invents commands.
-2. Replies on each client connection are delivered in the order the commands arrived on that
-   connection. RESP requires this.
-3. Commands from the same operation keep their order.
-4. Exactly one gated command is in flight to the store at a time. Because Valkey executes
-   commands one at a time, the store's execution order is the proxy's decision order.
+1. Never drop, rewrite, duplicate, or invent commands.
+2. **Per connection**, commands execute in arrival order and replies return in arrival order. The
+   scheduler can only *delay* the head of a connection's queue.
+3. **Across connections**, the scheduler chooses freely which connection's head executes next.
+   TCP connections are independent, so network delay alone can produce any cross-connection
+   order.
+4. One gated command (or block) is in flight to the store at a time. Valkey executes commands
+   one at a time, so store execution order equals decision order. Q-E7 checks this still holds
+   with Valkey's I/O threads.
+5. **Admission is a decision.** When each operation's request is issued is chosen by the
+   scheduler and enumerated by `exhaustive`.
 
-Under these rules every schedule the proxy produces is one that ordinary network delay could
-produce. A violation found this way is a reachable behavior of the real system.
+Consequence: every schedule the proxy produces is reachable by ordinary network delay, so a
+violation is a real behavior. The converse does not hold. On a multiplexed client, where all
+operations share one connection, reality can also produce orders that come from in-process thread
+timing on that connection. The proxy cannot produce those. That is a **false-negative** risk, and
+reports state it.
 
-### 5.3 Decision points and quiescence
+A **soundness checker** runs on every trace. It verifies that per-connection order was preserved,
+that at most one gated command was in flight, and that nothing executed before it arrived. A trace
+that fails is discarded and counted as a harness error.
 
-The executor admits the concurrent operations one at a time. It invokes the next one only after
-the previous has either reached its first gated command (held at the proxy) or returned. This
-gives each command an owner. After that:
+### 5.3 Operation states, decision points, timeouts
 
-- A **decision point** occurs when the system is quiescent: every live operation has a held gated
-  command or has returned. The scheduler then picks one held command to execute.
-- If quiescence is not reached within `Δq` (default 50 ms **[UNVERIFIED value]**), the scheduler
-  decides anyway and records a `forced` decision. Executions with forced decisions are flagged
-  timing-dependent, and their replay rate is reported separately.
-- Holding time per command is capped well below client timeouts (StackExchange.Redis defaults to
-  seconds **[UNVERIFIED]**), so held commands never trigger client-side failure paths.
+Each operation of the concurrent round is in one of these states:
+- `pending`: not yet admitted.
+- `running`: admitted and computing inside the service, with no command queued at the proxy.
+- `held`: has a gated command queued at the proxy.
+- `reply-pending`: its command executed, but the reply is waiting behind an earlier command on
+  the same connection. This only arises with pipelining inside one operation.
+- `done`: returned `ok`, `fail`, or `info`.
 
-### 5.4 Multiplexed clients (the #3824 case)
+A **decision point** occurs when no operation is `running`. The choices are:
+1. admit a `pending` operation, or
+2. execute the head command of a connection whose head belongs to a `held` operation.
 
-StackExchange.Redis and ioredis send all of a process's commands over one connection. Rule 2
-then means a held command at the head of that connection delays replies to everything behind it.
-The scheduler handles this by separating **execution order** (free across operations) from
-**reply delivery** (FIFO per connection). Example for two concurrent `AddItem(u1, …)` calls,
-A arriving first:
+After each decision the scheduler waits until no operation is `running` again.
 
-| Step | Decision | Store effect |
+**Attribution.** Each decision lets at most one operation run, so any new command belongs to that
+operation. This holds on a shared connection too, because execution is strictly FIFO and the
+executed head's reply is delivered immediately. Per-connection clients are also attributed by
+connection, which acts as a cross-check.
+
+**Timeouts.** If no operation is `running`, nothing can make progress without a decision. If an
+operation stays `running` longer than `Δq`, the scheduler records a `forced` decision and
+continues. The default `Δq` is measured on Day 1 (Q-E6). Forced decisions mark the execution
+timing-dependent. Held commands are capped well below client timeouts. Admission has the same
+timeout, so an operation blocked on an in-process lock cannot deadlock the run.
+
+### 5.4 Multiplexed clients (the #3824 case) under the corrected rules
+
+A and B are both `AddItem(u1, p1, 1)` on the cart's single shared connection.
+
+| Decision | Connection queue after | Store effect |
 |---|---|---|
-| 1 | execute `HGET u1 cart` (A); deliver A's reply | A reads q₀ |
-| 2 | A sends `HSET` (now behind B's `HGET` on the connection) | — |
-| 3 | execute `HGET u1 cart` (B) before A's `HSET` | B reads q₀: lost-update path |
-| 4 | execute A's `HSET`, then B's `HSET`; deliver replies in arrival order | final q₀+1, not q₀+2 |
+| admit A | `[HGET_A]` | — |
+| admit B | `[HGET_A, HGET_B]` | — |
+| execute head `HGET_A` | `[HGET_B, HSET_A]` (A ran and sent HSET) | A reads q₀ |
+| execute head `HGET_B` | `[HSET_A, HSET_B]` | B reads q₀: lost-update path |
+| execute `HSET_A`, then A's `EXPIRE`, then `HSET_B`, … | — | final q₀+1, not q₀+2 |
 
-Attribution after step 1 uses admission order plus command content. When two operations send
-byte-identical commands, they are interchangeable for the store, so either labeling is valid.
-Whether this is robust on the real cart is **the** Phase 1 Day-2 experiment (gate G1).
+The serial order comes from a different admission choice: admit A, then execute all of A's
+commands, then admit B. No reordering within the connection is needed for either outcome.
 
 ### 5.5 Scheduling policies (same interface for all strategies)
 
 | Policy | Behavior at a decision point |
 |---|---|
-| `passthrough` | No gating (used for setup, observation, serial runs, and the Stress baseline). |
-| `fifo` | Oldest held command first. |
-| `random(seed)` | Uniform over held commands. |
-| `pct(seed, d)` | PCT priorities with d−1 change points over the estimated step count. |
-| `exhaustive(prefix)` | Depth-first enumeration of all decision sequences (small workloads only). |
-| `hint(steps) → exhaustive` | Follow the model's suggested order where it matches held commands, then enumerate the rest. Hint adherence is recorded. |
+| `passthrough` | No gating. Used for setup, observation, serial runs, and the Stress baseline, which runs in record mode. |
+| `fifo` | Admit everything first, then execute in arrival order. |
+| `random(seed)` | Uniform over the available choices. |
+| `pct(seed, d)` | PCT priorities with d−1 change points. |
+| `exhaustive` | Depth-first enumeration of every decision sequence, admissions included. P1: sleep-set reduction for adjacent commands on different keys, applied identically to every method. |
+| `hint(steps) → exhaustive` | Follow the model's suggested order where it is a legal choice, then enumerate the rest. Hint adherence is recorded. |
 | `replay(decisions)` | Follow a recorded decision list exactly; fail loudly on divergence. |
 
 ### 5.6 Trace record (JSON Lines) [provisional]
 
 ```json
-{"seq": 17, "t_ns": 123456789, "event": "exec", "op": 1, "conn": 3,
- "cmd": "HSET", "key_hash": "9f2c…", "args_digest": "sha256:…",
- "reply_digest": "sha256:…", "decision": {"kind": "chosen", "among": [0, 1], "policy": "pct"}}
+{"seq": 17, "event": "exec", "op": 1, "conn": 3, "cmd": "HSET", "key_hash": "9f2c…",
+ "args_digest": "sha256:…", "reply_digest": "sha256:…",
+ "decision": {"kind": "chosen", "choices": ["admit:2", "exec:conn3"], "policy": "random"}}
 ```
 
 Keys and values are hashed or truncated in traces and reports. Raw values exist only in run
-directories, which are git-ignored.
+directories, which are git-ignored. The trace hash covers decisions, attributions, commands, and
+digests, and excludes timestamps.
 
 ## 6. Oracle
 
-### 6.1 History semantics (adopted from Jepsen)
+Corrected on 2026-10-28 (`PHASE0_REVIEW.md` R2–R4, accepted as D-018/A2). The Phase 0 version
+imposed serializability on every target and treated errors as "no effect". Both are removed.
 
-Each operation is recorded as `invoke` then one of `ok`, `fail`, or `info`:
-- `ok`: completed, with a result.
-- `fail`: the service returned a definite error. **A failed operation must have no effect.**
-- `info`: indeterminate (timeout, transport error). It may or may not have taken effect.
+### 6.1 The contract comes first
 
-### 6.2 Serial-equivalence check (spec-free)
+Every target spec carries a `contract` block. The owner approves it, and each clause cites its
+source: API documentation, a docstring, an issue, or, for our fixtures, our own specification.
 
-Given the setup state, the set `S` of `ok` operations, and the set `I` of `info` operations:
+```yaml
+contract:
+  source: "fixture spec: 'every successful increment is counted' (fixtures/dev/d2_counter)"
+  observed_fields: [counter]            # only these are compared
+  invariants:                           # primary oracle: the expected-state check
+    - id: no_lost_increment
+      kind: counter_conserved           # final == initial + sum(amount of ok increments)
+      key: counter
+      op: increment
+      amount_arg: by
+  atomic_groups: []                     # operations that must be serializable together
+  allowed_anomalies: []                 # e.g. last_writer_wins on a field
+  status_semantics:                     # which non-OK statuses mean "no effect"
+    increment: { no_effect: [] }        # empty → every error is `info`
+```
 
-1. For every subset `I' ⊆ I` and every permutation of `S ∪ I'` (|S ∪ I'| ≤ 4, so ≤ 24
-   permutations per subset), run the operations **serially** through the proxy in pass-through
-   mode from a fresh reset with the same setup. Record each operation's result and the
-   observation.
-2. Run every serial permutation **twice**. Fields that differ between two identical serial runs
-   are volatile (IDs, timestamps). Mask them, together with any `volatile_masks` from the target
-   spec. If a serial run is non-deterministic outside masked fields, the result is
-   `INCONCLUSIVE`.
-3. The concurrent run **passes** if its masked outcome (results of the `ok` operations plus the
-   observation) equals some serial outcome. Otherwise it is a **VIOLATION: non-serializable
-   outcome**.
+Invariants use a fixed set of kinds, interpreted by our code, with no expressions. The initial
+kinds are `counter_conserved`, `sum_conserved` (over several keys), `non_negative`,
+`at_most(n)` (for quotas and stock), `member_preserved` (an added item is in the final
+collection), and `state_machine` (allowed transitions). New kinds are added as code with tests,
+never from model text.
 
-All operations in a round are invoked before any returns, so their intervals overlap and any
-serial order is a legal linearization. Serializability and linearizability coincide here, and
-no sequential model has to be written (the idea behind Line-Up and Lincheck's default oracle).
+Muse may **draft** clauses with citations to source lines (§8.1). A human approves or edits every
+clause before it is used; drafts are never used unapproved.
 
-### 6.3 What a violation does and does not mean
+### 6.2 History semantics
 
-A violation proves the service produced an outcome that **no serial order of the same requests
-produces**. It does not by itself prove the API promised serializability. For #3824, the outcome
-"two successful `AddItem(+1)` calls leave quantity 1" is a user-visible lost item, which the issue
-reports as a bug. Reports therefore say "non-serializable outcome", and the human decides
-whether the contract was violated. Only replay-confirmed violations are labeled `verified`.
+Each operation is recorded as `invoke` followed by `ok`, `fail`, or `info`. **Any non-OK status
+is `info`** (it may or may not have taken effect) unless the contract's `status_semantics`
+declares it `no_effect` for that operation. This matters for the cart, which turns every
+exception into `FailedPrecondition`, even after a write succeeded.
 
-### 6.4 Model-proposed invariants (P1)
+### 6.3 Checks
 
-The model may propose invariants from a fixed template grammar (no code), for example
-`non_negative(path)`, `equals(path, const)`, `sum_equals(paths, const)`, `count_equals(path, n)`.
-An invariant is accepted only if it holds on **every** serial execution of the workload, which
-automatically rejects invariants the model invented incorrectly. Violations of accepted
-invariants are still labeled `candidate` until a human confirms them.
+1. **Invariants** are evaluated on the observation over the `ok` operations. For `info`
+   operations, the check passes if *some* subset of them having taken effect satisfies it.
+2. **Serial equivalence**, for `atomic_groups` only, on `observed_fields` only. The observed
+   values are compared with every serial order of the group's `ok` operations, plus each subset
+   of its `info` operations.
+   - Only orders consistent with real-time order count: if X returned before Y was invoked, X
+     comes first.
+   - Serial runs go through the proxy in pass-through from a fresh reset, are cached per
+     workload, and their cost is reported separately and identically for every method.
+3. Fields that differ between two identical serial runs trigger a **warning** that the contract's
+   `observed_fields` may include a volatile field. They are never silently masked.
+
+**Verdicts:**
+- `PASS`.
+- `VIOLATION(clause)`: a named contract clause failed.
+- `OBSERVATION`: the outcome matches no serial order, but no clause covers it. Reported, never
+  called a bug.
+- `INCONCLUSIVE`: timeouts, harness errors, or soundness-check failures.
+
+### 6.4 Verified
+
+A `VIOLATION` is **verified** when both hold:
+- Its decision list replays **20 out of 20** times from fresh resets with identical trace hashes.
+  Anything less is reported as "reproducible k/20".
+- If the target has a corrected version, the **same workload explored exhaustively** on the
+  corrected version produces no `VIOLATION`. Decision lists are not reused across code versions,
+  because they diverge.
 
 ## 7. Strategy interface
 
@@ -257,7 +319,7 @@ Only workload choice and policy differ. This is what makes the comparison in
 |---|---|---|---|---|
 | `plan` | Start of a Muse trial, then after each batch of results | System rules; catalog; value domains; allow-listed source as delimited untrusted data; structured feedback from previous experiments | `PlannerOutput`: ≤ 5 hypotheses, ≤ 4 experiments | Plan validator (C4); then execution and the oracle |
 | `explain` (P1) | After a violation is verified and minimized | Minimized trace (digests + command names + operation labels), serial outcomes vs observed, source | `Explanation`: summary, ordered steps with `{path, line}` references, root-cause kind, fix direction | Reference checker: file exists, line is in range, line is inside the operation's handler. Output labeled "model explanation" |
-| `invariants` (P1) | Optional | Catalog, source, serial outcomes | Template invariants | Must hold on all serial runs (§6.4) |
+| `draft_spec` | Once per new target, before any search | Allow-listed source, proto/OpenAPI files | Draft operation catalog, setup recipes, and contract clauses (§6.1 kinds only), each citing `{path, line}` | Reference checker; **human approval of every clause**; clauses must hold on all serial runs. Metric: fraction accepted unchanged. |
 
 ### 8.2 Model configuration (provisional, checked in the Day-1 smoke test)
 
@@ -274,14 +336,20 @@ Only workload choice and policy differ. This is what makes the comparison in
 
 ### 8.3 Schema design rules (from Meta's documented limits)
 
-- Root is a plain object with `additionalProperties: false` and every property `required`.
-  Optional values are represented as nullable types **[UNVERIFIED that `["string","null"]` is
-  accepted]**.
+- Root is a plain object (no top-level `anyOf`/`oneOf`/`allOf`/`enum`/`not`), every object has
+  `additionalProperties: false`, and `required` lists every key. `allOf`/`oneOf` are banned
+  everywhere; `anyOf` is allowed below the root, so optional values are written as
+  `anyOf: [{...}, {"type": "null"}]`. (Verified in the docs 2026-10-28; nullable form still to be
+  exercised in the smoke test.)
 - No recursion and nesting ≤ 10. Traces and graphs are sent as flat lists with integer ids.
 - The schema is **generated from the catalog** for each target: `op` is an `enum` of catalog
-  operation names, and `args` is an object holding the union of all argument names, each
-  nullable. Per-operation argument checks happen in the validator.
-- `$ref` is avoided (inlined) until verified.
+  operation names, the hint `command` enum is generated from the commands observed for that
+  target, and `args` is an object holding the union of all argument names, each nullable.
+  Per-operation argument checks happen in the validator.
+- Non-recursive `$ref`/`$defs` are allowed (≤ 200,000 nodes after inlining).
+  `minItems`/`maxItems`/`maxLength`/`pattern` are not documented, so they are enforced locally.
+- Responses API: `text.format`; Chat Completions: `response_format`. Sending `response_format`
+  to the Responses API returns 400.
 
 Provisional `PlannerOutput` for the cart catalog (abridged):
 
@@ -339,9 +407,18 @@ says so on screen.
 
 ## 9. Execution environment
 
-- Docker Compose project per target on an `internal: true` network: service, proxy, store.
-  The harness reaches the service through one published port bound to `127.0.0.1`.
-- Hardened flags from `THREAT_MODEL.md` §6 on every container that tolerates them.
+- One `internal: true` network per target holding the service, the store, and the **executor
+  container**, which runs the proxy, scheduler, executor, and oracle. Nothing on that network has
+  egress or a published port.
+- The host orchestrator is the only process with internet access and the API key. It starts the
+  executor with `docker run -i`, writes the experiment JSON to its stdin, and reads size-capped
+  JSON results from its stdout. Our source is mounted read-only; nothing else from the host is
+  mounted.
+- Hardened flags from `THREAT_MODEL.md` §6 on every container. A Compose lint rejects
+  `privileged`, `network_mode: host`, `cap_add`, `docker.sock`, and writable bind mounts.
+  Any per-image exception is recorded in `DECISIONS.md`.
+- Images are built from source at the pinned commit in a builder container (network at build
+  time only), or pulled by digest for upstream infrastructure images such as Valkey.
 - Reset between executions: `FLUSHALL` sent to Valkey on a proxy-owned admin connection, then
   the target's warm-up (the cart writes a test key on first connect). Services must not cache
   state across requests. A per-target check runs a serial workload twice and compares outcomes.
@@ -366,13 +443,19 @@ finishes. Their hash is committed beforehand (see `EVALUATION_PLAN.md` §5).
 
 ## 11. Known weaknesses of this design
 
-1. Determinism is empirical. Forced decisions and multiplexed-connection attribution can make
-   replays diverge. We measure and report this rather than assume it.
-2. The serial-reference cost grows with `|S|!`. The ≤ 4 concurrent-operation cap keeps it at ≤ 24
+1. Determinism is empirical. Forced decisions can make replays diverge. We measure and report
+   this rather than assume it.
+2. Multiplexed clients make some real schedules unreachable (§5.2), so false negatives are
+   possible. False positives from the control mechanism are excluded by the ordering rules and the
+   soundness checker.
+3. The serial-reference cost grows with `|S|!`. The ≤ 4 concurrent-operation cap keeps it at ≤ 24
    serial runs per subset, and results are cached per workload.
-3. Observation through the service API can hide store-level anomalies the API does not expose.
+4. Contracts are human-approved. A missing clause means a real anomaly is reported only as an
+   `OBSERVATION`; a wrong clause would mislabel designed behavior. Weak-contract controls exist to
+   catch the second case.
+5. Observation through the service API can hide store-level anomalies the API does not expose.
    A raw store snapshot is a P1 addition.
-4. The catalog is human-made. A wrong catalog can make every strategy miss a bug equally. This
+6. The catalog is human-made. A wrong catalog can make every strategy miss a bug equally. This
    does not bias the comparison, but it limits recall.
-5. Services with internal background work (timers, consumers) can break quiescence detection.
+7. Services with internal background work (timers, consumers) can break quiescence detection.
    Such targets are out of scope for P0.

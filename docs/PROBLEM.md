@@ -35,8 +35,8 @@ Source: https://github.com/open-telemetry/opentelemetry-demo/issues/3824 (opened
 unlabeled, no maintainer response). Code read at tag `3.1.0` (`dedc0178…`) and `main`
 (`8f640ded…`, 2026-10-27) via the GitHub API. **Not executed yet.**
 
-The demo's cart service (C#, .NET 10, ASP.NET Core gRPC, StackExchange.Redis, Valkey 9.1.2)
-stores each user's cart as one serialized protobuf blob in a Valkey hash field. In
+The demo's cart service (C#, .NET 10, ASP.NET Core gRPC, StackExchange.Redis; Valkey
+`9.0.4-alpine3.23` per the `.env` at tag `3.1.0`, 9.1.2 on `main`) stores each user's cart as one serialized protobuf blob in a Valkey hash field. In
 `src/cart/src/cartstore/ValkeyCartStore.cs` at `3.1.0`:
 
 - `AddItemAsync` does `HashGetAsync(userId, "cart")` (line 140), parses the blob, adds the item or

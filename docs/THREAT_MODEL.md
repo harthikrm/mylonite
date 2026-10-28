@@ -4,6 +4,14 @@ Status: **Phase 0 draft.** Nothing described here is implemented yet. Every cont
 requirement for Phase 1, and the [security acceptance checklist](#security-acceptance-checklist)
 at the end is the gate for running any third-party code.
 
+> **Updated 2026-10-28 (`PHASE0_REVIEW.md` R10, approved as A7).**
+> - The executor, proxy, and oracle run as a container **inside** the target's internal network.
+> - The host orchestrator, the only process with internet access and the API key, talks to it
+>   only through stdin/stdout (B4).
+> - No published ports. Compose files are linted.
+> - Docker Desktop file sharing is restricted, and `.env` is never mounted.
+> - Checklist items added in §8.
+
 ## 1. What Mylonite does that is dangerous
 
 Mylonite reads source code it did not write, sends parts of it to a remote model, receives
@@ -123,8 +131,10 @@ Baseline `docker run` flags for a single-process target (provisional; verified i
 --env-file /dev/null   # plus an explicit allow-list of non-secret variables
 ```
 
-For multi-container targets (Valkey/Redis, Postgres), the same flags apply per service where the
-image allows, and the Compose network is declared `internal: true`.
+For multi-container targets (Valkey/Redis, Postgres), the same flags apply to every service, and
+the Compose network is declared `internal: true`. Any flag an image cannot tolerate is an
+exception recorded in `DECISIONS.md` with the reason. The executor container joins the same
+internal network and is driven over stdin/stdout (`ARCHITECTURE.md` §9).
 
 ## 7. Phase 0 posture
 
@@ -157,6 +167,15 @@ A Phase 1 build may run third-party code only when every item is checked and rec
 - [ ] Meta API data-use and retention terms read and recorded in `HACKATHON_COMPLIANCE.md`.
 - [ ] Dependencies pinned with hashes; base images pinned by digest.
 - [ ] Trace/result parser rejects oversized input and non-schema JSON.
+- [ ] Executor results leave the sandbox only through size-capped stdout; no writable host
+      mounts.
+- [ ] Docker Desktop file sharing restricted to what the build needs; `.env` and `$HOME` never
+      mounted (checked with `docker inspect` on every container).
+- [ ] Compose lint rejects `privileged`, `network_mode: host`, `cap_add`, `docker.sock`,
+      `ports:` on sandbox networks, and writable bind mounts.
+- [ ] Proxy soundness checker runs on every trace; failures are counted, never ignored.
+- [ ] Third-party images are built from source at a pinned commit in a builder container
+      (network only at build time), or are upstream infrastructure images pinned by digest.
 - [ ] Report renderer escapes all untrusted strings (test with an HTML/script payload fixture).
 - [ ] Reports label each finding `verified` or `candidate`; only `verified` appear in the demo.
 - [ ] Per-session caps on model calls, tokens, and wall-clock are enforced.

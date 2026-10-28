@@ -11,16 +11,20 @@ From the research (details and links in `PRIOR_ART.md` and `RESEARCH_LOG.md`):
 
 1. **Interleaving search is largely solved for small bugs.** Most real concurrency bugs involve
    ≤ 2 threads and ≤ 4 ordered accesses (Lu et al., ASPLOS 2008). On SCTBench, naive controlled
-   random scheduling found 43 of 49 bugs, 32 within 10 schedules (Thomson et al., TOPC 2016). PCT,
+   random scheduling found 43 of 49 bugs in total; a single seed found 27 within its first 2
+   schedules and 32 within 10 (Thomson et al., TOPC 2016). PCT,
    POS, RFF, and SURW push further. An LLM picking interleavings competes against this.
 2. **Choosing the workload is not solved.** PCT explicitly assumes the bug-triggering input is
    given. Learned input selection helped in Snowcat (SOSP 2023); LLM driver generation helped
    in ConCovUp (2026). This is the most plausible place for model guidance to win.
 3. **LLM-chosen interleavings already exist.** REINS (arXiv 2610.13421, Oct 2026) uses an LLM
-   agent to turn bug hypotheses into constraints for a controlled C/C++ thread scheduler, with a
-   one-program margin over the best baseline in a single run. Fray (JVM) ships an MCP server that
-   lets an LLM choose every scheduling step. Re-doing either for another language is not
-   differentiated.
+   agent to turn bug hypotheses into constraints on event orders and variable states for a
+   controlled C/C++ thread scheduler. It reports 48/52 vs 47 for the best baseline on
+   SCTBench+ConVul and 769 vs 731 bugs on RaceBench (each tool run once, per the full paper),
+   plus six previously unknown real-world bugs, three confirmed by developers (abstract). Its
+   abstract does not describe the LLM choosing inputs or workloads. Fray (JVM) ships an MCP
+   server that lets an LLM choose every scheduling step. Re-doing either for another language is
+   not differentiated.
 4. **Application-level races through a shared store are invisible to memory-level tools.** A lost
    update across two HTTP/gRPC requests that each do `HGET` then `HSET` has no data race in any
    process; ThreadSanitizer and the Go race detector cannot see it. ACIDRain (SIGMOD 2017) found

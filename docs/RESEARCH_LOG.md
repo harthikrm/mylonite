@@ -80,9 +80,10 @@ so quotations from those pages are close to verbatim but not guaranteed. Items m
   `_locker` guards only connection setup. Connection string uses `allowAdmin=true`; on first
   connect the store writes the test key `cart` = `OK`. (Read from the file as fetched via
   `gh api`.)
-- FACT: cart is C# on `net10.0`, ASP.NET Core gRPC, StackExchange.Redis; Valkey image
-  `ghcr.io/valkey-io/valkey:9.1.2-alpine3.24`; `CART_PORT=7070`; cart registers no gRPC
-  reflection; OpenFeature with a flagd provider is configured in `Program.cs`.
+- FACT: cart is C# on `net10.0`, ASP.NET Core gRPC, StackExchange.Redis; `CART_PORT=7070`; cart
+  registers no gRPC reflection; OpenFeature with a flagd provider is configured in `Program.cs`.
+  **Corrected 2026-10-28:** the Valkey image `9.1.2-alpine3.24` is from `main`. At tag `3.1.0`
+  the `.env` pins `9.0.4-alpine3.23` and `IMAGE_VERSION=3.0.0`.
 - FACT: fix PR #3825 (optimistic concurrency with `Condition.HashEqual`) was closed unmerged by
   the stale bot on 2026-09-17. PR #3988 (merged 2026-09-18) re-enabled cart tests against an
   in-memory store, with no concurrency test. The racy code is present on 3.0.0, 3.1.0 (latest
@@ -130,6 +131,42 @@ so quotations from those pages are close to verbatim but not guaranteed. Items m
   added (D-010); #3824 demoted to dev-only (D-011).
 - Not verified: TaxDC percentages, Feral Concurrency Control numbers (primary PDF unreachable),
   SURW's full paper and budget, ConMAn mutation operators.
+
+## 2026-10-28: Team handoff, re-verification, and independent review
+
+- Team handoff received. New inputs:
+  - Participant-guide rules: public repository and 3-minute video required, new contributions
+    identified, three judging stages.
+  - The Agents 102 session.
+  - $200 Claude credits.
+  - The cookbook URL.
+  - Risk C: respect each application's actual consistency contract.
+  - A proposed day order.
+  All recorded in `HACKATHON_COMPLIANCE.md` and `PHASE0_REVIEW.md`.
+- FACT (re-checked with `gh`): #3824 open; #3825 closed unmerged 2026-09-17; tag `3.1.0` =
+  `dedc0178…` = latest release.
+- FACT: at `3.1.0`, `.env` pins `VALKEY_IMAGE=…9.0.4-alpine3.23` and `IMAGE_VERSION=3.0.0`.
+  `ValkeyCartStore.cs` differs between `3.0.0` and `3.1.0` only cosmetically (`object` → `Lock`,
+  `(byte[])` casts). The race logic is identical.
+- FACT: the cart wraps every storage exception in `FailedPrecondition` (lines 168–171, 190–193 at
+  `3.1.0`). Consequence: an error status does not imply "no effect" (`PHASE0_REVIEW.md` R3).
+- FACT: Meta structured-output docs, re-read: `anyOf` allowed below the root; non-recursive
+  `$ref`/`$defs` allowed; `strict: false` currently behaves like `strict: true`; Responses API uses
+  `text.format`. https://dev.meta.ai/docs/structured-output
+- FACT: quickstart confirms `muse-spark-1.3`, `https://api.meta.ai/v1`, `MODEL_API_KEY`, and that
+  the OpenAI SDK does not read `MODEL_API_KEY` automatically. https://dev.meta.ai/docs/quickstart
+- FACT: cookbook (MIT, pushed 2026-10-24): prompt caching is automatic on identical prefixes; an
+  agent-loop recipe has Muse fix an asyncio lost-update race given failing tests.
+  https://github.com/meta-models/meta-model-cookbook
+- FACT: REINS abstract: "Agent-guided Thread Scheduling for Concurrency Bug Detection and
+  Reproduction" (Zhang, Pasareanu, Yang; 9 Oct 2026). The LLM produces event-order and state
+  constraints. Six new real-world bugs, three confirmed. https://arxiv.org/abs/2610.13421
+- Review outcome: two critical design errors (the proxy reordered within one connection; the
+  oracle imposed serializability as every target's contract) and several high-severity findings.
+  See `PHASE0_REVIEW.md`.
+- Observation on tooling: the fetched Meta and arXiv pages came back wrapped in text styled as
+  instructions to the fetching agent, which the agent ignored. This is a reminder that any text
+  pulled into a prompt can carry instructions (`THREAT_MODEL.md` T1).
 
 ## Open threads carried into Phase 1
 
