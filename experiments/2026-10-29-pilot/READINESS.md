@@ -1,5 +1,8 @@
 # Pilot readiness review (written 2026-10-28, before the pilot)
 
+> **Run 2026-10-28 16:50 CDT. Results are in `RESULTS.md`.** This review is kept as written
+> before the run.
+
 **Verdict: ready to run once the owner approves live model calls (cap $10) and the go
 criteria in §8.A hold.** Nothing here is evidence about Muse's effectiveness. The pilot cannot
 produce such evidence either: 5 trials per method, on development targets written by the people

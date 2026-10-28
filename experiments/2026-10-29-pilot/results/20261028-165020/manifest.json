@@ -1,0 +1,123 @@
+{
+ "git_commit": "db1f84f41682a9114d67fed9abe1197e887c4947",
+ "git_dirty": [],
+ "files_sha256": {
+  "docker/executor.Dockerfile": "afb1f6ffe2f0c9440ba1ba68937a238c3e300a27c206214ee59c7823614a2e88",
+  "docker/requirements.lock": "ad8dfc86aad735afc2b032d0bbac3404fde42cf9cc9a6f3ad215695d26855a08",
+  "experiments/2026-10-29-pilot/config.json": "4c38d6477af6dedbd1515eeb06b024d8193aead090b0345e8fc516dbb21edf9c",
+  "experiments/2026-10-29-pilot/run_pilot.py": "5b06de763ca8c02647b8eb0a6c42162d33b1688d57145e222d0b7435737a1e29",
+  "fixtures/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "fixtures/dev/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "fixtures/dev/d2_counter/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "fixtures/dev/d2_counter/service.py": "4d9b815ad000812e9bb550f967a19aa5876903bda5f281f2c9e8a390d5a77e35",
+  "fixtures/dev/d2_counter/service_fixed.py": "a38350ae2913de496d650b2c7455337dc6513053351358b67e952aefcfb82de9",
+  "fixtures/dev/d2_counter/target.json": "2201c6d412309dc86a218cfaab86f57b8ebae10041172f8589ccfef7b3350613",
+  "fixtures/dev/d3_inventory/DESIGN.md": "96d43eb13e40550bd545f5dcee69d4d649f95e960791ada062829b63184dddec",
+  "fixtures/dev/d3_inventory/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "fixtures/dev/d3_inventory/service.py": "a08ca47d15a3fa01e22e7fe48ffafb67ad428b318c99696ed355a538396262e8",
+  "fixtures/dev/d3_inventory/service_fixed.py": "1fd5228e7d2988a7d7de4e9386258e806fc0b957cf83e2adbd7c37d27171e593",
+  "fixtures/dev/d3_inventory/target.json": "594b535a21e35b7c5a726b578be2c87f3b4c52912df00382dc3685e6f8025da0",
+  "src/mylonite/__init__.py": "980ce6b63c80396d40e46796bc524236b86c3242014325bee3492016d8bb81df",
+  "src/mylonite/audit.py": "08c0f5049467308124efe34bea490d48a644376c68ab7c1117fb368adfc7e779",
+  "src/mylonite/executor.py": "caeea4fc388dd599ee851316ae65abd85cf3b56fb6c812a4c1f712c9ef85316a",
+  "src/mylonite/methods.py": "f81c295f3075bdba86d6b1da006b316b64c8e33539285e2de0803bca1e11beb7",
+  "src/mylonite/oracle.py": "917482f9ce0f5e49e4c20f906a8ee40c1f6c5d13382041aee6be32b5a32a3226",
+  "src/mylonite/planner.py": "88648773ab6e1f7a9b84c42fc2e0a63cb587e1139b73718e6dc0d3bc5bbde068",
+  "src/mylonite/proxy.py": "94d34ceeda7f1ebc90eb9066a8c7514820a23d77225d229aecc9d4f67eabc1eb",
+  "src/mylonite/resp.py": "3ebaee0b6ca3bbf9ccea6edf9cbc262bcb64483ba77de7ac46762ed5eacb2b6f",
+  "src/mylonite/sandbox.py": "d428b0f9280de909a94855dd6b452779f528f2a0e0520a227e1dbb54f47c7c80",
+  "src/mylonite/scheduler.py": "8d8e31e60356ed8e67f05f95dcf31caa56925232a5af22dbf8140d238c8ef0ce",
+  "src/mylonite/space.py": "2d0259a50fd219ed558af094107a5ce2e4815c51bc7b566bce3789cc9d170250",
+  "tests/test_contamination.py": "a5ff574f9678564ee5f6b34dbd2f54c07d3a0dd021c87d2644521fabde620b50",
+  "tests/test_core.py": "bf93e01436bd9edbcf7016864cf5f187ee4895606d99bc08eff774f7c266d114"
+ },
+ "host_python": "3.14.5",
+ "images": {
+  "executor": "sha256:fc531f255610701165b8eb231bc8bc6863a90189fb6752c73c15f55f60ab7c33",
+  "valkey": "ghcr.io/valkey-io/valkey@sha256:107b203169a20ef7c87548c157f4e4a833dbbbd20fefd3a26740b7f98ac80216"
+ },
+ "executor": {
+  "d2-loyalty-points": {
+   "ready": true,
+   "egress_probe": {
+    "tcp_1.1.1.1:443": "blocked (OSError)",
+    "dns_pypi.org": "blocked (gaierror)"
+   },
+   "python": "3.13.18",
+   "redis_py": "8.1.0"
+  },
+  "d3-inventory": {
+   "ready": true,
+   "egress_probe": {
+    "tcp_1.1.1.1:443": "blocked (OSError)",
+    "dns_pypi.org": "blocked (gaierror)"
+   },
+   "python": "3.13.18",
+   "redis_py": "8.1.0"
+  }
+ },
+ "prompt_version": "planner-v2-2026-10-28",
+ "prompt_fingerprint": "3da3aa341994c85e64bf1e452a3e61070f8da4b37013dc2de08c9ca6e1c31157",
+ "model": "muse-spark-1.3",
+ "config": {
+  "experiment": "2026-10-29 pilot value checkpoint (EVALUATION_PLAN.md \u00a79)",
+  "status": "pre-registered 2026-10-28, before any M1, M3+ or M4 run on D3",
+  "targets": [
+   "fixtures/dev/d2_counter/target.json",
+   "fixtures/dev/d3_inventory/target.json"
+  ],
+  "methods": [
+   "M1",
+   "M3+",
+   "M4"
+  ],
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "budget": {
+   "executions": 1000,
+   "method_seconds": 900,
+   "schedules_per_experiment": 50
+  },
+  "M4": {
+   "max_rounds": 5,
+   "include_source": true,
+   "reasoning_effort": "medium"
+  },
+  "verification": {
+   "replays": 20,
+   "corrected_exhaustive_cap": 5000,
+   "corrected_bounded_random": 2000
+  },
+  "executor": {
+   "delta_q_ms": 300,
+   "round_timeout_s": 10
+  },
+  "prices": {
+   "input": 1.25,
+   "cached": 0.15,
+   "output": 4.25,
+   "compute_per_second": 1.11e-05
+  },
+  "model_cost_cap_usd": 10.0,
+  "notes": {
+   "prices": "USD per 1M tokens, Spark Standard; compute at a nominal $0.04 per vCPU-hour of execution time",
+   "space": "every method: setup <= 6 calls, 2-4 concurrent calls, catalog x domains (src/mylonite/space.py)",
+   "seeds": "M1 seeds workload and schedule draws; M3+ seeds only the order of calls and pairs; M4 has no usable seed (sampling at temperature 1.0), so each trial is a fresh planning session",
+   "budget": "B_exec raised from the plan's starting 300 to 1000 before any run on D3: an emulation showed breadth-first M3+ needs more than 300 on D3 (READINESS.md). Success is also reported at 100 and 300.",
+   "model_retries": "up to 3 attempts on transport errors, HTTP 429 and 5xx (waits 5 s, 15 s); failed attempts count as model latency"
+  },
+  "report_success_at": [
+   100,
+   300,
+   1000
+  ]
+ },
+ "argv": [],
+ "started": "2026-10-28T16:50:20-0500",
+ "finished": "2026-10-28T16:54:51-0500"
+}

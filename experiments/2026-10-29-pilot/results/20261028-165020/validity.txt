@@ -1,0 +1,98 @@
+[
+ {
+  "criterion": "B1 audit re-run on every model request",
+  "pass": true,
+  "detail": {
+   "requests": 10,
+   "recorded_calls": 10,
+   "findings": []
+  }
+ },
+ {
+  "criterion": "B2 no error status",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "criterion": "B2 INCONCLUSIVE <= 1% per method",
+  "pass": true,
+  "detail": {
+   "d2-loyalty-points/M1": {
+    "executions": 27,
+    "inconclusive": 0
+   },
+   "d2-loyalty-points/M3+": {
+    "executions": 40,
+    "inconclusive": 0
+   },
+   "d2-loyalty-points/M4": {
+    "executions": 5,
+    "inconclusive": 0
+   },
+   "d3-inventory/M1": {
+    "executions": 5000,
+    "inconclusive": 0
+   },
+   "d3-inventory/M3+": {
+    "executions": 1654,
+    "inconclusive": 0
+   },
+   "d3-inventory/M4": {
+    "executions": 5,
+    "inconclusive": 0
+   }
+  }
+ },
+ {
+  "criterion": "B2 0 soundness problems",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "criterion": "B3 corrected variant: every schedule PASS",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "criterion": "B4 every hit verified, mode recorded",
+  "pass": true,
+  "detail": {
+   "verified_trials": 25,
+   "corrected_modes": {
+    "exhaustive": 25
+   },
+   "weak": []
+  }
+ },
+ {
+  "criterion": "B5 D2 sanity: M1 and M3+ verified 5/5",
+  "pass": true,
+  "detail": {
+   "M1": 5,
+   "M3+": 5
+  }
+ },
+ {
+  "criterion": "B6 spend <= cap, all trials recorded, clean manifest",
+  "pass": true,
+  "detail": {
+   "model_usd": 0.151594,
+   "cap": 10.0,
+   "trials": 30,
+   "expected": 30,
+   "git_commit": "db1f84f41682a9114d67fed9abe1197e887c4947",
+   "git_dirty": []
+  }
+ },
+ {
+  "criterion": "accounting: logged executions match each trial's count",
+  "pass": true,
+  "detail": {}
+ },
+ {
+  "criterion": "accounting: no trial over B_exec or the method-seconds cap",
+  "pass": true,
+  "detail": []
+ }
+]
+ALL PASS

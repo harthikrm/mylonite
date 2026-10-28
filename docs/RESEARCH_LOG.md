@@ -252,6 +252,33 @@ Details in `experiments/2026-10-28-tracer/README.md`.
   style (decoy rewrites), C6 labeling, blindness and crash rules, and the `WATCH` operator the
   harness cannot expose.
 
+## 2026-10-28: Pilot value checkpoint
+
+Run on the evening of Oct 28, ahead of the planned Oct 29 date, at `db1f84f` with live Muse calls
+approved by the owner. Details are in `experiments/2026-10-29-pilot/RESULTS.md`.
+- OBSERVATION: every validity criterion (`READINESS.md` §8.B) passed, and no stop condition
+  occurred. The checker reads the raw run and catches a planted fault for each criterion.
+- OBSERVATION: the replay from recorded answers, at the run's commit, matched all 30 trials.
+- OBSERVATION, D2: every method was verified 5/5. Median E₁: M1 5, M3+ 8, M4 1. M4 used about
+  240–300× the baselines' method seconds and $0.014 per trial.
+- OBSERVATION, D3:
+  - M1 was censored 5/5, as predicted.
+  - M3+ was verified 5/5, at E₁ 211, 246, 211, 211, 775 (Success@300 4/5), close to the
+    reviewer's emulation.
+  - M4 was verified 5/5 at E₁ = 1, at a median of 12.6 method seconds against M3+'s 1.7, and
+    $0.016 per trial.
+- OBSERVATION: every Muse plan named the bug's lines in the shown source. Each trial hit on its
+  first execution, so feedback rounds and depth-first search were never exercised live.
+- INTERPRETATION: the pilot cannot tell reading code apart from planning, because A2 (no source)
+  was not run. No outperformance claim is made.
+- OBSERVATION: both of §8.D's D3 clauses, *continue* and *re-scope*, fire on this outcome. The
+  pre-registered rule had no precedence for this case. Under §8.D, the owner decides.
+- OBSERVATION: M3+'s pair priority ignores argument values. On seed 5, its one prioritized
+  `purchase ∥ purchase` pair could not violate, and the violating pair came 18 pairs later.
+  Fixing this would be a post-pilot baseline change and needs the owner's decision.
+- OBSERVATION: in 3 of the 5 D3 trials, the hint-advance rule (review fix #3) ran a command that
+  Muse's hint had omitted.
+
 ## Open threads carried into Phase 1
 
 See `OPEN_QUESTIONS.md`. Most urgent: G0 smoke tests, cart startup dependencies, team roster,
