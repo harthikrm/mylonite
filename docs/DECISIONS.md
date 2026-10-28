@@ -202,3 +202,27 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
     the baseline, the conservative direction for any claim about M4.
   - M3+ is frozen with everything else at C1, before held-out code exists.
 
+
+## D-024 M3+arg: an argument-aware variant of M3+, as an additional baseline
+- Date: 2026-10-28. Status: **Proposed** (needs the owner's decision; **post-pilot development**).
+- Context:
+  - M3+'s pair priority (D-023) keeps one pair per command signature. Calls that differ only in
+    argument values share a signature.
+  - On D3 the one prioritized `purchase ∥ purchase` pair is chosen at random among quantity
+    combinations. With probability 2/9 per seed, it is a pair that cannot violate.
+  - The pilot's seed 5 hit this case: E₁ = 775 against 211–246 for the other seeds
+    (`experiments/2026-10-28-a2-no-source/RESULTS.md` §5).
+- Proposal:
+  - A new method ID, `M3+arg`, identical to M3+ until its frontier is exhausted.
+  - Then, ahead of the other deferred pairs, it explores the pairs M3+ deferred only because they
+    share a signature with a representative it already explored.
+  - `M3+` stays as pre-registered. It is not altered, renamed or replaced.
+- Evidence (estimate only, not a run):
+  - The emulator replays `methods.run_m3plus` over the pilot's recorded profiles and
+    exploration outcomes, and reproduces all 5 seeds exactly.
+  - Its M3+arg estimate: 211, 246, 211, 211, 555. The same as M3+ on seeds 1–4, and 775 → 555 on
+    seed 5. Every pair it reaches has a recorded cost.
+  - The alternative, which explores variants right after their representative at each state,
+    estimates 281–311 on seeds 1–4. It was rejected because it is worse in the typical case.
+- If accepted: freeze M3+arg at C1 with everything else, and run it beside M3+ (not instead of
+  it) on held-out targets. Report both.

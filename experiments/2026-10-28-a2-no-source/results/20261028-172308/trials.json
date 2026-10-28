@@ -1,0 +1,1116 @@
+[
+ {
+  "target": "d2-loyalty-points",
+  "method": "A2",
+  "seed": 1,
+  "status": "verified",
+  "e1_executions": 1,
+  "witness": {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 2
+      }
+     },
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 1
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "exec:0",
+    "admit:1",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "bff0d6cbd32e588a3661485107634a1703b3ad926efa3d4e36f7b9c2d0ed3b0a",
+   "pre": {
+    "m1": 0,
+    "m2": 0
+   },
+   "post": {
+    "m1": 1,
+    "m2": 0
+   },
+   "violations": [
+    {
+     "clause": "balance_matches_awards",
+     "failures": [
+      {
+       "key": "m1",
+       "observed_delta": 1,
+       "allowed_deltas": [
+        3
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": []
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 1,
+  "method_s": 17.508,
+  "exec_s": 0.018,
+  "overhead_s": 0.006,
+  "verification_s": 0.163,
+  "model_s": 17.48,
+  "model_calls": 1,
+  "tokens": {
+   "prompt": 1263,
+   "cached": 0,
+   "completion": 3920,
+   "reasoning": 3128
+  },
+  "model_usd": 0.018239,
+  "compute_usd": 0.0,
+  "counters": {
+   "experiments_proposed": 3,
+   "experiments_valid": 3,
+   "VIOLATION": 1
+  },
+  "unverified_violations": [],
+  "implemented_as": "methods.run_m4 with include_source=false"
+ },
+ {
+  "target": "d2-loyalty-points",
+  "method": "A2",
+  "seed": 2,
+  "status": "verified",
+  "e1_executions": 1,
+  "witness": {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 1
+      }
+     },
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 1
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "exec:0",
+    "admit:1",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "619c301f7accb549c3da47e72358345372ad7ec0cec7531bf8196c2cd8b60494",
+   "pre": {
+    "m1": 0,
+    "m2": 0
+   },
+   "post": {
+    "m1": 1,
+    "m2": 0
+   },
+   "violations": [
+    {
+     "clause": "balance_matches_awards",
+     "failures": [
+      {
+       "key": "m1",
+       "observed_delta": 1,
+       "allowed_deltas": [
+        2
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": []
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 1,
+  "method_s": 14.049,
+  "exec_s": 0.015,
+  "overhead_s": 0.002,
+  "verification_s": 0.171,
+  "model_s": 14.03,
+  "model_calls": 1,
+  "tokens": {
+   "prompt": 1263,
+   "cached": 0,
+   "completion": 3597,
+   "reasoning": 2950
+  },
+  "model_usd": 0.016866,
+  "compute_usd": 0.0,
+  "counters": {
+   "experiments_proposed": 3,
+   "experiments_valid": 3,
+   "VIOLATION": 1
+  },
+  "unverified_violations": [],
+  "implemented_as": "methods.run_m4 with include_source=false"
+ },
+ {
+  "target": "d2-loyalty-points",
+  "method": "A2",
+  "seed": 3,
+  "status": "verified",
+  "e1_executions": 1,
+  "witness": {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 2
+      }
+     },
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 2
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "exec:0",
+    "admit:1",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "3749a3f6ed694ce9100dcea7828e0fb36cb5ffcd6446f5b9af83f7a8674acc3e",
+   "pre": {
+    "m1": 0,
+    "m2": 0
+   },
+   "post": {
+    "m1": 2,
+    "m2": 0
+   },
+   "violations": [
+    {
+     "clause": "balance_matches_awards",
+     "failures": [
+      {
+       "key": "m1",
+       "observed_delta": 2,
+       "allowed_deltas": [
+        4
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": []
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 1,
+  "method_s": 16.335,
+  "exec_s": 0.016,
+  "overhead_s": 0.002,
+  "verification_s": 0.17,
+  "model_s": 16.31,
+  "model_calls": 1,
+  "tokens": {
+   "prompt": 1263,
+   "cached": 1137,
+   "completion": 3717,
+   "reasoning": 3039
+  },
+  "model_usd": 0.016125,
+  "compute_usd": 0.0,
+  "counters": {
+   "experiments_proposed": 3,
+   "experiments_valid": 3,
+   "VIOLATION": 1
+  },
+  "unverified_violations": [],
+  "implemented_as": "methods.run_m4 with include_source=false"
+ },
+ {
+  "target": "d2-loyalty-points",
+  "method": "A2",
+  "seed": 4,
+  "status": "verified",
+  "e1_executions": 1,
+  "witness": {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 2
+      }
+     },
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 2
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "exec:0",
+    "admit:1",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "3749a3f6ed694ce9100dcea7828e0fb36cb5ffcd6446f5b9af83f7a8674acc3e",
+   "pre": {
+    "m1": 0,
+    "m2": 0
+   },
+   "post": {
+    "m1": 2,
+    "m2": 0
+   },
+   "violations": [
+    {
+     "clause": "balance_matches_awards",
+     "failures": [
+      {
+       "key": "m1",
+       "observed_delta": 2,
+       "allowed_deltas": [
+        4
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": []
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 1,
+  "method_s": 15.428,
+  "exec_s": 0.015,
+  "overhead_s": 0.002,
+  "verification_s": 0.169,
+  "model_s": 15.41,
+  "model_calls": 1,
+  "tokens": {
+   "prompt": 1263,
+   "cached": 1137,
+   "completion": 3632,
+   "reasoning": 2935
+  },
+  "model_usd": 0.015764,
+  "compute_usd": 0.0,
+  "counters": {
+   "experiments_proposed": 3,
+   "experiments_valid": 3,
+   "VIOLATION": 1
+  },
+  "unverified_violations": [],
+  "implemented_as": "methods.run_m4 with include_source=false"
+ },
+ {
+  "target": "d2-loyalty-points",
+  "method": "A2",
+  "seed": 5,
+  "status": "verified",
+  "e1_executions": 1,
+  "witness": {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 1
+      }
+     },
+     {
+      "op": "award",
+      "args": {
+       "member": "m1",
+       "points": 2
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "exec:0",
+    "admit:1",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "a38d654375a96471285a1ca8987ddf59944c9911409e0f2a882747823e324681",
+   "pre": {
+    "m1": 0,
+    "m2": 0
+   },
+   "post": {
+    "m1": 2,
+    "m2": 0
+   },
+   "violations": [
+    {
+     "clause": "balance_matches_awards",
+     "failures": [
+      {
+       "key": "m1",
+       "observed_delta": 2,
+       "allowed_deltas": [
+        3
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": []
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 1,
+  "method_s": 17.681,
+  "exec_s": 0.017,
+  "overhead_s": 0.002,
+  "verification_s": 0.17,
+  "model_s": 17.66,
+  "model_calls": 1,
+  "tokens": {
+   "prompt": 1263,
+   "cached": 1137,
+   "completion": 4106,
+   "reasoning": 3294
+  },
+  "model_usd": 0.017779,
+  "compute_usd": 0.0,
+  "counters": {
+   "experiments_proposed": 3,
+   "experiments_valid": 3,
+   "VIOLATION": 1
+  },
+  "unverified_violations": [],
+  "implemented_as": "methods.run_m4 with include_source=false"
+ },
+ {
+  "target": "d3-inventory",
+  "method": "A2",
+  "seed": 1,
+  "status": "verified",
+  "e1_executions": 1,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "create",
+      "args": {
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "restock",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "publish",
+      "args": {
+       "sku": "s1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "purchase",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "purchase",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "exec:0",
+    "exec:0",
+    "admit:1",
+    "exec:1",
+    "exec:1",
+    "exec:0",
+    "exec:0",
+    "exec:1",
+    "exec:1"
+   ],
+   "trace_hash": "1b450fa332004d8e895e3bbe356504d402062761d114b84befd2af80b79fe641",
+   "pre": {
+    "s1": 2,
+    "s2": 0
+   },
+   "post": {
+    "s1": -2,
+    "s2": 0
+   },
+   "violations": [
+    {
+     "clause": "stock_non_negative",
+     "failures": [
+      {
+       "key": "s1",
+       "observed": -2
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 1,
+  "method_s": 27.821,
+  "exec_s": 0.022,
+  "overhead_s": 0.007,
+  "verification_s": 0.198,
+  "model_s": 27.79,
+  "model_calls": 1,
+  "tokens": {
+   "prompt": 1613,
+   "cached": 0,
+   "completion": 7561,
+   "reasoning": 6714
+  },
+  "model_usd": 0.034151,
+  "compute_usd": 0.0,
+  "counters": {
+   "experiments_proposed": 3,
+   "experiments_valid": 3,
+   "VIOLATION": 1
+  },
+  "unverified_violations": [],
+  "implemented_as": "methods.run_m4 with include_source=false"
+ },
+ {
+  "target": "d3-inventory",
+  "method": "A2",
+  "seed": 2,
+  "status": "verified",
+  "e1_executions": 1,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "create",
+      "args": {
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "restock",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "publish",
+      "args": {
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "restock",
+      "args": {
+       "qty": 1,
+       "sku": "s1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "purchase",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "purchase",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "purchase",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "exec:0",
+    "exec:0",
+    "admit:1",
+    "exec:1",
+    "exec:1",
+    "admit:2",
+    "exec:2",
+    "exec:2",
+    "exec:0",
+    "exec:1",
+    "exec:2",
+    "exec:0",
+    "exec:1",
+    "exec:2"
+   ],
+   "trace_hash": "74490b75d4416c1c2733c5c65a3381c7e21c208ef7c0913ab29805cea2d2d9dc",
+   "pre": {
+    "s1": 3,
+    "s2": 0
+   },
+   "post": {
+    "s1": -3,
+    "s2": 0
+   },
+   "violations": [
+    {
+     "clause": "stock_non_negative",
+     "failures": [
+      {
+       "key": "s1",
+       "observed": -3
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 90,
+    "verdicts": {
+     "PASS": 90
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 1,
+  "method_s": 21.497,
+  "exec_s": 0.023,
+  "overhead_s": 0.001,
+  "verification_s": 0.903,
+  "model_s": 21.46,
+  "model_calls": 1,
+  "tokens": {
+   "prompt": 1613,
+   "cached": 0,
+   "completion": 5394,
+   "reasoning": 4242
+  },
+  "model_usd": 0.024941,
+  "compute_usd": 0.0,
+  "counters": {
+   "experiments_proposed": 3,
+   "experiments_valid": 3,
+   "VIOLATION": 1
+  },
+  "unverified_violations": [],
+  "implemented_as": "methods.run_m4 with include_source=false"
+ },
+ {
+  "target": "d3-inventory",
+  "method": "A2",
+  "seed": 3,
+  "status": "verified",
+  "e1_executions": 114,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "create",
+      "args": {
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "restock",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "publish",
+      "args": {
+       "sku": "s1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "purchase",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "purchase",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:0",
+    "exec:1",
+    "exec:1",
+    "exec:0",
+    "exec:0",
+    "exec:1",
+    "exec:1"
+   ],
+   "trace_hash": "5eb8abababb6798a0955081887ee28b207aafff0bb1a8beb67b4695ac2117030",
+   "pre": {
+    "s1": 2,
+    "s2": 0
+   },
+   "post": {
+    "s1": -2,
+    "s2": 0
+   },
+   "violations": [
+    {
+     "clause": "stock_non_negative",
+     "failures": [
+      {
+       "key": "s1",
+       "observed": -2
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 114,
+  "method_s": 30.945,
+  "exec_s": 0.842,
+  "overhead_s": 0.065,
+  "verification_s": 0.187,
+  "model_s": 30.07,
+  "model_calls": 2,
+  "tokens": {
+   "prompt": 4369,
+   "cached": 1521,
+   "completion": 7749,
+   "reasoning": 6036
+  },
+  "model_usd": 0.036721,
+  "compute_usd": 9e-06,
+  "counters": {
+   "experiments_proposed": 6,
+   "experiments_valid": 6,
+   "PASS": 113,
+   "hint_followed": 0,
+   "hint_skipped": 16,
+   "VIOLATION": 1
+  },
+  "unverified_violations": [],
+  "implemented_as": "methods.run_m4 with include_source=false"
+ },
+ {
+  "target": "d3-inventory",
+  "method": "A2",
+  "seed": 4,
+  "status": "verified",
+  "e1_executions": 71,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "create",
+      "args": {
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "restock",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "publish",
+      "args": {
+       "sku": "s1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "purchase",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "purchase",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:0",
+    "exec:1",
+    "exec:1",
+    "exec:0",
+    "exec:0",
+    "exec:1",
+    "exec:1"
+   ],
+   "trace_hash": "5eb8abababb6798a0955081887ee28b207aafff0bb1a8beb67b4695ac2117030",
+   "pre": {
+    "s1": 2,
+    "s2": 0
+   },
+   "post": {
+    "s1": -2,
+    "s2": 0
+   },
+   "violations": [
+    {
+     "clause": "stock_non_negative",
+     "failures": [
+      {
+       "key": "s1",
+       "observed": -2
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 71,
+  "method_s": 44.953,
+  "exec_s": 0.525,
+  "overhead_s": 0.043,
+  "verification_s": 0.187,
+  "model_s": 44.4,
+  "model_calls": 2,
+  "tokens": {
+   "prompt": 4316,
+   "cached": 1521,
+   "completion": 10687,
+   "reasoning": 9059
+  },
+  "model_usd": 0.049142,
+  "compute_usd": 6e-06,
+  "counters": {
+   "experiments_proposed": 6,
+   "experiments_valid": 6,
+   "PASS": 70,
+   "hint_followed": 0,
+   "hint_skipped": 7,
+   "VIOLATION": 1
+  },
+  "unverified_violations": [],
+  "implemented_as": "methods.run_m4 with include_source=false"
+ },
+ {
+  "target": "d3-inventory",
+  "method": "A2",
+  "seed": 5,
+  "status": "verified",
+  "e1_executions": 71,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "create",
+      "args": {
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "restock",
+      "args": {
+       "qty": 3,
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "publish",
+      "args": {
+       "sku": "s1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "purchase",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     },
+     {
+      "op": "purchase",
+      "args": {
+       "qty": 2,
+       "sku": "s1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:0",
+    "exec:1",
+    "exec:1",
+    "exec:0",
+    "exec:0",
+    "exec:1",
+    "exec:1"
+   ],
+   "trace_hash": "9e6fa99fb29c43032c17fda4d8fd1051f2471c2274fe094b422a5983c1c0bc08",
+   "pre": {
+    "s1": 3,
+    "s2": 0
+   },
+   "post": {
+    "s1": -1,
+    "s2": 0
+   },
+   "violations": [
+    {
+     "clause": "stock_non_negative",
+     "failures": [
+      {
+       "key": "s1",
+       "observed": -1
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 71,
+  "method_s": 33.837,
+  "exec_s": 0.548,
+  "overhead_s": 0.045,
+  "verification_s": 0.192,
+  "model_s": 33.27,
+  "model_calls": 2,
+  "tokens": {
+   "prompt": 4316,
+   "cached": 1521,
+   "completion": 7827,
+   "reasoning": 6432
+  },
+  "model_usd": 0.036987,
+  "compute_usd": 6e-06,
+  "counters": {
+   "experiments_proposed": 6,
+   "experiments_valid": 6,
+   "PASS": 70,
+   "hint_followed": 0,
+   "hint_skipped": 7,
+   "VIOLATION": 1
+  },
+  "unverified_violations": [],
+  "implemented_as": "methods.run_m4 with include_source=false"
+ }
+]

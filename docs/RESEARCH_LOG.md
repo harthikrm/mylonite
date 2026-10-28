@@ -279,6 +279,31 @@ approved by the owner. Details are in `experiments/2026-10-29-pilot/RESULTS.md`.
 - OBSERVATION: in 3 of the 5 D3 trials, the hint-advance rule (review fix #3) ran a command that
   Muse's hint had omitted.
 
+## 2026-10-28: Ablation A2, Muse without source (exploratory)
+
+Pre-registered at `aa1f4eb` before any A2 call; run at that commit. Details are in
+`experiments/2026-10-28-a2-no-source/RESULTS.md`.
+- OBSERVATION: the round-1 A2 requests equal the pilot's recorded requests minus the source
+  block, byte for byte. Source rewrites cannot change them (tested). Every validity criterion
+  (V1–V6) passed. The replay reproduced all 10 trials. Cost: $0.27.
+- OBSERVATION: D2: A2 at E₁ = 1 in 5/5. D3: A2 verified 5/5 at E₁ 1, 1, 114, 71, 71 (median 71),
+  against M4's 1 ×5 and M3+'s median 211. A2 took a median of 30.9 method seconds and $0.037 per
+  trial.
+- OBSERVATION: without source, Muse still named `check_then_act` on `purchase` in 5/5. In 3/5
+  its round-1 setups ran `publish` before `restock`, so no round-1 experiment could violate. Its
+  own execution feedback (`publish → InsufficientStock`) fixed the order in round 2, 3/3.
+- OBSERVATION: each D3 Muse trial's E₁ splits exactly into executions on experiments that could
+  not violate plus the hit's schedule index (1 for a hint hit, 7 = the 6th depth-first schedule
+  otherwise).
+- INTERPRETATION: on D3 the source supplied the precondition order, not the bug. Schedule hints
+  were worth about 5 executions per hit.
+- OBSERVATION: M3+'s argument-blindness hits 2/9 of seeds on D3 (derived from the code). An
+  emulator over the recorded pilot data reproduces M3+ exactly. It estimates the proposed
+  `M3+arg` (D-024, Proposed) at 211, 246, 211, 211, 555 against M3+'s 211, 246, 211, 211, 775.
+- RECOMMENDATION (author's; the owner decides): re-scope. Keep the executions claim, report the
+  wall-clock and dollar break-even per target (about 60 ms per execution for M4 on D3), measure
+  per-execution cost on D1 early, and keep A2 required on held-out targets.
+
 ## Open threads carried into Phase 1
 
 See `OPEN_QUESTIONS.md`. Most urgent: G0 smoke tests, cart startup dependencies, team roster,

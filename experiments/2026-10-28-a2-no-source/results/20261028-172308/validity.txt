@@ -1,0 +1,87 @@
+[
+ {
+  "criterion": "V1 no source in any request; audit clean; recorded = logged calls",
+  "pass": true,
+  "detail": {
+   "requests": 13,
+   "recorded_calls": 13,
+   "problems": []
+  }
+ },
+ {
+  "criterion": "V2 no error status",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "criterion": "V2 INCONCLUSIVE <= 1%",
+  "pass": true,
+  "detail": {
+   "executions": 263,
+   "inconclusive": 0
+  }
+ },
+ {
+  "criterion": "V2 0 soundness problems",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "criterion": "V3 corrected variant: every schedule PASS",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "criterion": "V4 every hit verified, mode recorded",
+  "pass": true,
+  "detail": {
+   "verified_trials": 10,
+   "corrected_modes": {
+    "exhaustive": 10
+   },
+   "weak": []
+  }
+ },
+ {
+  "criterion": "V5 comparable with the pilot",
+  "pass": true,
+  "detail": {
+   "files_differing_from_pilot_run": [],
+   "pilot_dir_changed_since_results_commit": false,
+   "pilot_dir_untracked": [],
+   "conditions_equal": {
+    "targets": true,
+    "seeds": true,
+    "budget": true,
+    "verification": true,
+    "executor": true,
+    "prices": true,
+    "report_success_at": true,
+    "method config": true
+   }
+  }
+ },
+ {
+  "criterion": "V6 spend <= cap, all trials recorded, clean manifest",
+  "pass": true,
+  "detail": {
+   "model_usd": 0.266715,
+   "cap": 5.0,
+   "trials": 10,
+   "expected": 10,
+   "git_commit": "aa1f4eb76089926fda29c98d29d217488659c96b",
+   "git_dirty": []
+  }
+ },
+ {
+  "criterion": "accounting: logged executions match each trial's count",
+  "pass": true,
+  "detail": {}
+ },
+ {
+  "criterion": "accounting: no trial over B_exec or the method-seconds cap",
+  "pass": true,
+  "detail": []
+ }
+]
+ALL PASS

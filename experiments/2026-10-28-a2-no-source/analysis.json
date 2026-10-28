@@ -1,0 +1,3680 @@
+{
+ "a2_trials": {
+  "d2-loyalty-points/A2/1": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "member": "m1",
+        "points": 2
+       },
+       "op": "award"
+      },
+      {
+       "args": {
+        "member": "m1",
+        "points": 1
+       },
+       "op": "award"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "SET",
+       "op_index": 0
+      },
+      {
+       "command": "SET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "SET@0",
+      "SET@1"
+     ],
+     "schedules": 1,
+     "setup": [],
+     "setup_outcomes": [],
+     "stock": null,
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 17.508,
+   "model_usd": 0.018239,
+   "rounds": [
+    {
+     "cost_usd": 0.018239,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "lost_update",
+       "operations": [
+        "award"
+       ]
+      },
+      {
+       "code_refs": 0,
+       "kind": "stale_read",
+       "operations": [
+        "award",
+        "balance"
+       ]
+      }
+     ],
+     "latency_s": 17.48,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3920,
+      "completion_tokens_details": {
+       "reasoning_tokens": 3128
+      },
+      "prompt_tokens": 1263,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 5183
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d2-loyalty-points/A2/2": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "member": "m1",
+        "points": 1
+       },
+       "op": "award"
+      },
+      {
+       "args": {
+        "member": "m1",
+        "points": 1
+       },
+       "op": "award"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 2,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1"
+     ],
+     "schedules": 1,
+     "setup": [],
+     "setup_outcomes": [],
+     "stock": null,
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 14.049,
+   "model_usd": 0.016866,
+   "rounds": [
+    {
+     "cost_usd": 0.016866,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "lost_update",
+       "operations": [
+        "award"
+       ]
+      },
+      {
+       "code_refs": 0,
+       "kind": "stale_read",
+       "operations": [
+        "award",
+        "balance"
+       ]
+      }
+     ],
+     "latency_s": 14.03,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3597,
+      "completion_tokens_details": {
+       "reasoning_tokens": 2950
+      },
+      "prompt_tokens": 1263,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 4860
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d2-loyalty-points/A2/3": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "member": "m1",
+        "points": 2
+       },
+       "op": "award"
+      },
+      {
+       "args": {
+        "member": "m1",
+        "points": 2
+       },
+       "op": "award"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "SET",
+       "op_index": 0
+      },
+      {
+       "command": "SET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "SET@0",
+      "SET@1"
+     ],
+     "schedules": 1,
+     "setup": [],
+     "setup_outcomes": [],
+     "stock": null,
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 16.335,
+   "model_usd": 0.016125,
+   "rounds": [
+    {
+     "cost_usd": 0.016125,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "lost_update",
+       "operations": [
+        "award"
+       ]
+      }
+     ],
+     "latency_s": 16.31,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3717,
+      "completion_tokens_details": {
+       "reasoning_tokens": 3039
+      },
+      "prompt_tokens": 1263,
+      "prompt_tokens_details": {
+       "cached_tokens": 1137
+      },
+      "total_tokens": 4980
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d2-loyalty-points/A2/4": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "member": "m1",
+        "points": 2
+       },
+       "op": "award"
+      },
+      {
+       "args": {
+        "member": "m1",
+        "points": 2
+       },
+       "op": "award"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "SET",
+       "op_index": 0
+      },
+      {
+       "command": "SET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "SET@0",
+      "SET@1"
+     ],
+     "schedules": 1,
+     "setup": [],
+     "setup_outcomes": [],
+     "stock": null,
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 15.428,
+   "model_usd": 0.015764,
+   "rounds": [
+    {
+     "cost_usd": 0.015764,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "lost_update",
+       "operations": [
+        "award"
+       ]
+      },
+      {
+       "code_refs": 0,
+       "kind": "lost_update",
+       "operations": [
+        "award"
+       ]
+      }
+     ],
+     "latency_s": 15.41,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3632,
+      "completion_tokens_details": {
+       "reasoning_tokens": 2935
+      },
+      "prompt_tokens": 1263,
+      "prompt_tokens_details": {
+       "cached_tokens": 1137
+      },
+      "total_tokens": 4895
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d2-loyalty-points/A2/5": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "member": "m1",
+        "points": 1
+       },
+       "op": "award"
+      },
+      {
+       "args": {
+        "member": "m1",
+        "points": 2
+       },
+       "op": "award"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "SET",
+       "op_index": 0
+      },
+      {
+       "command": "SET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "SET@0",
+      "SET@1"
+     ],
+     "schedules": 1,
+     "setup": [],
+     "setup_outcomes": [],
+     "stock": null,
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 17.681,
+   "model_usd": 0.017779,
+   "rounds": [
+    {
+     "cost_usd": 0.017779,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "lost_update",
+       "operations": [
+        "award"
+       ]
+      },
+      {
+       "code_refs": 0,
+       "kind": "stale_read",
+       "operations": [
+        "award",
+        "balance"
+       ]
+      }
+     ],
+     "latency_s": 17.66,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 4106,
+      "completion_tokens_details": {
+       "reasoning_tokens": 3294
+      },
+      "prompt_tokens": 1263,
+      "prompt_tokens_details": {
+       "cached_tokens": 1137
+      },
+      "total_tokens": 5369
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d3-inventory/A2/1": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 2,
+      "hint_followed": 2,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1"
+     ],
+     "schedules": 1,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "ok",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 27.821,
+   "model_usd": 0.034151,
+   "rounds": [
+    {
+     "cost_usd": 0.034151,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase",
+        "stock",
+        "restock",
+        "publish"
+       ]
+      },
+      {
+       "code_refs": 0,
+       "kind": "lost_update",
+       "operations": [
+        "purchase",
+        "restock",
+        "stock"
+       ]
+      }
+     ],
+     "latency_s": 27.79,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 7561,
+      "completion_tokens_details": {
+       "reasoning_tokens": 6714
+      },
+      "prompt_tokens": 1613,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 9174
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d3-inventory/A2/2": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "GET",
+       "op_index": 2
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 0
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 1
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 2
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 3,
+      "hint_followed": 6,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "GET@2",
+      "DECRBY@0",
+      "DECRBY@1",
+      "DECRBY@2"
+     ],
+     "schedules": 1,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      },
+      {
+       "args": {
+        "qty": 1,
+        "sku": "s1"
+       },
+       "op": "restock"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "ok",
+      "ok",
+      "ok"
+     ],
+     "stock": {
+      "s1": 3
+     },
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 21.497,
+   "model_usd": 0.024941,
+   "rounds": [
+    {
+     "cost_usd": 0.024941,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase"
+       ]
+      },
+      {
+       "code_refs": 0,
+       "kind": "lost_update",
+       "operations": [
+        "purchase"
+       ]
+      }
+     ],
+     "latency_s": 21.46,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 5394,
+      "completion_tokens_details": {
+       "reasoning_tokens": 4242
+      },
+      "prompt_tokens": 1613,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 7007
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d3-inventory/A2/3": {
+   "e1": 114,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 0
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 2,
+      "hint_followed": 0,
+      "hint_skipped": 4
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "DECRBY@0",
+      "DECRBY@1"
+     ],
+     "schedules": 7,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "InsufficientStock",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "PASS": 7
+     },
+     "violable_by_design": false
+    },
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 8,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "GET",
+       "op_index": 2
+      },
+      {
+       "command": "SET",
+       "op_index": 0
+      },
+      {
+       "command": "SET",
+       "op_index": 1
+      },
+      {
+       "command": "SET",
+       "op_index": 2
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 3,
+      "hint_followed": 0,
+      "hint_skipped": 6
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "GET@2",
+      "SET@0",
+      "SET@1",
+      "SET@2"
+     ],
+     "schedules": 50,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      },
+      {
+       "args": {
+        "qty": 3,
+        "sku": "s1"
+       },
+       "op": "restock"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "InsufficientStock",
+      "ok"
+     ],
+     "stock": {
+      "s1": 3
+     },
+     "verdicts": {
+      "PASS": 50
+     },
+     "violable_by_design": false
+    },
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 3,
+        "sku": "s1"
+       },
+       "op": "restock"
+      }
+     ],
+     "first_n": 58,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "GET",
+       "op_index": 2
+      },
+      {
+       "command": "SET",
+       "op_index": 0
+      },
+      {
+       "command": "SET",
+       "op_index": 1
+      },
+      {
+       "command": "SET",
+       "op_index": 2
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 4,
+      "hint_followed": 0,
+      "hint_skipped": 6
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "GET@2",
+      "SET@0",
+      "SET@1",
+      "SET@2"
+     ],
+     "schedules": 50,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "InsufficientStock",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "PASS": 50
+     },
+     "violable_by_design": false
+    },
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 108,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "HGET",
+       "op_index": 0
+      },
+      {
+       "command": "HGET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 2,
+      "hint_skipped": 0
+     },
+     "round": 2,
+     "schedule_hint": [
+      "HGET@0",
+      "HGET@1"
+     ],
+     "schedules": 7,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "ok",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "PASS": 6,
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 4,
+    "n": 114,
+    "round": 2,
+    "schedule_in_experiment": 7
+   },
+   "method_s": 30.945,
+   "model_usd": 0.036721,
+   "rounds": [
+    {
+     "cost_usd": 0.022035,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase",
+        "purchase"
+       ]
+      },
+      {
+       "code_refs": 0,
+       "kind": "lost_update",
+       "operations": [
+        "purchase",
+        "purchase",
+        "restock"
+       ]
+      }
+     ],
+     "latency_s": 18.95,
+     "proposed": 3,
+     "rejected": 0,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 5104,
+      "completion_tokens_details": {
+       "reasoning_tokens": 4112
+      },
+      "prompt_tokens": 1613,
+      "prompt_tokens_details": {
+       "cached_tokens": 1521
+      },
+      "total_tokens": 6717
+     }
+    },
+    {
+     "cost_usd": 0.014686,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase",
+        "purchase"
+       ]
+      }
+     ],
+     "latency_s": 11.12,
+     "proposed": 3,
+     "round": 2,
+     "usage": {
+      "completion_tokens": 2645,
+      "completion_tokens_details": {
+       "reasoning_tokens": 1924
+      },
+      "prompt_tokens": 2756,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 5401
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d3-inventory/A2/4": {
+   "e1": 71,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 2,
+      "hint_followed": 0,
+      "hint_skipped": 2
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1"
+     ],
+     "schedules": 7,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "InsufficientStock",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "PASS": 7
+     },
+     "violable_by_design": false
+    },
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 8,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 2,
+      "hint_followed": 0,
+      "hint_skipped": 2
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1"
+     ],
+     "schedules": 7,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      },
+      {
+       "args": {
+        "qty": 3,
+        "sku": "s1"
+       },
+       "op": "restock"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "InsufficientStock",
+      "ok"
+     ],
+     "stock": {
+      "s1": 3
+     },
+     "verdicts": {
+      "PASS": 7
+     },
+     "violable_by_design": false
+    },
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 1,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 1,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 1,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 15,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "GET",
+       "op_index": 2
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 3,
+      "hint_followed": 0,
+      "hint_skipped": 3
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "GET@2"
+     ],
+     "schedules": 50,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "InsufficientStock",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "PASS": 50
+     },
+     "violable_by_design": false
+    },
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 65,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "HGET",
+       "op_index": 0
+      },
+      {
+       "command": "HGET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 2,
+      "hint_skipped": 0
+     },
+     "round": 2,
+     "schedule_hint": [
+      "HGET@0",
+      "HGET@1"
+     ],
+     "schedules": 7,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "ok",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "PASS": 6,
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 4,
+    "n": 71,
+    "round": 2,
+    "schedule_in_experiment": 7
+   },
+   "method_s": 44.953,
+   "model_usd": 0.049142,
+   "rounds": [
+    {
+     "cost_usd": 0.028538,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase"
+       ]
+      }
+     ],
+     "latency_s": 27.18,
+     "proposed": 3,
+     "rejected": 0,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 6634,
+      "completion_tokens_details": {
+       "reasoning_tokens": 5915
+      },
+      "prompt_tokens": 1613,
+      "prompt_tokens_details": {
+       "cached_tokens": 1521
+      },
+      "total_tokens": 8247
+     }
+    },
+    {
+     "cost_usd": 0.020604,
+     "hypotheses": [
+      {
+       "code_refs": 1,
+       "kind": "lost_update",
+       "operations": [
+        "purchase",
+        "restock"
+       ]
+      },
+      {
+       "code_refs": 1,
+       "kind": "atomicity_violation",
+       "operations": [
+        "purchase"
+       ]
+      }
+     ],
+     "latency_s": 17.22,
+     "proposed": 3,
+     "round": 2,
+     "usage": {
+      "completion_tokens": 4053,
+      "completion_tokens_details": {
+       "reasoning_tokens": 3144
+      },
+      "prompt_tokens": 2703,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 6756
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d3-inventory/A2/5": {
+   "e1": 71,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 2,
+      "hint_followed": 0,
+      "hint_skipped": 2
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1"
+     ],
+     "schedules": 7,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      },
+      {
+       "args": {
+        "qty": 3,
+        "sku": "s1"
+       },
+       "op": "restock"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "InsufficientStock",
+      "ok"
+     ],
+     "stock": {
+      "s1": 3
+     },
+     "verdicts": {
+      "PASS": 7
+     },
+     "violable_by_design": false
+    },
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 8,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "GET",
+       "op_index": 2
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 3,
+      "hint_followed": 0,
+      "hint_skipped": 3
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "GET@2"
+     ],
+     "schedules": 50,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      },
+      {
+       "args": {
+        "qty": 3,
+        "sku": "s1"
+       },
+       "op": "restock"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "InsufficientStock",
+      "ok"
+     ],
+     "stock": {
+      "s1": 3
+     },
+     "verdicts": {
+      "PASS": 50
+     },
+     "violable_by_design": false
+    },
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 3,
+        "sku": "s2"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 3,
+        "sku": "s2"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 58,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 2,
+      "hint_followed": 0,
+      "hint_skipped": 2
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1"
+     ],
+     "schedules": 7,
+     "setup": [
+      {
+       "args": {
+        "sku": "s2"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "sku": "s2"
+       },
+       "op": "publish"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s2"
+       },
+       "op": "restock"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "InsufficientStock",
+      "ok"
+     ],
+     "stock": {
+      "s2": 2
+     },
+     "verdicts": {
+      "PASS": 7
+     },
+     "violable_by_design": false
+    },
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 65,
+     "first_schedule": "PASS",
+     "hint": [
+      {
+       "command": "HGET",
+       "op_index": 0
+      },
+      {
+       "command": "HGET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 2,
+      "hint_skipped": 0
+     },
+     "round": 2,
+     "schedule_hint": [
+      "HGET@0",
+      "HGET@1"
+     ],
+     "schedules": 7,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "qty": 3,
+        "sku": "s1"
+       },
+       "op": "restock"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "ok",
+      "ok"
+     ],
+     "stock": {
+      "s1": 3
+     },
+     "verdicts": {
+      "PASS": 6,
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 4,
+    "n": 71,
+    "round": 2,
+    "schedule_in_experiment": 7
+   },
+   "method_s": 33.837,
+   "model_usd": 0.036987,
+   "rounds": [
+    {
+     "cost_usd": 0.0228,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase"
+       ]
+      }
+     ],
+     "latency_s": 21.4,
+     "proposed": 3,
+     "rejected": 0,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 5284,
+      "completion_tokens_details": {
+       "reasoning_tokens": 4588
+      },
+      "prompt_tokens": 1613,
+      "prompt_tokens_details": {
+       "cached_tokens": 1521
+      },
+      "total_tokens": 6897
+     }
+    },
+    {
+     "cost_usd": 0.014186,
+     "hypotheses": [
+      {
+       "code_refs": 0,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase"
+       ]
+      }
+     ],
+     "latency_s": 11.87,
+     "proposed": 3,
+     "round": 2,
+     "usage": {
+      "completion_tokens": 2543,
+      "completion_tokens_details": {
+       "reasoning_tokens": 1844
+      },
+      "prompt_tokens": 2703,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 5246
+     }
+    }
+   ],
+   "status": "verified"
+  }
+ },
+ "comparison": {
+  "A2 (M4 without source)": {
+   "d2-loyalty-points": {
+    "A2": {
+     "e1": [
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "median_e1_censored": 1,
+     "median_method_s": 16.335,
+     "method_s": [
+      17.508,
+      14.049,
+      16.335,
+      15.428,
+      17.681
+     ],
+     "model_calls": [
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "success_at": {
+      "100": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "1000": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "300": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ]
+     },
+     "tokens_total": {
+      "cached": 3411,
+      "completion": 18972,
+      "prompt": 6315,
+      "reasoning": 15346
+     },
+     "trials": 5,
+     "usd_per_trial_median": 0.016866,
+     "usd_total": 0.084773,
+     "verified": 5,
+     "verified_wilson95": [
+      0.566,
+      1.0
+     ]
+    }
+   },
+   "d3-inventory": {
+    "A2": {
+     "e1": [
+      1,
+      1,
+      114,
+      71,
+      71
+     ],
+     "median_e1_censored": 71,
+     "median_method_s": 30.945,
+     "method_s": [
+      27.821,
+      21.497,
+      30.945,
+      44.953,
+      33.837
+     ],
+     "model_calls": [
+      1,
+      1,
+      2,
+      2,
+      2
+     ],
+     "success_at": {
+      "100": [
+       4,
+       [
+        0.376,
+        0.964
+       ]
+      ],
+      "1000": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "300": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ]
+     },
+     "tokens_total": {
+      "cached": 4563,
+      "completion": 39218,
+      "prompt": 16227,
+      "reasoning": 32483
+     },
+     "trials": 5,
+     "usd_per_trial_median": 0.03673,
+     "usd_total": 0.181963,
+     "verified": 5,
+     "verified_wilson95": [
+      0.566,
+      1.0
+     ]
+    }
+   }
+  },
+  "pilot (M1, M3+, M4 with source)": {
+   "d2-loyalty-points": {
+    "M1": {
+     "e1": [
+      9,
+      5,
+      7,
+      5,
+      1
+     ],
+     "median_e1_censored": 5,
+     "median_method_s": 0.058,
+     "method_s": [
+      0.077,
+      0.068,
+      0.058,
+      0.032,
+      0.006
+     ],
+     "model_calls": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "success_at": {
+      "100": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "1000": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "300": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ]
+     },
+     "tokens_total": {
+      "cached": 0,
+      "completion": 0,
+      "prompt": 0,
+      "reasoning": 0
+     },
+     "trials": 5,
+     "usd_per_trial_median": 1e-06,
+     "usd_total": 3e-06,
+     "verified": 5,
+     "verified_wilson95": [
+      0.566,
+      1.0
+     ]
+    },
+    "M3+": {
+     "e1": [
+      8,
+      8,
+      8,
+      8,
+      8
+     ],
+     "median_e1_censored": 8,
+     "median_method_s": 0.047,
+     "method_s": [
+      0.061,
+      0.047,
+      0.066,
+      0.043,
+      0.044
+     ],
+     "model_calls": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "success_at": {
+      "100": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "1000": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "300": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ]
+     },
+     "tokens_total": {
+      "cached": 0,
+      "completion": 0,
+      "prompt": 0,
+      "reasoning": 0
+     },
+     "trials": 5,
+     "usd_per_trial_median": 1e-06,
+     "usd_total": 3e-06,
+     "verified": 5,
+     "verified_wilson95": [
+      0.566,
+      1.0
+     ]
+    },
+    "M4": {
+     "e1": [
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "median_e1_censored": 1,
+     "median_method_s": 14.15,
+     "method_s": [
+      11.828,
+      14.418,
+      14.875,
+      14.15,
+      10.445
+     ],
+     "model_calls": [
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "success_at": {
+      "100": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "1000": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "300": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ]
+     },
+     "tokens_total": {
+      "cached": 4179,
+      "completion": 15657,
+      "prompt": 7080,
+      "reasoning": 11933
+     },
+     "trials": 5,
+     "usd_per_trial_median": 0.014607,
+     "usd_total": 0.070795,
+     "verified": 5,
+     "verified_wilson95": [
+      0.566,
+      1.0
+     ]
+    }
+   },
+   "d3-inventory": {
+    "M1": {
+     "e1": [
+      null,
+      null,
+      null,
+      null,
+      null
+     ],
+     "median_e1_censored": 1001,
+     "median_method_s": 6.802,
+     "method_s": [
+      6.659,
+      6.802,
+      9.019,
+      6.843,
+      6.682
+     ],
+     "model_calls": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "success_at": {
+      "100": [
+       0,
+       [
+        0.0,
+        0.434
+       ]
+      ],
+      "1000": [
+       0,
+       [
+        0.0,
+        0.434
+       ]
+      ],
+      "300": [
+       0,
+       [
+        0.0,
+        0.434
+       ]
+      ]
+     },
+     "tokens_total": {
+      "cached": 0,
+      "completion": 0,
+      "prompt": 0,
+      "reasoning": 0
+     },
+     "trials": 5,
+     "usd_per_trial_median": 7.4e-05,
+     "usd_total": 0.000394,
+     "verified": 0,
+     "verified_wilson95": [
+      0.0,
+      0.434
+     ]
+    },
+    "M3+": {
+     "e1": [
+      211,
+      246,
+      211,
+      211,
+      775
+     ],
+     "median_e1_censored": 211,
+     "median_method_s": 1.662,
+     "method_s": [
+      1.351,
+      1.662,
+      1.727,
+      1.237,
+      6.912
+     ],
+     "model_calls": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "success_at": {
+      "100": [
+       0,
+       [
+        0.0,
+        0.434
+       ]
+      ],
+      "1000": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "300": [
+       4,
+       [
+        0.376,
+        0.964
+       ]
+      ]
+     },
+     "tokens_total": {
+      "cached": 0,
+      "completion": 0,
+      "prompt": 0,
+      "reasoning": 0
+     },
+     "trials": 5,
+     "usd_per_trial_median": 1.8e-05,
+     "usd_total": 0.000142,
+     "verified": 5,
+     "verified_wilson95": [
+      0.566,
+      1.0
+     ]
+    },
+    "M4": {
+     "e1": [
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "median_e1_censored": 1,
+     "median_method_s": 12.587,
+     "method_s": [
+      11.291,
+      13.84,
+      11.076,
+      12.706,
+      12.587
+     ],
+     "model_calls": [
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "success_at": {
+      "100": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "1000": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ],
+      "300": [
+       5,
+       [
+        0.566,
+        1.0
+       ]
+      ]
+     },
+     "tokens_total": {
+      "cached": 4578,
+      "completion": 16811,
+      "prompt": 11510,
+      "reasoning": 12348
+     },
+     "trials": 5,
+     "usd_per_trial_median": 0.016184,
+     "usd_total": 0.080799,
+     "verified": 5,
+     "verified_wilson95": [
+      0.566,
+      1.0
+     ]
+    }
+   }
+  }
+ },
+ "m4_trials": {
+  "d2-loyalty-points/M4/1": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "member": "m1",
+        "points": 1
+       },
+       "op": "award"
+      },
+      {
+       "args": {
+        "member": "m1",
+        "points": 2
+       },
+       "op": "award"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "SET",
+       "op_index": 0
+      },
+      {
+       "command": "SET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "SET@0",
+      "SET@1"
+     ],
+     "schedules": 1,
+     "setup": [],
+     "setup_outcomes": [],
+     "stock": null,
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 11.828,
+   "model_usd": 0.015289,
+   "rounds": [
+    {
+     "cost_usd": 0.015289,
+     "hypotheses": [
+      {
+       "code_refs": 2,
+       "kind": "lost_update",
+       "operations": [
+        "award"
+       ]
+      }
+     ],
+     "latency_s": 11.78,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3181,
+      "completion_tokens_details": {
+       "reasoning_tokens": 2468
+      },
+      "prompt_tokens": 1416,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 4597
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d2-loyalty-points/M4/2": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "member": "m1",
+        "points": 1
+       },
+       "op": "award"
+      },
+      {
+       "args": {
+        "member": "m1",
+        "points": 2
+       },
+       "op": "award"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "SET",
+       "op_index": 0
+      },
+      {
+       "command": "SET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "SET@0",
+      "SET@1"
+     ],
+     "schedules": 1,
+     "setup": [],
+     "setup_outcomes": [],
+     "stock": null,
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 14.418,
+   "model_usd": 0.014146,
+   "rounds": [
+    {
+     "cost_usd": 0.014146,
+     "hypotheses": [
+      {
+       "code_refs": 2,
+       "kind": "lost_update",
+       "operations": [
+        "award",
+        "balance"
+       ]
+      }
+     ],
+     "latency_s": 14.4,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 2912,
+      "completion_tokens_details": {
+       "reasoning_tokens": 2203
+      },
+      "prompt_tokens": 1416,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 4328
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d2-loyalty-points/M4/3": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "member": "m1",
+        "points": 1
+       },
+       "op": "award"
+      },
+      {
+       "args": {
+        "member": "m1",
+        "points": 2
+       },
+       "op": "award"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "SET",
+       "op_index": 0
+      },
+      {
+       "command": "SET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "SET@0",
+      "SET@1"
+     ],
+     "schedules": 1,
+     "setup": [],
+     "setup_outcomes": [],
+     "stock": null,
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 14.875,
+   "model_usd": 0.015669,
+   "rounds": [
+    {
+     "cost_usd": 0.015669,
+     "hypotheses": [
+      {
+       "code_refs": 2,
+       "kind": "lost_update",
+       "operations": [
+        "award"
+       ]
+      }
+     ],
+     "latency_s": 14.85,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3631,
+      "completion_tokens_details": {
+       "reasoning_tokens": 2669
+      },
+      "prompt_tokens": 1416,
+      "prompt_tokens_details": {
+       "cached_tokens": 1393
+      },
+      "total_tokens": 5047
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d2-loyalty-points/M4/4": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "member": "m1",
+        "points": 1
+       },
+       "op": "award"
+      },
+      {
+       "args": {
+        "member": "m1",
+        "points": 2
+       },
+       "op": "award"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "SET",
+       "op_index": 0
+      },
+      {
+       "command": "SET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "SET@0",
+      "SET@1"
+     ],
+     "schedules": 1,
+     "setup": [],
+     "setup_outcomes": [],
+     "stock": null,
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 14.15,
+   "model_usd": 0.014607,
+   "rounds": [
+    {
+     "cost_usd": 0.014607,
+     "hypotheses": [
+      {
+       "code_refs": 2,
+       "kind": "lost_update",
+       "operations": [
+        "award",
+        "award"
+       ]
+      }
+     ],
+     "latency_s": 14.13,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3381,
+      "completion_tokens_details": {
+       "reasoning_tokens": 2658
+      },
+      "prompt_tokens": 1416,
+      "prompt_tokens_details": {
+       "cached_tokens": 1393
+      },
+      "total_tokens": 4797
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d2-loyalty-points/M4/5": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "member": "m1",
+        "points": 1
+       },
+       "op": "award"
+      },
+      {
+       "args": {
+        "member": "m1",
+        "points": 1
+       },
+       "op": "award"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "SET",
+       "op_index": 0
+      },
+      {
+       "command": "SET",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "SET@0",
+      "SET@1"
+     ],
+     "schedules": 1,
+     "setup": [],
+     "setup_outcomes": [],
+     "stock": null,
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 10.445,
+   "model_usd": 0.011084,
+   "rounds": [
+    {
+     "cost_usd": 0.011084,
+     "hypotheses": [
+      {
+       "code_refs": 2,
+       "kind": "lost_update",
+       "operations": [
+        "award"
+       ]
+      }
+     ],
+     "latency_s": 10.42,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 2552,
+      "completion_tokens_details": {
+       "reasoning_tokens": 1935
+      },
+      "prompt_tokens": 1416,
+      "prompt_tokens_details": {
+       "cached_tokens": 1393
+      },
+      "total_tokens": 3968
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d3-inventory/M4/1": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "HGET",
+       "op_index": 0
+      },
+      {
+       "command": "HGET",
+       "op_index": 1
+      },
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 0
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 6,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "HGET@0",
+      "HGET@1",
+      "GET@0",
+      "GET@1",
+      "DECRBY@0",
+      "DECRBY@1"
+     ],
+     "schedules": 1,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "ok",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 11.291,
+   "model_usd": 0.016184,
+   "rounds": [
+    {
+     "cost_usd": 0.016184,
+     "hypotheses": [
+      {
+       "code_refs": 2,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase"
+       ]
+      }
+     ],
+     "latency_s": 11.26,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3131,
+      "completion_tokens_details": {
+       "reasoning_tokens": 2188
+      },
+      "prompt_tokens": 2302,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 5433
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d3-inventory/M4/2": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 0
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 2,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "DECRBY@0",
+      "DECRBY@1"
+     ],
+     "schedules": 1,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "ok",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 13.84,
+   "model_usd": 0.016686,
+   "rounds": [
+    {
+     "cost_usd": 0.016686,
+     "hypotheses": [
+      {
+       "code_refs": 2,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase"
+       ]
+      }
+     ],
+     "latency_s": 13.8,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3249,
+      "completion_tokens_details": {
+       "reasoning_tokens": 2413
+      },
+      "prompt_tokens": 2302,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 5551
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d3-inventory/M4/3": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 0
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 2,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "DECRBY@0",
+      "DECRBY@1"
+     ],
+     "schedules": 1,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "ok",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 11.076,
+   "model_usd": 0.015018,
+   "rounds": [
+    {
+     "cost_usd": 0.015018,
+     "hypotheses": [
+      {
+       "code_refs": 2,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase"
+       ]
+      }
+     ],
+     "latency_s": 11.05,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3449,
+      "completion_tokens_details": {
+       "reasoning_tokens": 2576
+      },
+      "prompt_tokens": 2302,
+      "prompt_tokens_details": {
+       "cached_tokens": 2289
+      },
+      "total_tokens": 5751
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d3-inventory/M4/4": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 0
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 2,
+      "hint_followed": 4,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "GET@0",
+      "GET@1",
+      "DECRBY@0",
+      "DECRBY@1"
+     ],
+     "schedules": 1,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "ok",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 12.706,
+   "model_usd": 0.015477,
+   "rounds": [
+    {
+     "cost_usd": 0.015477,
+     "hypotheses": [
+      {
+       "code_refs": 2,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase"
+       ]
+      }
+     ],
+     "latency_s": 12.67,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3557,
+      "completion_tokens_details": {
+       "reasoning_tokens": 2666
+      },
+      "prompt_tokens": 2302,
+      "prompt_tokens_details": {
+       "cached_tokens": 2289
+      },
+      "total_tokens": 5859
+     }
+    }
+   ],
+   "status": "verified"
+  },
+  "d3-inventory/M4/5": {
+   "e1": 1,
+   "experiments": [
+    {
+     "concurrent": [
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "purchase"
+      }
+     ],
+     "first_n": 1,
+     "first_schedule": "VIOLATION",
+     "hint": [
+      {
+       "command": "HGET",
+       "op_index": 0
+      },
+      {
+       "command": "HGET",
+       "op_index": 1
+      },
+      {
+       "command": "GET",
+       "op_index": 0
+      },
+      {
+       "command": "GET",
+       "op_index": 1
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 0
+      },
+      {
+       "command": "DECRBY",
+       "op_index": 1
+      }
+     ],
+     "hint_stats": {
+      "hint_advanced": 0,
+      "hint_followed": 6,
+      "hint_skipped": 0
+     },
+     "round": 1,
+     "schedule_hint": [
+      "HGET@0",
+      "HGET@1",
+      "GET@0",
+      "GET@1",
+      "DECRBY@0",
+      "DECRBY@1"
+     ],
+     "schedules": 1,
+     "setup": [
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "create"
+      },
+      {
+       "args": {
+        "qty": 2,
+        "sku": "s1"
+       },
+       "op": "restock"
+      },
+      {
+       "args": {
+        "sku": "s1"
+       },
+       "op": "publish"
+      }
+     ],
+     "setup_outcomes": [
+      "ok",
+      "ok",
+      "ok"
+     ],
+     "stock": {
+      "s1": 2
+     },
+     "verdicts": {
+      "VIOLATION": 1
+     },
+     "violable_by_design": true
+    }
+   ],
+   "hit": {
+    "experiment": 1,
+    "n": 1,
+    "round": 1,
+    "schedule_in_experiment": 1
+   },
+   "method_s": 12.587,
+   "model_usd": 0.017434,
+   "rounds": [
+    {
+     "cost_usd": 0.017434,
+     "hypotheses": [
+      {
+       "code_refs": 2,
+       "kind": "check_then_act",
+       "operations": [
+        "purchase"
+       ]
+      }
+     ],
+     "latency_s": 12.57,
+     "proposed": 3,
+     "round": 1,
+     "usage": {
+      "completion_tokens": 3425,
+      "completion_tokens_details": {
+       "reasoning_tokens": 2505
+      },
+      "prompt_tokens": 2302,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 5727
+     }
+    }
+   ],
+   "status": "verified"
+  }
+ }
+}

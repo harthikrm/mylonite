@@ -1,0 +1,62 @@
+{
+ "d2-loyalty-points": {
+  "A2": {
+   "trials": 5,
+   "verified": 5,
+   "statuses": [
+    "verified"
+   ],
+   "e1_executions": [
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "median_e1_censored_at_budget_plus_1": 1,
+   "success_at": {
+    "100": 5,
+    "300": 5,
+    "1000": 5
+   },
+   "method_s": [
+    17.508,
+    14.049,
+    16.335,
+    15.428,
+    17.681
+   ],
+   "model_usd_total": 0.08477
+  }
+ },
+ "d3-inventory": {
+  "A2": {
+   "trials": 5,
+   "verified": 5,
+   "statuses": [
+    "verified"
+   ],
+   "e1_executions": [
+    1,
+    1,
+    114,
+    71,
+    71
+   ],
+   "median_e1_censored_at_budget_plus_1": 71,
+   "success_at": {
+    "100": 4,
+    "300": 5,
+    "1000": 5
+   },
+   "method_s": [
+    27.821,
+    21.497,
+    30.945,
+    44.953,
+    33.837
+   ],
+   "model_usd_total": 0.18194
+  }
+ }
+}

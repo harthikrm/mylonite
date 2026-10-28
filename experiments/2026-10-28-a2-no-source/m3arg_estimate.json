@@ -1,0 +1,85 @@
+{
+ "blind_spot_probability": {
+  "overall": "2/9",
+  "overall_float": 0.2222,
+  "per_stock": {
+   "1": "0",
+   "2": "1/3",
+   "3": "1/3"
+  }
+ },
+ "fidelity_e1": {
+  "methods.run_m3plus": {
+   "1": 211,
+   "2": 246,
+   "3": 211,
+   "4": 211,
+   "5": 775
+  },
+  "run_m3plus_arg, change off": {
+   "1": 211,
+   "2": 246,
+   "3": 211,
+   "4": 211,
+   "5": 775
+  }
+ },
+ "m3arg_e1_estimate": {
+  "M3+arg (proposed)": {
+   "1": {
+    "high": 211,
+    "low": 211
+   },
+   "2": {
+    "high": 246,
+    "low": 246
+   },
+   "3": {
+    "high": 211,
+    "low": 211
+   },
+   "4": {
+    "high": 211,
+    "low": 211
+   },
+   "5": {
+    "high": 555,
+    "low": 555
+   },
+   "_pairs_without_recorded_cost": {
+    "high": 0,
+    "low": 0
+   }
+  },
+  "M3+arg-immediate (alternative)": {
+   "1": {
+    "high": 296,
+    "low": 281
+   },
+   "2": {
+    "high": 296,
+    "low": 281
+   },
+   "3": {
+    "high": 311,
+    "low": 281
+   },
+   "4": {
+    "high": 296,
+    "low": 281
+   },
+   "5": {
+    "high": 531,
+    "low": 531
+   },
+   "_pairs_without_recorded_cost": {
+    "high": 5,
+    "low": 5
+   }
+  }
+ },
+ "purchase_violation_index_observed": {
+  "6": 4
+ },
+ "recorded_explorations_checked_against_design": 30
+}
