@@ -1,0 +1,62 @@
+{
+  "experiment": "Ablation A2, Muse without source (EVALUATION_PLAN.md §3), on the pilot's development targets",
+  "status": "pre-registered 2026-10-28, before any A2 model call; exploratory, development only, not an independent replication",
+  "pilot_reference": {
+    "results_commit": "ecf37d9",
+    "run_commit": "db1f84f41682a9114d67fed9abe1197e887c4947",
+    "results": "experiments/2026-10-29-pilot/results/20261028-165020",
+    "config": "experiments/2026-10-29-pilot/config.json"
+  },
+  "targets": [
+    "fixtures/dev/d2_counter/target.json",
+    "fixtures/dev/d3_inventory/target.json"
+  ],
+  "methods": [
+    "A2"
+  ],
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "budget": {
+    "executions": 1000,
+    "method_seconds": 900,
+    "schedules_per_experiment": 50
+  },
+  "A2": {
+    "max_rounds": 5,
+    "include_source": false,
+    "reasoning_effort": "medium"
+  },
+  "verification": {
+    "replays": 20,
+    "corrected_exhaustive_cap": 5000,
+    "corrected_bounded_random": 2000
+  },
+  "executor": {
+    "delta_q_ms": 300,
+    "round_timeout_s": 10
+  },
+  "prices": {
+    "input": 1.25,
+    "cached": 0.15,
+    "output": 4.25,
+    "compute_per_second": 1.11e-05
+  },
+  "model_cost_cap_usd": 5.0,
+  "per_call_reserve_usd": 0.25,
+  "notes": {
+    "change": "the only change from the pilot's M4 is include_source false; A2 runs M4's code path (methods.run_m4)",
+    "cap": "strict: a call is refused when spend so far plus per_call_reserve_usd would exceed model_cost_cap_usd. The pilot's largest call cost $0.0174; the reserve is about 14x that",
+    "seeds": "the pilot's seeds; M4 and A2 have no usable seed (sampling at temperature 1.0), so a seed only labels a fresh planning session",
+    "comparison": "M1, M3+ and source-visible M4 are the pilot's trials at db1f84f, not re-run; run_a2.py records whether src/, fixtures/, docker/ and tests/ hash identically to that run"
+  },
+  "report_success_at": [
+    100,
+    300,
+    1000
+  ]
+}

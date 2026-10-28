@@ -1,0 +1,159 @@
+{
+ "d2-loyalty-points": {
+  "sha256": "33bc7ae1dea4c9589fefe8feba23fa058b1ff7acc3ead6bd03527cda12ac0c95",
+  "equals_pilot_recorded_request_minus_source": true,
+  "equals_current_m4_request_minus_source": true,
+  "chars": {
+   "a2_user_message": 1145,
+   "m4_user_message": 1632
+  },
+  "audit_findings": [],
+  "a2_check_problems": [],
+  "source_identifiers_reaching_the_model": {
+   "award": [
+    "catalog",
+    "contract",
+    "schema"
+   ],
+   "balance": [
+    "catalog",
+    "contract",
+    "schema"
+   ],
+   "get": [
+    "schema"
+   ],
+   "incrby": [
+    "schema"
+   ],
+   "member": [
+    "catalog",
+    "contract",
+    "schema"
+   ],
+   "points": [
+    "catalog",
+    "contract",
+    "schema"
+   ],
+   "set": [
+    "prompt",
+    "schema"
+   ],
+   "true": [
+    "request fields"
+   ]
+  },
+  "user_message": "Catalog, value domains, limits and observation:\n{\n  \"domains\": {\n    \"member\": [\n      \"m1\",\n      \"m2\"\n    ],\n    \"points\": [\n      1,\n      2\n    ]\n  },\n  \"limits\": {\n    \"concurrent_max\": 4,\n    \"concurrent_min\": 2,\n    \"setup_max\": 6\n  },\n  \"observation\": {\n    \"arg\": \"member\",\n    \"for_each\": \"member\",\n    \"op\": \"balance\"\n  },\n  \"operations\": {\n    \"award\": {\n      \"args\": {\n        \"member\": {\n          \"domain\": \"member\"\n        },\n        \"points\": {\n          \"domain\": \"points\"\n        }\n      }\n    },\n    \"balance\": {\n      \"args\": {\n        \"member\": {\n          \"domain\": \"member\"\n        }\n      }\n    }\n  }\n}\n\nContract:\n{\n  \"allowed_anomalies\": [],\n  \"atomic_groups\": [],\n  \"invariants\": [\n    {\n      \"amount_arg\": \"points\",\n      \"id\": \"balance_matches_awards\",\n      \"key_arg\": \"member\",\n      \"kind\": \"counter_conserved\",\n      \"op\": \"award\"\n    }\n  ],\n  \"statement\": \"A member's balance equals the sum of the points of all successful award calls for that member.\",\n  \"status_semantics\": {\n    \"award\": {\n      \"no_effect\": []\n    }\n  }\n}\n\nService source: not provided.\n\nPropose up to 3 experiments, most promising first."
+ },
+ "d3-inventory": {
+  "sha256": "c6ee04dd9ca5cafd47dcf290128077397051e04bfdf990516c0539866516aba9",
+  "equals_pilot_recorded_request_minus_source": true,
+  "equals_current_m4_request_minus_source": true,
+  "chars": {
+   "a2_user_message": 2218,
+   "m4_user_message": 4214
+  },
+  "audit_findings": [],
+  "a2_check_problems": [],
+  "source_identifiers_reaching_the_model": {
+   "conflict": [
+    "contract"
+   ],
+   "create": [
+    "catalog",
+    "contract",
+    "schema"
+   ],
+   "decrby": [
+    "schema"
+   ],
+   "eval": [
+    "schema"
+   ],
+   "get": [
+    "schema"
+   ],
+   "hget": [
+    "schema"
+   ],
+   "hset": [
+    "schema"
+   ],
+   "hsetnx": [
+    "schema"
+   ],
+   "incrby": [
+    "schema"
+   ],
+   "insufficientstock": [
+    "contract"
+   ],
+   "none": [
+    "prompt"
+   ],
+   "not": [
+    "prompt"
+   ],
+   "notfound": [
+    "contract"
+   ],
+   "product": [
+    "contract"
+   ],
+   "publish": [
+    "catalog",
+    "contract",
+    "schema"
+   ],
+   "purchase": [
+    "catalog",
+    "contract",
+    "schema"
+   ],
+   "qty": [
+    "catalog",
+    "schema"
+   ],
+   "restock": [
+    "catalog",
+    "contract",
+    "schema"
+   ],
+   "retire": [
+    "catalog",
+    "contract",
+    "schema"
+   ],
+   "service": [
+    "prompt"
+   ],
+   "sku": [
+    "catalog",
+    "contract",
+    "schema"
+   ],
+   "status": [
+    "catalog",
+    "schema"
+   ],
+   "stock": [
+    "catalog",
+    "contract",
+    "schema"
+   ],
+   "true": [
+    "request fields"
+   ],
+   "unavailable": [
+    "contract"
+   ],
+   "unpublish": [
+    "catalog",
+    "contract",
+    "schema"
+   ]
+  },
+  "user_message": "Catalog, value domains, limits and observation:\n{\n  \"domains\": {\n    \"qty\": [\n      1,\n      2,\n      3\n    ],\n    \"sku\": [\n      \"s1\",\n      \"s2\"\n    ]\n  },\n  \"limits\": {\n    \"concurrent_max\": 4,\n    \"concurrent_min\": 2,\n    \"setup_max\": 6\n  },\n  \"observation\": {\n    \"arg\": \"sku\",\n    \"for_each\": \"sku\",\n    \"op\": \"stock\"\n  },\n  \"operations\": {\n    \"create\": {\n      \"args\": {\n        \"sku\": {\n          \"domain\": \"sku\"\n        }\n      }\n    },\n    \"publish\": {\n      \"args\": {\n        \"sku\": {\n          \"domain\": \"sku\"\n        }\n      }\n    },\n    \"purchase\": {\n      \"args\": {\n        \"qty\": {\n          \"domain\": \"qty\"\n        },\n        \"sku\": {\n          \"domain\": \"sku\"\n        }\n      }\n    },\n    \"restock\": {\n      \"args\": {\n        \"qty\": {\n          \"domain\": \"qty\"\n        },\n        \"sku\": {\n          \"domain\": \"sku\"\n        }\n      }\n    },\n    \"retire\": {\n      \"args\": {\n        \"sku\": {\n          \"domain\": \"sku\"\n        }\n      }\n    },\n    \"status\": {\n      \"args\": {\n        \"sku\": {\n          \"domain\": \"sku\"\n        }\n      }\n    },\n    \"stock\": {\n      \"args\": {\n        \"sku\": {\n          \"domain\": \"sku\"\n        }\n      }\n    },\n    \"unpublish\": {\n      \"args\": {\n        \"sku\": {\n          \"domain\": \"sku\"\n        }\n      }\n    }\n  }\n}\n\nContract:\n{\n  \"allowed_anomalies\": [],\n  \"atomic_groups\": [],\n  \"invariants\": [\n    {\n      \"id\": \"stock_non_negative\",\n      \"kind\": \"non_negative\"\n    }\n  ],\n  \"statement\": \"A product's stock, as returned by stock(sku), is never negative.\",\n  \"status_semantics\": {\n    \"create\": {\n      \"no_effect\": [\n        \"Conflict\"\n      ]\n    },\n    \"publish\": {\n      \"no_effect\": [\n        \"NotFound\",\n        \"Conflict\",\n        \"InsufficientStock\"\n      ]\n    },\n    \"purchase\": {\n      \"no_effect\": [\n        \"NotFound\",\n        \"Unavailable\",\n        \"InsufficientStock\"\n      ]\n    },\n    \"restock\": {\n      \"no_effect\": [\n        \"NotFound\",\n        \"Unavailable\"\n      ]\n    },\n    \"retire\": {\n      \"no_effect\": [\n        \"NotFound\",\n        \"Conflict\"\n      ]\n    },\n    \"unpublish\": {\n      \"no_effect\": [\n        \"NotFound\",\n        \"Conflict\"\n      ]\n    }\n  }\n}\n\nService source: not provided.\n\nPropose up to 3 experiments, most promising first."
+ }
+}
