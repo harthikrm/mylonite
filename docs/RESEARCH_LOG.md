@@ -308,3 +308,29 @@ Pre-registered at `aa1f4eb` before any A2 call; run at that commit. Details are 
 
 See `OPEN_QUESTIONS.md`. Most urgent: G0 smoke tests, cart startup dependencies, team roster,
 and a human read of REINS.
+
+## 2026-10-28: D1 feasibility gate (real OTel cart; no model calls)
+
+- **Inputs.**
+  - Owner decisions: re-scope (D-026); D-024 accepted; A3 designed only (D-027); D-020 in
+    principle; timestamp proposal (D-028).
+  - Harness: `9dc696e`, `bf8701c`. Gate run at `bf8701c`. Report:
+    `experiments/2026-10-28-d1-gate/README.md`.
+- **Defect.** The authentic defect reproduces on the unmodified cart, built from source at tag
+  3.1.0.
+  - Controlled: depth-first exploration finds the lost update; every first violation replays
+    20/20.
+  - Without the proxy, 942 of 1,000 natural races lose an update; the #3825 build loses none.
+- **Harness problems found.**
+  - The proxy could not control the multiplexed client: 300 ms forced decisions and
+    misattribution, with the soundness check blind to both.
+  - A delayed ACK added about 40 ms per execution.
+  - The client's transaction lock blocked other operations unseen.
+  - All three are fixed (D-025). The pilot regression is identical in 6,766 events.
+- **Costs and baselines.**
+  - A D1 execution takes about 5–8 ms, the same as D3.
+  - Seed-0 feasibility: M1 verified at E₁ 30 (0.21 s), M3+ at 23 (0.11 s).
+  - Even with E₁ = 1, Muse would tie only at 0.43–1.4 s per execution: 60–190× short.
+- **Recommendation.** Continue the re-scoped project; D1 becomes the realism anchor and a
+  "baselines win" case. Next: a D1 baseline-only experiment after fixing the fixed-build stall
+  and 3+-operation verification.

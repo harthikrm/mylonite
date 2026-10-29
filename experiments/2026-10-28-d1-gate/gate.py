@@ -169,15 +169,16 @@ def stage_costs(session, target, raw, n=300):
     empty = {"setup": [], "concurrent": []}
     measure("floor: reset + observe, empty workload", lambda i: ("buggy", empty, {"kind": "prefix", "prefix": []}))
     a = WORKLOADS["A_same_item"]
-    schedules, prefix = [], []
-    while prefix is not None:  # the 8 schedules of A_same_item, cycled
-        record = execute(session, "buggy", a, {"kind": "prefix", "prefix": prefix})[0]
-        schedules.append(prefix)
-        prefix = next_prefix(record["steps"])
-    measure("A_same_item, depth-first schedules (buggy)",
-            lambda i: ("buggy", a, {"kind": "prefix", "prefix": schedules[i % len(schedules)]}))
-    measure("A_same_item, depth-first schedules (fixed)",
-            lambda i: ("fixed", a, {"kind": "prefix", "prefix": schedules[i % len(schedules)]}))
+    schedules = {}
+    for variant in ("buggy", "fixed"):  # each build's own schedule tree (8 and 6), cycled
+        schedules[variant], prefix = [], []
+        while prefix is not None:
+            record = execute(session, variant, a, {"kind": "prefix", "prefix": prefix})[0]
+            schedules[variant].append(prefix)
+            prefix = next_prefix(record["steps"])
+    for variant in ("buggy", "fixed"):
+        measure(f"A_same_item, depth-first schedules ({variant})",
+                lambda i, v=variant: (v, a, {"kind": "prefix", "prefix": schedules[v][i % len(schedules[v])]}))
     measure("M1 draws: random workload, random schedule (buggy)",
             lambda i: ("buggy", space.random_workload(target, rng), {"kind": "random", "seed": f"costs:{i}"}))
     calls = space.op_calls(target)

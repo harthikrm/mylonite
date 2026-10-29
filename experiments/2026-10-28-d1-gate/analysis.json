@@ -1,0 +1,82 @@
+{
+ "status": "estimates; Muse has not run on D1; baseline E1 from one seed-0 trial each",
+ "d1_measured_exec_ms_median": {
+  "M1 executions (random workload and schedule)": 7.26,
+  "M3+ profile executions": 7.55,
+  "scenario A, depth-first": 4.665,
+  "floor: reset and observe only": 2.44
+ },
+ "d1_baselines_seed0": {
+  "M1": {
+   "e1": 30,
+   "method_s": 0.205,
+   "verified": true
+  },
+  "M3+": {
+   "e1": 23,
+   "method_s": 0.109,
+   "verified": true
+  }
+ },
+ "muse_on_d3": {
+  "M4 (with source), D3 pilot": {
+   "model_s_median": 12.57,
+   "model_usd_median": 0.0162,
+   "e1": [
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  "A2 (no source), D3": {
+   "model_s_median": 30.07,
+   "model_usd_median": 0.0367,
+   "e1": [
+    1,
+    1,
+    114,
+    71,
+    71
+   ]
+  }
+ },
+ "d1_call_usd_estimate": 0.0271,
+ "break_even_per_execution": {
+  "M4-like: one call, D3 latency, D1-sized prompt": {
+   "M1": {
+    "seconds": 0.433,
+    "dollars": 84.2
+   },
+   "M3+": {
+    "seconds": 0.571,
+    "dollars": 111.0
+   }
+  },
+  "A2-like: two calls, D3 latency": {
+   "M1": {
+    "seconds": 1.037,
+    "dollars": 168.4
+   },
+   "M3+": {
+    "seconds": 1.367,
+    "dollars": 221.9
+   }
+  }
+ },
+ "shortfall_factor_vs_measured": {
+  "M4-like: one call, D3 latency, D1-sized prompt": {
+   "M1": 60,
+   "M3+": 79
+  },
+  "A2-like: two calls, D3 latency": {
+   "M1": 143,
+   "M3+": 188
+  }
+ },
+ "for_reference_d3_break_even_s": {
+  "M4 vs M3+": 0.06,
+  "A2 vs M3+": 0.215
+ }
+}
