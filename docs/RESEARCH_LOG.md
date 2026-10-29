@@ -353,3 +353,23 @@ and a human read of REINS.
   - 67 unit tests pass; the pilot regression is identical.
 - **Seed-0 smoke**, which is not data: E₁ = 77 (M0), 39 (M1), 23 (M3+); all verified.
 - **Protocol:** `experiments/2026-10-29-d1-baselines/PROTOCOL.md`.
+
+## 2026-10-29: D1 baseline experiment, results (no model calls)
+
+- **Run.** At `c927e5c`, `experiments/2026-10-29-d1-baselines/results/20261029-125353/`. Validity
+  ALL PASS (V1–V10). 15/15 trials verified; 0 inconclusive executions; 0 verification re-runs.
+- **E₁, seeds 1–5.**
+  - FACT: M0 stress 25, 6, 5, 7, 14 (median 7, 0.05 method-seconds);
+  - FACT: M1 122, 18, 141, 15, 14 (median 18);
+  - FACT: M3+ 23 on every seed (median 0.12 s).
+- **Why stress wins here.**
+  - FACT: every stress draw of two same-user `AddItem` calls lost an update (5/5).
+  - FACT: each hit reproduced on the first controlled schedule.
+- **Predictions.**
+  - Wrong: P2, P3 and P6 for M0. The seed-0 smoke (E₁ 77) misled them.
+  - Right: P1, P4, P5 and P7, and P3's 2× part.
+- **Break-even** (estimates; Muse has not run on D1): 2.1–5.0 s per execution against stress,
+  0.57–1.4 s against M3+, versus 5–8 ms measured.
+- **Interpretation.** D1 is a confirmed "baselines win" case, and plain stress is the strongest
+  conventional method on it. M0 has never run on D2 or D3; the pilot's D3 efficiency signal is
+  against M1 and M3+ only.

@@ -1,0 +1,400 @@
+{
+ "status": "exploratory, development-only; break-evens are estimates (Muse has not run on D1)",
+ "run": "runs/d1base-20261029-125353",
+ "results": "experiments/2026-10-29-d1-baselines/results/20261029-125353",
+ "methods": {
+  "M0": {
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "statuses": [
+    "verified",
+    "verified",
+    "verified",
+    "verified",
+    "verified"
+   ],
+   "e1": [
+    25,
+    6,
+    5,
+    7,
+    14
+   ],
+   "median_e1_censored_at_budget_plus_1": 7,
+   "min_e1": 5,
+   "max_e1": 25,
+   "success_at": {
+    "10": {
+     "k": 3,
+     "n": 5,
+     "wilson95": [
+      0.231,
+      0.882
+     ]
+    },
+    "30": {
+     "k": 5,
+     "n": 5,
+     "wilson95": [
+      0.566,
+      1.0
+     ]
+    },
+    "100": {
+     "k": 5,
+     "n": 5,
+     "wilson95": [
+      0.566,
+      1.0
+     ]
+    },
+    "300": {
+     "k": 5,
+     "n": 5,
+     "wilson95": [
+      0.566,
+      1.0
+     ]
+    },
+    "1000": {
+     "k": 5,
+     "n": 5,
+     "wilson95": [
+      0.566,
+      1.0
+     ]
+    }
+   },
+   "method_s": [
+    0.193,
+    0.042,
+    0.031,
+    0.052,
+    0.088
+   ],
+   "median_method_s": 0.052,
+   "median_method_s_per_execution": 0.007,
+   "median_execution_ms": 6.85,
+   "compute_usd": [
+    2e-06,
+    0.0,
+    0.0,
+    1e-06,
+    1e-06
+   ],
+   "verification_s": [
+    0.236,
+    0.172,
+    0.215,
+    0.28,
+    0.288
+   ],
+   "stress": {
+    "per_trial": [
+     {
+      "stress": 24,
+      "hits": 1,
+      "inconclusive": 0
+     },
+     {
+      "stress": 5,
+      "hits": 1,
+      "inconclusive": 0
+     },
+     {
+      "stress": 4,
+      "hits": 1,
+      "inconclusive": 0
+     },
+     {
+      "stress": 6,
+      "hits": 1,
+      "inconclusive": 0
+     },
+     {
+      "stress": 13,
+      "hits": 1,
+      "inconclusive": 0
+     }
+    ],
+    "hit_rate": 0.0962,
+    "reproduced_under_scheduler": [
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "exploration_executions": [
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "median_stress_ms": 6.84
+   }
+  },
+  "M1": {
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "statuses": [
+    "verified",
+    "verified",
+    "verified",
+    "verified",
+    "verified"
+   ],
+   "e1": [
+    122,
+    18,
+    141,
+    15,
+    14
+   ],
+   "median_e1_censored_at_budget_plus_1": 18,
+   "min_e1": 14,
+   "max_e1": 141,
+   "success_at": {
+    "10": {
+     "k": 0,
+     "n": 5,
+     "wilson95": [
+      0.0,
+      0.434
+     ]
+    },
+    "30": {
+     "k": 3,
+     "n": 5,
+     "wilson95": [
+      0.231,
+      0.882
+     ]
+    },
+    "100": {
+     "k": 3,
+     "n": 5,
+     "wilson95": [
+      0.231,
+      0.882
+     ]
+    },
+    "300": {
+     "k": 5,
+     "n": 5,
+     "wilson95": [
+      0.566,
+      1.0
+     ]
+    },
+    "1000": {
+     "k": 5,
+     "n": 5,
+     "wilson95": [
+      0.566,
+      1.0
+     ]
+    }
+   },
+   "method_s": [
+    0.915,
+    0.143,
+    1.059,
+    0.114,
+    0.095
+   ],
+   "median_method_s": 0.143,
+   "median_method_s_per_execution": 0.00751,
+   "median_execution_ms": 7.35,
+   "compute_usd": [
+    1e-05,
+    2e-06,
+    1.2e-05,
+    1e-06,
+    1e-06
+   ],
+   "verification_s": [
+    0.232,
+    0.233,
+    0.261,
+    0.234,
+    0.241
+   ]
+  },
+  "M3+": {
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "statuses": [
+    "verified",
+    "verified",
+    "verified",
+    "verified",
+    "verified"
+   ],
+   "e1": [
+    23,
+    23,
+    23,
+    23,
+    23
+   ],
+   "median_e1_censored_at_budget_plus_1": 23,
+   "min_e1": 23,
+   "max_e1": 23,
+   "success_at": {
+    "10": {
+     "k": 0,
+     "n": 5,
+     "wilson95": [
+      0.0,
+      0.434
+     ]
+    },
+    "30": {
+     "k": 5,
+     "n": 5,
+     "wilson95": [
+      0.566,
+      1.0
+     ]
+    },
+    "100": {
+     "k": 5,
+     "n": 5,
+     "wilson95": [
+      0.566,
+      1.0
+     ]
+    },
+    "300": {
+     "k": 5,
+     "n": 5,
+     "wilson95": [
+      0.566,
+      1.0
+     ]
+    },
+    "1000": {
+     "k": 5,
+     "n": 5,
+     "wilson95": [
+      0.566,
+      1.0
+     ]
+    }
+   },
+   "method_s": [
+    0.13,
+    0.127,
+    0.113,
+    0.114,
+    0.121
+   ],
+   "median_method_s": 0.121,
+   "median_method_s_per_execution": 0.00526,
+   "median_execution_ms": 5.13,
+   "compute_usd": [
+    1e-06,
+    1e-06,
+    1e-06,
+    1e-06,
+    1e-06
+   ],
+   "verification_s": [
+    0.155,
+    0.166,
+    0.157,
+    0.141,
+    0.159
+   ]
+  }
+ },
+ "break_even_per_execution": {
+  "M4-like: one call, D3 latency, D1-sized prompt": {
+   "M0": {
+    "e_b": 7,
+    "seconds": 2.095,
+    "dollars": 406.9,
+    "measured_s_per_execution": 0.007,
+    "shortfall_factor": 299.3
+   },
+   "M1": {
+    "e_b": 18,
+    "seconds": 0.739,
+    "dollars": 143.6,
+    "measured_s_per_execution": 0.00751,
+    "shortfall_factor": 98.5
+   },
+   "M3+": {
+    "e_b": 23,
+    "seconds": 0.571,
+    "dollars": 111.0,
+    "measured_s_per_execution": 0.00526,
+    "shortfall_factor": 108.6
+   }
+  },
+  "A2-like: two calls, D3 latency": {
+   "M0": {
+    "e_b": 7,
+    "seconds": 5.012,
+    "dollars": 813.8,
+    "measured_s_per_execution": 0.007,
+    "shortfall_factor": 716.0
+   },
+   "M1": {
+    "e_b": 18,
+    "seconds": 1.769,
+    "dollars": 287.2,
+    "measured_s_per_execution": 0.00751,
+    "shortfall_factor": 235.5
+   },
+   "M3+": {
+    "e_b": 23,
+    "seconds": 1.367,
+    "dollars": 221.9,
+    "measured_s_per_execution": 0.00526,
+    "shortfall_factor": 259.9
+   }
+  }
+ },
+ "muse_scenarios": {
+  "M4-like: one call, D3 latency, D1-sized prompt": {
+   "latency_s": 12.57,
+   "usd": 0.0271
+  },
+  "A2-like: two calls, D3 latency": {
+   "latency_s": 30.07,
+   "usd": 0.0542
+  }
+ },
+ "predictions": {
+  "P1 all 15 verified within 1,000": true,
+  "P2 medians in range": {
+   "M3+": true,
+   "M1": true,
+   "M0": false
+  },
+  "P3 M3+ lowest median E1": false,
+  "P3 M3+ and M1 method-seconds within 2x": true,
+  "P4 every trial under 2 method-seconds": true,
+  "P6 every median E1 above 10": false,
+  "P7 every break-even above 0.1 s": true,
+  "P5": "see check_validity.py V7"
+ }
+}

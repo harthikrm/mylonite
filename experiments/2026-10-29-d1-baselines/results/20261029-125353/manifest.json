@@ -1,0 +1,227 @@
+{
+ "git_commit": "c927e5cd89fab46e90743f917985541c6695c6f1",
+ "git_dirty": [],
+ "files_sha256": {
+  "docker/executor-d1.Dockerfile": "f18bc82b78e57e94cf09a1bd60a322fd4f52fbbe8af8dac3759cf7c046202539",
+  "docker/executor.Dockerfile": "afb1f6ffe2f0c9440ba1ba68937a238c3e300a27c206214ee59c7823614a2e88",
+  "docker/requirements-d1.lock": "b724aabbcd652932b79b6f4d0f87cc1e0663b24b6562c76a53fd54481ba4fff8",
+  "docker/requirements.lock": "ad8dfc86aad735afc2b032d0bbac3404fde42cf9cc9a6f3ad215695d26855a08",
+  "experiments/2026-10-28-d1-gate/d1.py": "62320fac3b4b47ea45b8980e5c1bf3707187307dca99a381c866b3f595fae36a",
+  "experiments/2026-10-29-d1-baselines/analyze.py": "97d8ffcf025d06458a4b4344b52fc2ddaff321d9cf5618f075ded0a9b76882e1",
+  "experiments/2026-10-29-d1-baselines/check_validity.py": "b22f7e59f350f57c3b2ce6929a42c931208dbbfdc876e0aa2deb5c9f4f741d2d",
+  "experiments/2026-10-29-d1-baselines/config.json": "463aeff9520d660dd98c30c7603c39168ab6af06b6c4168c3694268ed507496f",
+  "experiments/2026-10-29-d1-baselines/run_d1.py": "633b23011e65f6232cea814cf436aca638f861e98540c761cd9a86ac6d956606",
+  "experiments/2026-10-29-d1-baselines/sandbox_check.py": "4d447304213a2fcbeb0d487db5a5bd2d17cf59a352388207935d6d6be4afd285",
+  "experiments/2026-10-29-d1-baselines/stall.py": "803bb1e507c0a2627c576b2dd6a93345c8feb69f3a04317b1980c9b195b4f7c8",
+  "src/mylonite/__init__.py": "980ce6b63c80396d40e46796bc524236b86c3242014325bee3492016d8bb81df",
+  "src/mylonite/adapters/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/mylonite/adapters/otel_cart.py": "e276b02ac9ee6f04d755270793ee67f5531ab5a03b9237495de2c1f59845145d",
+  "src/mylonite/audit.py": "08c0f5049467308124efe34bea490d48a644376c68ab7c1117fb368adfc7e779",
+  "src/mylonite/executor.py": "6baa877876f4d7783d4e149bb02d4a53c9a2eef287ffc0d6c1d71fef6dfb5348",
+  "src/mylonite/methods.py": "4e12eab75631783216abbcdaa21bc825e445158db47fe84b452adc7a0beddcde",
+  "src/mylonite/oracle.py": "be1f7a4bb671bab10ee1678af66db930c98996aa84208c180b4b90f8e578fdc2",
+  "src/mylonite/planner.py": "ea422cb5a92471c0ae40a29cd8b36acf9b47dcd1628ac238e42759795cc2d9c1",
+  "src/mylonite/proxy.py": "6b1cdae9bd380a7d37fd29b0ae5b5ea83a94bf99df911785e36cf37f135ff940",
+  "src/mylonite/resp.py": "3ebaee0b6ca3bbf9ccea6edf9cbc262bcb64483ba77de7ac46762ed5eacb2b6f",
+  "src/mylonite/sandbox.py": "d892842ef3214fde47bea2e2fe745d515d21c8651b2f59dc38add0bbea167a26",
+  "src/mylonite/scheduler.py": "d698006eb74f051cf8ba8ad94efeb5525e3bbfe10442d959b0c3fb3f44cfb8f3",
+  "src/mylonite/space.py": "c4f0947ed270a5fc55f38f75f62cbf06df08308b60834afbe5ba29205ad5fe20",
+  "targets/d1-otel-cart/Dockerfile": "c8e5e7fe2fae27b255bb864b166fa54e74d866ec307aeede9a9ad5bacc9eb0c2",
+  "targets/d1-otel-cart/build.py": "1e4c9a7cad29db5b4ea250d6ba85e4ae1924e330455fa833c7d12d7a3c4afc2f",
+  "targets/d1-otel-cart/target.json": "78f4293858cf26e5c28d282c9db4b6fb19a3eaef54b10322b88bd0c34169abfc",
+  "tests/test_contamination.py": "a5ff574f9678564ee5f6b34dbd2f54c07d3a0dd021c87d2644521fabde620b50",
+  "tests/test_core.py": "e2ac935124b7d3be95dd25fd933874c8b9ad49e95fd264f93323bfcb66b657cd",
+  "tests/test_d1.py": "23fe955524ec9837034bdd44c0d3e57a96b54679b248a53da9ca21aa6f802a5d",
+  "tests/test_sandbox.py": "2f9a97ed05d79882dbf63686315dc9ff559ec8f5bf534e830307c6dbbf96613a"
+ },
+ "build": {
+  "dockerfile_sha256": "c8e5e7fe2fae27b255bb864b166fa54e74d866ec307aeede9a9ad5bacc9eb0c2",
+  "fix_commit": "060ee20677b4383f28277069b68d99e234b64dcb",
+  "tag_commit": "dedc0178918e260823323b8d95005a8cb924b007",
+  "variants": {
+   "buggy": {
+    "context_files": {
+     "pb/demo.proto": "28e2c4badedcbed88543afdafc8c60f9d9e9e5cc499ee3b7098a6438d3deaf85",
+     "src/cart/Directory.Build.props": "411339a72688258cf7d1782fbc5fb2bb09004e49588264fc7eec755519eca234",
+     "src/cart/Directory.Packages.props": "3b0d229d5c1ddd103b4381097163d5318e91832e19b99a46776c8ee8417e9229",
+     "src/cart/NuGet.config": "60d4246cae527e3d38b92ab1f227ee2f420846724bf895f6c4ab401f728b78fa",
+     "src/cart/README.md": "69d73535491d81ceee6c90cba8912f90330bb8074ae22a5a0218a6738df00863",
+     "src/cart/cart.slnx": "6636c36d493d6f71200bcb46ad6270ca2c1186f03b6935cfe1a53b9eebb169c8",
+     "src/cart/src/.dockerignore": "6fbd265c6e0bbc1649dd1b16589c5b7a95b832043eaefe6db5f0e3520aebf05e",
+     "src/cart/src/Dockerfile": "88883c65540e0364f28cb5ea33d998f623571ab078521bb6c234e8f0d896ee5f",
+     "src/cart/src/Log.cs": "07349ab48c378e118f5d67ae6e2b3c919c3ea7cc784ae18aa9723d2da476edef",
+     "src/cart/src/OpAmpClientSetup.cs": "5f84df81f553ca5070718c2139aa016414cc4f9e156de95e9c3054e48b8044a3",
+     "src/cart/src/Program.cs": "f6aea9843b092406dff42c9b8d89fd38a5459456abffa8879818ea8d8153118f",
+     "src/cart/src/appsettings.json": "8ecd6805243f91b3e62e1aebee3bbc7df4df1fbfb46183a105714b2ffddfb8dc",
+     "src/cart/src/cart.csproj": "9680e70fd07f32291b7762f20d0eb8cddec86b07c71418db0c4a41ce018db40b",
+     "src/cart/src/cartstore/ICartStore.cs": "761e35d4e773ccbbc8fa5888e6aec5a1bcfdb9c5907f3afb596b1e3384fdca5b",
+     "src/cart/src/cartstore/ValkeyCartStore.cs": "9f04993deaf8c6abbe66254d1567ba7406c0d872cf866b9ba969a4e9e88c1f71",
+     "src/cart/src/services/CartService.cs": "07523fd634eed14003fdbda57eca405ac449384ef51821b86982212d250fef43",
+     "src/cart/src/services/HealthCheckService.cs": "27851fac3aedff779619aaafbf521b85c86fe9f97ed07f4e3858b7fb90175aa6",
+     "src/cart/tests/CartServiceTests.cs": "41d9e8c36ec39d24b4f2f6106bf9c0bafc4dae543536a4894844a29f917cc803",
+     "src/cart/tests/cart.tests.csproj": "8e3b40d8103fa185db5f76ba54050c92dec11739aba71af2fb185cedd3934047"
+    },
+    "image": "mylonite-d1-cart:buggy-dedc0178",
+    "image_id": "sha256:b30d652223c5f732374c7c3653f9a6ad76538b42773b1cca3dc5f33ded13893e",
+    "store_sha256": "9f04993deaf8c6abbe66254d1567ba7406c0d872cf866b9ba969a4e9e88c1f71"
+   },
+   "fixed": {
+    "context_files": {
+     "pb/demo.proto": "28e2c4badedcbed88543afdafc8c60f9d9e9e5cc499ee3b7098a6438d3deaf85",
+     "src/cart/Directory.Build.props": "411339a72688258cf7d1782fbc5fb2bb09004e49588264fc7eec755519eca234",
+     "src/cart/Directory.Packages.props": "3b0d229d5c1ddd103b4381097163d5318e91832e19b99a46776c8ee8417e9229",
+     "src/cart/NuGet.config": "60d4246cae527e3d38b92ab1f227ee2f420846724bf895f6c4ab401f728b78fa",
+     "src/cart/README.md": "69d73535491d81ceee6c90cba8912f90330bb8074ae22a5a0218a6738df00863",
+     "src/cart/cart.slnx": "6636c36d493d6f71200bcb46ad6270ca2c1186f03b6935cfe1a53b9eebb169c8",
+     "src/cart/src/.dockerignore": "6fbd265c6e0bbc1649dd1b16589c5b7a95b832043eaefe6db5f0e3520aebf05e",
+     "src/cart/src/Dockerfile": "88883c65540e0364f28cb5ea33d998f623571ab078521bb6c234e8f0d896ee5f",
+     "src/cart/src/Log.cs": "07349ab48c378e118f5d67ae6e2b3c919c3ea7cc784ae18aa9723d2da476edef",
+     "src/cart/src/OpAmpClientSetup.cs": "5f84df81f553ca5070718c2139aa016414cc4f9e156de95e9c3054e48b8044a3",
+     "src/cart/src/Program.cs": "f6aea9843b092406dff42c9b8d89fd38a5459456abffa8879818ea8d8153118f",
+     "src/cart/src/appsettings.json": "8ecd6805243f91b3e62e1aebee3bbc7df4df1fbfb46183a105714b2ffddfb8dc",
+     "src/cart/src/cart.csproj": "9680e70fd07f32291b7762f20d0eb8cddec86b07c71418db0c4a41ce018db40b",
+     "src/cart/src/cartstore/ICartStore.cs": "761e35d4e773ccbbc8fa5888e6aec5a1bcfdb9c5907f3afb596b1e3384fdca5b",
+     "src/cart/src/cartstore/ValkeyCartStore.cs": "d18a915e502e7a3e70428658becaa777d56cdca2f6988a5c8b8449d90ecb5031",
+     "src/cart/src/services/CartService.cs": "07523fd634eed14003fdbda57eca405ac449384ef51821b86982212d250fef43",
+     "src/cart/src/services/HealthCheckService.cs": "27851fac3aedff779619aaafbf521b85c86fe9f97ed07f4e3858b7fb90175aa6",
+     "src/cart/tests/CartServiceTests.cs": "41d9e8c36ec39d24b4f2f6106bf9c0bafc4dae543536a4894844a29f917cc803",
+     "src/cart/tests/cart.tests.csproj": "8e3b40d8103fa185db5f76ba54050c92dec11739aba71af2fb185cedd3934047"
+    },
+    "image": "mylonite-d1-cart:fixed-pr3825-060ee206",
+    "image_id": "sha256:c507c7437cb573cdb3e4336e3c75b9146c1d03bce42914ff3825a2edc996abad",
+    "store_sha256": "d18a915e502e7a3e70428658becaa777d56cdca2f6988a5c8b8449d90ecb5031"
+   }
+  }
+ },
+ "host_python": "3.14.5",
+ "config": {
+  "experiment": "2026-10-29 D1 baseline experiment: M0, M1 and M3+ on the real OTel cart, no model calls",
+  "status": "pre-registered 2026-10-29, before any D1 trial at seeds 1-5 (PROTOCOL.md)",
+  "target": "targets/d1-otel-cart/target.json",
+  "methods": [
+   "M0",
+   "M1",
+   "M3+"
+  ],
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "concurrent_max": 2,
+  "budget": {
+   "executions": 1000,
+   "method_seconds": 900,
+   "schedules_per_experiment": 50
+  },
+  "verification": {
+   "replays": 20,
+   "corrected_exhaustive_cap": 5000,
+   "corrected_bounded_random": 2000,
+   "inconclusive_reruns": 2
+  },
+  "executor": {
+   "delta_q_ms": 300,
+   "round_timeout_s": 10
+  },
+  "prices": {
+   "input": 1.25,
+   "cached": 0.15,
+   "output": 4.25,
+   "compute_per_second": 1.11e-05
+  },
+  "report_success_at": [
+   10,
+   30,
+   100,
+   300,
+   1000
+  ],
+  "notes": {
+   "budget, executor, prices": "identical to the pilot (experiments/2026-10-29-pilot/config.json)",
+   "verification": "the pilot's, plus inconclusive_reruns (D-030)",
+   "space": "D1's catalog and domains (target.json); setup <= 6 calls; exactly 2 concurrent calls for every method (D-029)",
+   "seeds": "M0 and M1 seed workload draws (M1 also its schedules); M3+ seeds only the order of calls and pairs. Seed 0 was used by the gate's feasibility trials and the smoke run, and is excluded.",
+   "order": "for each seed, M0 then M1 then M3+, against one warm cart; every execution starts from FLUSHALL"
+  }
+ },
+ "argv": [],
+ "started": "2026-10-29T12:53:53-0500",
+ "bringup": {
+  "ready": {
+   "ready": true,
+   "egress_probe": {
+    "tcp_1.1.1.1:443": "blocked (OSError)",
+    "dns_pypi.org": "blocked (gaierror)"
+   },
+   "python": "3.13.18",
+   "redis_py": "8.1.0"
+  },
+  "services": {
+   "buggy": {
+    "ready_s": 1.61,
+    "start_to_ready_s": 1.71,
+    "warm_up": {
+     "serial": 50,
+     "race_schedules": 8
+    }
+   },
+   "fixed": {
+    "ready_s": 1.6,
+    "start_to_ready_s": 1.69,
+    "warm_up": {
+     "serial": 50,
+     "race_schedules": 6
+    }
+   }
+  },
+  "policy": "/mylonite-d1base-valkey net=mylonite-d1base-net ro=true user=999:1000 capdrop=[ALL] pids=256 mem=536870912 mounts=0 privileged=false\n/mylonite-d1base-cart-buggy net=mylonite-d1base-net ro=true user=1654:1654 capdrop=[ALL] pids=256 mem=167772160 mounts=0 privileged=false\n/mylonite-d1base-cart-fixed net=mylonite-d1base-net ro=true user=1654:1654 capdrop=[ALL] pids=256 mem=167772160 mounts=0 privileged=false",
+  "images": {
+   "executor": "sha256:32e0928724d43ee66452400ada6044c981812a0b9a0888e574b2586ac209798e",
+   "valkey": "ghcr.io/valkey-io/valkey@sha256:107b203169a20ef7c87548c157f4e4a833dbbbd20fefd3a26740b7f98ac80216"
+  },
+  "service_images": {
+   "buggy": "sha256:b30d652223c5f732374c7c3653f9a6ad76538b42773b1cca3dc5f33ded13893e",
+   "fixed": "sha256:c507c7437cb573cdb3e4336e3c75b9146c1d03bce42914ff3825a2edc996abad"
+  }
+ },
+ "cart_logs_tail": {
+  "buggy": [
+   "      GetCartAsync called with userId=u1",
+   "info: cart.cartstore.ValkeyCartStore[1662118147]",
+   "      GetCartAsync called with userId=u2",
+   "info: cart.cartstore.ValkeyCartStore[1662118147]",
+   "      GetCartAsync called with userId=u1",
+   "info: cart.cartstore.ValkeyCartStore[1662118147]",
+   "      GetCartAsync called with userId=u2",
+   "info: cart.cartstore.ValkeyCartStore[133092716]",
+   "      AddItemAsync called with userId=u1, productId=1YMWWN1N4O, quantity=1",
+   "info: cart.cartstore.ValkeyCartStore[133092716]",
+   "      AddItemAsync called with userId=u1, productId=1YMWWN1N4O, quantity=3",
+   "info: cart.cartstore.ValkeyCartStore[1662118147]",
+   "      GetCartAsync called with userId=u1",
+   "info: cart.cartstore.ValkeyCartStore[1662118147]",
+   "      GetCartAsync called with userId=u2"
+  ],
+  "fixed": [
+   "      GetCartAsync called with userId=u1",
+   "info: cart.cartstore.ValkeyCartStore[1662118147]",
+   "      GetCartAsync called with userId=u2",
+   "info: cart.cartstore.ValkeyCartStore[1662118147]",
+   "      GetCartAsync called with userId=u1",
+   "info: cart.cartstore.ValkeyCartStore[1662118147]",
+   "      GetCartAsync called with userId=u2",
+   "info: cart.cartstore.ValkeyCartStore[133092716]",
+   "      AddItemAsync called with userId=u1, productId=1YMWWN1N4O, quantity=3",
+   "info: cart.cartstore.ValkeyCartStore[133092716]",
+   "      AddItemAsync called with userId=u1, productId=1YMWWN1N4O, quantity=1",
+   "info: cart.cartstore.ValkeyCartStore[1662118147]",
+   "      GetCartAsync called with userId=u1",
+   "info: cart.cartstore.ValkeyCartStore[1662118147]",
+   "      GetCartAsync called with userId=u2"
+  ]
+ },
+ "finished": "2026-10-29T12:54:06-0500"
+}

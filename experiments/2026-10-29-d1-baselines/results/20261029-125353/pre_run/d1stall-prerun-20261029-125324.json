@@ -1,0 +1,214 @@
+{
+ "label": "prerun",
+ "commit": "c927e5cd89fab46e90743f917985541c6695c6f1",
+ "dirty": false,
+ "builds": {
+  "buggy": {
+   "pairs": {
+    "executions": 1200,
+    "verdicts": {
+     "VIOLATION": 195,
+     "PASS": 1005
+    },
+    "over_100ms": 0,
+    "forced_decisions": 0,
+    "soundness_problems": {},
+    "unstable_schedules": 0,
+    "median_ms": 4.52,
+    "p99_ms": 7.69,
+    "wall_s": 6.4,
+    "inconclusive_examples": [],
+    "schedules": 31
+   },
+   "random": {
+    "executions": 4000,
+    "verdicts": {
+     "PASS": 3865,
+     "VIOLATION": 135
+    },
+    "over_100ms": 0,
+    "forced_decisions": 0,
+    "soundness_problems": {},
+    "unstable_schedules": 0,
+    "median_ms": 6.04,
+    "p99_ms": 11.75,
+    "wall_s": 27.4,
+    "inconclusive_examples": []
+   }
+  },
+  "fixed": {
+   "pairs": {
+    "executions": 1200,
+    "verdicts": {
+     "PASS": 1200
+    },
+    "over_100ms": 0,
+    "forced_decisions": 0,
+    "soundness_problems": {},
+    "unstable_schedules": 0,
+    "median_ms": 5.4,
+    "p99_ms": 19.09,
+    "wall_s": 9.2,
+    "inconclusive_examples": [],
+    "schedules": 24
+   },
+   "random": {
+    "executions": 4000,
+    "verdicts": {
+     "PASS": 3999,
+     "INCONCLUSIVE": 1
+    },
+    "over_100ms": 1,
+    "forced_decisions": 0,
+    "soundness_problems": {
+     "unscheduled INFO": 1
+    },
+    "unstable_schedules": 0,
+    "median_ms": 6.27,
+    "p99_ms": 19.34,
+    "wall_s": 30.9,
+    "inconclusive_examples": [
+     {
+      "workload": {
+       "setup": [
+        {
+         "op": "EmptyCart",
+         "args": {
+          "user_id": "u2"
+         }
+        },
+        {
+         "op": "EmptyCart",
+         "args": {
+          "user_id": "u2"
+         }
+        },
+        {
+         "op": "AddItem",
+         "args": {
+          "product_id": "1YMWWN1N4O",
+          "quantity": 2,
+          "user_id": "u2"
+         }
+        },
+        {
+         "op": "AddItem",
+         "args": {
+          "product_id": "1YMWWN1N4O",
+          "quantity": 3,
+          "user_id": "u1"
+         }
+        },
+        {
+         "op": "GetCart",
+         "args": {
+          "user_id": "u1"
+         }
+        },
+        {
+         "op": "EmptyCart",
+         "args": {
+          "user_id": "u2"
+         }
+        }
+       ],
+       "concurrent": [
+        {
+         "op": "GetCart",
+         "args": {
+          "user_id": "u2"
+         }
+        },
+        {
+         "op": "EmptyCart",
+         "args": {
+          "user_id": "u1"
+         }
+        }
+       ]
+      },
+      "decisions": [
+       "admit:0",
+       "admit:1",
+       "exec:0",
+       "exec:1",
+       "exec:1"
+      ],
+      "soundness_problems": [
+       "unscheduled INFO on conn 1"
+      ],
+      "harness_error": null,
+      "ms": 8.44,
+      "ops": [
+       {
+        "op": "GetCart",
+        "args": {
+         "user_id": "u2"
+        },
+        "value": {},
+        "error": null,
+        "harness_failure": false,
+        "status": "ok"
+       },
+       {
+        "op": "EmptyCart",
+        "args": {
+         "user_id": "u1"
+        },
+        "value": null,
+        "error": null,
+        "harness_failure": false,
+        "status": "ok"
+       }
+      ],
+      "trace": [
+       [
+        "admit",
+        0,
+        null
+       ],
+       [
+        "admit",
+        1,
+        null
+       ],
+       [
+        "exec",
+        0,
+        "HGET"
+       ],
+       [
+        "exec",
+        1,
+        "HMSET"
+       ],
+       [
+        "exec",
+        1,
+        "EXPIRE"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "services": {
+  "buggy": {
+   "ready_s": 1.6,
+   "start_to_ready_s": 1.7,
+   "warm_up": {
+    "serial": 50,
+    "race_schedules": 8
+   }
+  },
+  "fixed": {
+   "ready_s": 1.07,
+   "start_to_ready_s": 1.18,
+   "warm_up": {
+    "serial": 50,
+    "race_schedules": 6
+   }
+  }
+ }
+}

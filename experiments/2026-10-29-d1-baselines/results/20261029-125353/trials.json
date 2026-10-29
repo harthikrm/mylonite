@@ -1,0 +1,1815 @@
+[
+ {
+  "target": "d1-otel-cart",
+  "method": "M0",
+  "seed": 1,
+  "status": "verified",
+  "e1_executions": 25,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 3,
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "EmptyCart",
+      "args": {
+       "user_id": "u1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 1,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "66VCHSJNUP",
+       "quantity": 2,
+       "user_id": "u1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "e70e2bdd079adea346febf53b51f1f402b5812dd23aa7c0f0d4d6a0d8da10ee0",
+   "pre": {
+    "u1": {},
+    "u2": {
+     "1YMWWN1N4O": 3
+    }
+   },
+   "post": {
+    "u1": {
+     "66VCHSJNUP": 2
+    },
+    "u2": {
+     "1YMWWN1N4O": 3
+    }
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u1/OLJCESPC7Z",
+       "before": 0,
+       "observed": 0,
+       "allowed": [
+        1
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 25,
+  "method_s": 0.193,
+  "exec_s": 0.19,
+  "overhead_s": 0.014,
+  "verification_s": 0.236,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 2e-06,
+  "counters": {
+   "stress": 24,
+   "stress_PASS": 23,
+   "stress_VIOLATION": 1,
+   "m0_reproductions": 1,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M1",
+  "seed": 1,
+  "status": "verified",
+  "e1_executions": 122,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "66VCHSJNUP",
+       "quantity": 2,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 1,
+       "user_id": "u2"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 3,
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 2,
+       "user_id": "u2"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "c16f44549bb3404666584ec2cbfd8ac579d2d5e21621f92d6d0f5eae0fbfe99c",
+   "pre": {
+    "u1": {
+     "66VCHSJNUP": 2
+    },
+    "u2": {
+     "OLJCESPC7Z": 1
+    }
+   },
+   "post": {
+    "u1": {
+     "66VCHSJNUP": 2
+    },
+    "u2": {
+     "OLJCESPC7Z": 3
+    }
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u2/OLJCESPC7Z",
+       "before": 1,
+       "observed": 3,
+       "allowed": [
+        6
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 122,
+  "method_s": 0.915,
+  "exec_s": 0.902,
+  "overhead_s": 0.076,
+  "verification_s": 0.232,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 1e-05,
+  "counters": {
+   "PASS": 121,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M3+",
+  "seed": 1,
+  "status": "verified",
+  "e1_executions": 23,
+  "witness": {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 1,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "66VCHSJNUP",
+       "quantity": 2,
+       "user_id": "u1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "4957badb1beedc66e881af4881837eb57dbb4a46af7fe3e7910570b67e9d36b0",
+   "pre": {
+    "u1": {},
+    "u2": {}
+   },
+   "post": {
+    "u1": {
+     "66VCHSJNUP": 2
+    },
+    "u2": {}
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u1/1YMWWN1N4O",
+       "before": 0,
+       "observed": 0,
+       "allowed": [
+        1
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": []
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 23,
+  "method_s": 0.13,
+  "exec_s": 0.129,
+  "overhead_s": 0.012,
+  "verification_s": 0.155,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 1e-06,
+  "counters": {
+   "profile": 22,
+   "m3_states": 1,
+   "m3_pairs": 130,
+   "m3_pairs_deferred": 116,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M0",
+  "seed": 2,
+  "status": "verified",
+  "e1_executions": 6,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 1,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 3,
+       "user_id": "u1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "73542b27a6346221802fdbe8a4ee1481a6f395529cfe1d091463a320a039dddf",
+   "pre": {
+    "u1": {},
+    "u2": {}
+   },
+   "post": {
+    "u1": {
+     "1YMWWN1N4O": 3
+    },
+    "u2": {}
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u1/OLJCESPC7Z",
+       "before": 0,
+       "observed": 0,
+       "allowed": [
+        1
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 6,
+  "method_s": 0.042,
+  "exec_s": 0.041,
+  "overhead_s": 0.004,
+  "verification_s": 0.172,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 0.0,
+  "counters": {
+   "stress": 5,
+   "stress_PASS": 4,
+   "stress_VIOLATION": 1,
+   "m0_reproductions": 1,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M1",
+  "seed": 2,
+  "status": "verified",
+  "e1_executions": 18,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 1,
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "EmptyCart",
+      "args": {
+       "user_id": "u2"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 1,
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 2,
+       "user_id": "u2"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:1",
+    "admit:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0"
+   ],
+   "trace_hash": "6e142fe28cd4a89e44d588c36413c717764e6bfc4b6c3008b808b22ceb46226a",
+   "pre": {
+    "u1": {},
+    "u2": {}
+   },
+   "post": {
+    "u1": {},
+    "u2": {
+     "1YMWWN1N4O": 1
+    }
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u2/OLJCESPC7Z",
+       "before": 0,
+       "observed": 0,
+       "allowed": [
+        2
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 18,
+  "method_s": 0.143,
+  "exec_s": 0.141,
+  "overhead_s": 0.012,
+  "verification_s": 0.233,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 2e-06,
+  "counters": {
+   "PASS": 17,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M3+",
+  "seed": 2,
+  "status": "verified",
+  "e1_executions": 23,
+  "witness": {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 1,
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 3,
+       "user_id": "u2"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "49bb64779bf7b6cd25fa46a9bf57e548b696c3fa059edd414c411ecfa17a3550",
+   "pre": {
+    "u1": {},
+    "u2": {}
+   },
+   "post": {
+    "u1": {},
+    "u2": {
+     "1YMWWN1N4O": 3
+    }
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u2/1YMWWN1N4O",
+       "before": 0,
+       "observed": 3,
+       "allowed": [
+        4
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": []
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 23,
+  "method_s": 0.127,
+  "exec_s": 0.124,
+  "overhead_s": 0.012,
+  "verification_s": 0.166,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 1e-06,
+  "counters": {
+   "profile": 22,
+   "m3_states": 1,
+   "m3_pairs": 130,
+   "m3_pairs_deferred": 117,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M0",
+  "seed": 3,
+  "status": "verified",
+  "e1_executions": 5,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 1,
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 2,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "66VCHSJNUP",
+       "quantity": 3,
+       "user_id": "u1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "1ba1228c79d7a5503510463136b737887c7bb4ea42020dcdcd9964765b0ac78b",
+   "pre": {
+    "u1": {},
+    "u2": {
+     "OLJCESPC7Z": 1
+    }
+   },
+   "post": {
+    "u1": {
+     "66VCHSJNUP": 3
+    },
+    "u2": {
+     "OLJCESPC7Z": 1
+    }
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u1/OLJCESPC7Z",
+       "before": 0,
+       "observed": 0,
+       "allowed": [
+        2
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 5,
+  "method_s": 0.031,
+  "exec_s": 0.03,
+  "overhead_s": 0.003,
+  "verification_s": 0.215,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 0.0,
+  "counters": {
+   "stress": 4,
+   "stress_PASS": 3,
+   "stress_VIOLATION": 1,
+   "m0_reproductions": 1,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M1",
+  "seed": 3,
+  "status": "verified",
+  "e1_executions": 141,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 3,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "EmptyCart",
+      "args": {
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "EmptyCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "66VCHSJNUP",
+       "quantity": 2,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 1,
+       "user_id": "u1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "a6ca4e9f3aa58a6c3f47833eec64284036a2c7c753d2436de7ad7f2ab0308656",
+   "pre": {
+    "u1": {},
+    "u2": {}
+   },
+   "post": {
+    "u1": {
+     "OLJCESPC7Z": 1
+    },
+    "u2": {}
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u1/66VCHSJNUP",
+       "before": 0,
+       "observed": 0,
+       "allowed": [
+        2
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 141,
+  "method_s": 1.059,
+  "exec_s": 1.043,
+  "overhead_s": 0.088,
+  "verification_s": 0.261,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 1.2e-05,
+  "counters": {
+   "PASS": 140,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M3+",
+  "seed": 3,
+  "status": "verified",
+  "e1_executions": 23,
+  "witness": {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 2,
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 1,
+       "user_id": "u2"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "a4daa6814e44d04105cf5dc57fde2ce39cc1ff6633964e4ff04d735ae9e1738a",
+   "pre": {
+    "u1": {},
+    "u2": {}
+   },
+   "post": {
+    "u1": {},
+    "u2": {
+     "OLJCESPC7Z": 1
+    }
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u2/OLJCESPC7Z",
+       "before": 0,
+       "observed": 1,
+       "allowed": [
+        3
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": []
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 23,
+  "method_s": 0.113,
+  "exec_s": 0.111,
+  "overhead_s": 0.011,
+  "verification_s": 0.157,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 1e-06,
+  "counters": {
+   "profile": 22,
+   "m3_states": 1,
+   "m3_pairs": 130,
+   "m3_pairs_deferred": 116,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M0",
+  "seed": 4,
+  "status": "verified",
+  "e1_executions": 7,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "EmptyCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "EmptyCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "66VCHSJNUP",
+       "quantity": 2,
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 1,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "66VCHSJNUP",
+       "quantity": 3,
+       "user_id": "u1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "9fdc7ea5e6b158908b40fb868cc7bd51f4049df45b6677b4fffdd3598a6081b6",
+   "pre": {
+    "u1": {},
+    "u2": {
+     "66VCHSJNUP": 2
+    }
+   },
+   "post": {
+    "u1": {
+     "66VCHSJNUP": 3
+    },
+    "u2": {
+     "66VCHSJNUP": 2
+    }
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u1/1YMWWN1N4O",
+       "before": 0,
+       "observed": 0,
+       "allowed": [
+        1
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 7,
+  "method_s": 0.052,
+  "exec_s": 0.051,
+  "overhead_s": 0.004,
+  "verification_s": 0.28,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 1e-06,
+  "counters": {
+   "stress": 6,
+   "stress_PASS": 5,
+   "stress_VIOLATION": 1,
+   "m0_reproductions": 1,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M1",
+  "seed": 4,
+  "status": "verified",
+  "e1_executions": 15,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "EmptyCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 1,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 2,
+       "user_id": "u1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:1",
+    "admit:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0"
+   ],
+   "trace_hash": "f268f8d7f8de5e46af7d978ad0c831a218a658e2e186d9d24d05e1e1eb61482f",
+   "pre": {
+    "u1": {},
+    "u2": {}
+   },
+   "post": {
+    "u1": {
+     "1YMWWN1N4O": 1
+    },
+    "u2": {}
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u1/OLJCESPC7Z",
+       "before": 0,
+       "observed": 0,
+       "allowed": [
+        2
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 15,
+  "method_s": 0.114,
+  "exec_s": 0.112,
+  "overhead_s": 0.01,
+  "verification_s": 0.234,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 1e-06,
+  "counters": {
+   "PASS": 14,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M3+",
+  "seed": 4,
+  "status": "verified",
+  "e1_executions": 23,
+  "witness": {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 2,
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 3,
+       "user_id": "u2"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "30e95d0ef2b278ef03fcaf212fe61ca572d856980d4b97fea34a05d4ce9a9f84",
+   "pre": {
+    "u1": {},
+    "u2": {}
+   },
+   "post": {
+    "u1": {},
+    "u2": {
+     "1YMWWN1N4O": 3
+    }
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u2/1YMWWN1N4O",
+       "before": 0,
+       "observed": 3,
+       "allowed": [
+        5
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": []
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 23,
+  "method_s": 0.114,
+  "exec_s": 0.112,
+  "overhead_s": 0.011,
+  "verification_s": 0.141,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 1e-06,
+  "counters": {
+   "profile": 22,
+   "m3_states": 1,
+   "m3_pairs": 130,
+   "m3_pairs_deferred": 117,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M0",
+  "seed": 5,
+  "status": "verified",
+  "e1_executions": 14,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "EmptyCart",
+      "args": {
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "EmptyCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 2,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "EmptyCart",
+      "args": {
+       "user_id": "u2"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 3,
+       "user_id": "u1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 3,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "66VCHSJNUP",
+       "quantity": 1,
+       "user_id": "u1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "738884b44808c2d64d41eeaa0d8bcdb17a47aa0699d1e332dea76e3101de0ae6",
+   "pre": {
+    "u1": {
+     "OLJCESPC7Z": 2,
+     "1YMWWN1N4O": 3
+    },
+    "u2": {}
+   },
+   "post": {
+    "u1": {
+     "OLJCESPC7Z": 2,
+     "1YMWWN1N4O": 3,
+     "66VCHSJNUP": 1
+    },
+    "u2": {}
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u1/1YMWWN1N4O",
+       "before": 3,
+       "observed": 3,
+       "allowed": [
+        6
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 14,
+  "method_s": 0.088,
+  "exec_s": 0.087,
+  "overhead_s": 0.008,
+  "verification_s": 0.288,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 1e-06,
+  "counters": {
+   "stress": 13,
+   "stress_PASS": 12,
+   "stress_VIOLATION": 1,
+   "m0_reproductions": 1,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M1",
+  "seed": 5,
+  "status": "verified",
+  "e1_executions": 14,
+  "witness": {
+   "workload": {
+    "setup": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 3,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "EmptyCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "GetCart",
+      "args": {
+       "user_id": "u1"
+      }
+     }
+    ],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 3,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "OLJCESPC7Z",
+       "quantity": 2,
+       "user_id": "u1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "6684996d43434f0fab3e8c6d0d44e2fd09a2aada1984b6aee04888f8ac039931",
+   "pre": {
+    "u1": {},
+    "u2": {}
+   },
+   "post": {
+    "u1": {
+     "OLJCESPC7Z": 2
+    },
+    "u2": {}
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u1/1YMWWN1N4O",
+       "before": 0,
+       "observed": 0,
+       "allowed": [
+        3
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": [
+    "ok",
+    "ok",
+    "ok",
+    "ok"
+   ]
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 14,
+  "method_s": 0.095,
+  "exec_s": 0.094,
+  "overhead_s": 0.009,
+  "verification_s": 0.241,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 1e-06,
+  "counters": {
+   "PASS": 13,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ },
+ {
+  "target": "d1-otel-cart",
+  "method": "M3+",
+  "seed": 5,
+  "status": "verified",
+  "e1_executions": 23,
+  "witness": {
+   "workload": {
+    "setup": [],
+    "concurrent": [
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 1,
+       "user_id": "u1"
+      }
+     },
+     {
+      "op": "AddItem",
+      "args": {
+       "product_id": "1YMWWN1N4O",
+       "quantity": 3,
+       "user_id": "u1"
+      }
+     }
+    ]
+   },
+   "decisions": [
+    "admit:0",
+    "admit:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1",
+    "exec:0",
+    "exec:1"
+   ],
+   "trace_hash": "0c48cd0ee4f45a6e22a0d57c9dad4e10ead2f54a64280f317438612b0d3701d0",
+   "pre": {
+    "u1": {},
+    "u2": {}
+   },
+   "post": {
+    "u1": {
+     "1YMWWN1N4O": 3
+    },
+    "u2": {}
+   },
+   "violations": [
+    {
+     "clause": "no_lost_quantity",
+     "failures": [
+      {
+       "key": "u1/1YMWWN1N4O",
+       "before": 0,
+       "observed": 3,
+       "allowed": [
+        4
+       ]
+      }
+     ]
+    }
+   ],
+   "setup_outcomes": []
+  },
+  "verification": {
+   "replays": 20,
+   "replay_violations": 20,
+   "replay_hash_matches": 20,
+   "corrected": {
+    "mode": "exhaustive",
+    "schedules": 6,
+    "verdicts": {
+     "PASS": 6
+    },
+    "soundness_problems": 0
+   },
+   "verified": true
+  },
+  "executions": 23,
+  "method_s": 0.121,
+  "exec_s": 0.119,
+  "overhead_s": 0.012,
+  "verification_s": 0.159,
+  "model_s": 0.0,
+  "model_calls": 0,
+  "tokens": {},
+  "model_usd": 0.0,
+  "compute_usd": 1e-06,
+  "counters": {
+   "profile": 22,
+   "m3_states": 1,
+   "m3_pairs": 130,
+   "m3_pairs_deferred": 117,
+   "VIOLATION": 1
+  },
+  "unverified_violations": []
+ }
+]

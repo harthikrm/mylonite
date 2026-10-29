@@ -1,0 +1,94 @@
+{
+ "d1-otel-cart": {
+  "M0": {
+   "trials": 5,
+   "verified": 5,
+   "statuses": [
+    "verified"
+   ],
+   "e1_executions": [
+    25,
+    6,
+    5,
+    7,
+    14
+   ],
+   "median_e1_censored_at_budget_plus_1": 7,
+   "success_at": {
+    "10": 3,
+    "30": 5,
+    "100": 5,
+    "300": 5,
+    "1000": 5
+   },
+   "method_s": [
+    0.193,
+    0.042,
+    0.031,
+    0.052,
+    0.088
+   ],
+   "model_usd_total": 0.0
+  },
+  "M1": {
+   "trials": 5,
+   "verified": 5,
+   "statuses": [
+    "verified"
+   ],
+   "e1_executions": [
+    122,
+    18,
+    141,
+    15,
+    14
+   ],
+   "median_e1_censored_at_budget_plus_1": 18,
+   "success_at": {
+    "10": 0,
+    "30": 3,
+    "100": 3,
+    "300": 5,
+    "1000": 5
+   },
+   "method_s": [
+    0.915,
+    0.143,
+    1.059,
+    0.114,
+    0.095
+   ],
+   "model_usd_total": 0.0
+  },
+  "M3+": {
+   "trials": 5,
+   "verified": 5,
+   "statuses": [
+    "verified"
+   ],
+   "e1_executions": [
+    23,
+    23,
+    23,
+    23,
+    23
+   ],
+   "median_e1_censored_at_budget_plus_1": 23,
+   "success_at": {
+    "10": 0,
+    "30": 5,
+    "100": 5,
+    "300": 5,
+    "1000": 5
+   },
+   "method_s": [
+    0.13,
+    0.127,
+    0.113,
+    0.114,
+    0.121
+   ],
+   "model_usd_total": 0.0
+  }
+ }
+}

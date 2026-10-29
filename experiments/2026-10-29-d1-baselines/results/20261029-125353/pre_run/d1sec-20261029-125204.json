@@ -1,0 +1,228 @@
+{
+ "commit": "c927e5cd89fab46e90743f917985541c6695c6f1",
+ "dirty": false,
+ "started": "2026-10-29T12:51:34-0500",
+ "containment": {
+  "baseline_store_ping": [
+   "PONG",
+   59.6
+  ],
+  "fork_bomb": {
+   "after_8s": {
+    "cpu_percent": 99.08,
+    "pids": 256,
+    "memory": "84.22MiB / 160MiB"
+   },
+   "store_ping_during": [
+    "PONG",
+    56.9
+   ],
+   "kill_seconds": 7.4
+  },
+  "busy_loop": {
+   "after_5s": {
+    "cpu_percent": 98.46,
+    "pids": 1,
+    "memory": "3.367MiB / 160MiB"
+   },
+   "kill_seconds": 0.11
+  },
+  "memory_hog": {
+   "status": "exited",
+   "exit_code": 137,
+   "oom_killed": true,
+   "seconds": 0.3
+  },
+  "filesystem": {
+   "tmpfs_fill": "stopped after 32 MiB: No space left on device",
+   "rootfs_write": "refused: Read-only file system",
+   "tmp_exec": "refused: Permission denied",
+   "egress_tcp": "blocked: OSError"
+  },
+  "pass": {
+   "fork_bomb_pids_capped": true,
+   "fork_bomb_store_responsive": true,
+   "fork_bomb_killed": true,
+   "busy_loop_cpu_capped": true,
+   "busy_loop_killed": true,
+   "memory_oom_killed": true,
+   "tmpfs_capped": true,
+   "rootfs_read_only": true,
+   "tmp_noexec": true,
+   "no_egress": true
+  }
+ },
+ "inspection": {
+  "containers": {
+   "mylonite-d1sec-valkey": {
+    "user": "999:1000",
+    "read_only": true,
+    "cap_drop": [
+     "ALL"
+    ],
+    "cap_add": null,
+    "privileged": false,
+    "security_opt": [
+     "no-new-privileges"
+    ],
+    "pids_limit": 256,
+    "memory": 536870912,
+    "memory_swap": 536870912,
+    "nano_cpus": 1000000000,
+    "network": "mylonite-d1sec-net",
+    "published_ports": {},
+    "tmpfs": {
+     "/data": "rw,size=64m"
+    },
+    "mounts": [],
+    "env_names": [
+     "PATH",
+     "VALKEY_VERSION"
+    ],
+    "canary_in_env": false,
+    "canary_in_logs": false
+   },
+   "mylonite-d1sec-exec-29397dfc": {
+    "user": "65534:65534",
+    "read_only": true,
+    "cap_drop": [
+     "ALL"
+    ],
+    "cap_add": null,
+    "privileged": false,
+    "security_opt": [
+     "no-new-privileges"
+    ],
+    "pids_limit": 256,
+    "memory": 536870912,
+    "memory_swap": 536870912,
+    "nano_cpus": 1000000000,
+    "network": "mylonite-d1sec-net",
+    "published_ports": {},
+    "tmpfs": {
+     "/tmp": "rw,size=16m,noexec"
+    },
+    "mounts": [
+     {
+      "type": "bind",
+      "source": "/Users/harthikmallichetty/Desktop/MetaMorphic/mylonite/src",
+      "destination": "/app/src",
+      "rw": false
+     },
+     {
+      "type": "bind",
+      "source": "/Users/harthikmallichetty/Desktop/MetaMorphic/mylonite/fixtures",
+      "destination": "/app/fixtures",
+      "rw": false
+     }
+    ],
+    "env_names": [
+     "GPG_KEY",
+     "LANG",
+     "PATH",
+     "PYTHONDONTWRITEBYTECODE",
+     "PYTHONPATH",
+     "PYTHONUNBUFFERED",
+     "PYTHON_SHA256",
+     "PYTHON_VERSION"
+    ],
+    "canary_in_env": false,
+    "canary_in_logs": false
+   },
+   "mylonite-d1sec-cart-buggy": {
+    "user": "1654:1654",
+    "read_only": true,
+    "cap_drop": [
+     "ALL"
+    ],
+    "cap_add": null,
+    "privileged": false,
+    "security_opt": [
+     "no-new-privileges"
+    ],
+    "pids_limit": 256,
+    "memory": 167772160,
+    "memory_swap": 167772160,
+    "nano_cpus": 1000000000,
+    "network": "mylonite-d1sec-net",
+    "published_ports": {},
+    "tmpfs": {
+     "/tmp": "rw,size=32m,noexec"
+    },
+    "mounts": [],
+    "env_names": [
+     "APP_UID",
+     "ASPNETCORE_HTTP_PORTS",
+     "ASPNETCORE_URLS",
+     "CART_PORT",
+     "DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE",
+     "DOTNET_RUNNING_IN_CONTAINER",
+     "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT",
+     "OTEL_SERVICE_NAME",
+     "PATH",
+     "VALKEY_ADDR"
+    ],
+    "canary_in_env": false,
+    "canary_in_logs": false
+   },
+   "mylonite-d1sec-cart-fixed": {
+    "user": "1654:1654",
+    "read_only": true,
+    "cap_drop": [
+     "ALL"
+    ],
+    "cap_add": null,
+    "privileged": false,
+    "security_opt": [
+     "no-new-privileges"
+    ],
+    "pids_limit": 256,
+    "memory": 167772160,
+    "memory_swap": 167772160,
+    "nano_cpus": 1000000000,
+    "network": "mylonite-d1sec-net",
+    "published_ports": {},
+    "tmpfs": {
+     "/tmp": "rw,size=32m,noexec"
+    },
+    "mounts": [],
+    "env_names": [
+     "APP_UID",
+     "ASPNETCORE_HTTP_PORTS",
+     "ASPNETCORE_URLS",
+     "CART_PORT",
+     "DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE",
+     "DOTNET_RUNNING_IN_CONTAINER",
+     "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT",
+     "OTEL_SERVICE_NAME",
+     "PATH",
+     "VALKEY_ADDR"
+    ],
+    "canary_in_env": false,
+    "canary_in_logs": false
+   }
+  },
+  "egress_probe": {
+   "tcp_1.1.1.1:443": "blocked (OSError)",
+   "dns_pypi.org": "blocked (gaierror)"
+  },
+  "network_internal": true,
+  "pass": {
+   "canary_absent": true,
+   "no_credential_variables": true,
+   "no_docker_socket": true,
+   "no_home_repo_or_env_mount": true,
+   "mounts_read_only": true,
+   "non_root": true,
+   "read_only_rootfs": true,
+   "caps_dropped": true,
+   "unprivileged": true,
+   "no_new_privileges": true,
+   "limits_set": true,
+   "no_published_ports": true,
+   "internal_network": true,
+   "egress_blocked": true
+  }
+ },
+ "all_pass": true
+}
