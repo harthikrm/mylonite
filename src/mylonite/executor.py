@@ -22,28 +22,37 @@ from .scheduler import (Divergence, HintPolicy, PrefixPolicy, RandomPolicy, Repl
                         next_prefix, soundness_problems, trace_hash)
 
 PROXY = ("127.0.0.1", 6380)
-# Raised when the proxy or store, not the service, fails: the execution is inconclusive.
-HARNESS_FAILURES = (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError)
+# Raised when the proxy, the store or (for an out-of-process service) the transport to the
+# service fails, not the service itself: the execution is inconclusive.
+HARNESS_FAILURES = (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError,
+                    ConnectionError, TimeoutError)
 
 
 _shared = {}
 
 
-def shared_controller(store, delta_q):
-    """One proxy per executor process, shared by every variant's context."""
+def shared_controller(store, delta_q, target):
+    """One proxy per executor process, shared by every variant's context. In-process services
+    reach it on loopback; a service in its own container (the target spec lists it under
+    ``services``) reaches it over the internal network. A multiplexed store client puts every
+    operation on one connection (ARCHITECTURE.md §5.4)."""
     if "ctl" not in _shared:
-        _shared["ctl"] = Controller(delta_q=delta_q)
-        Proxy(PROXY, store, _shared["ctl"]).start()
+        _shared["ctl"] = Controller(delta_q=delta_q,
+                                    shared_connections=target.get("store_client") == "multiplexed")
+        listen = ("0.0.0.0", PROXY[1]) if target.get("services") else PROXY
+        Proxy(listen, store, _shared["ctl"]).start()
     return _shared["ctl"]
 
 
 class Context:
     def __init__(self, request):
         self.target = request["target"]
-        self.module = importlib.import_module(self.target["variants"][request["variant"]])
+        module = importlib.import_module(self.target["variants"][request["variant"]])
+        service = self.target.get("services", {}).get(request["variant"])
+        self.module = module.bind(service) if service else module
         self.store = tuple(request["store"])
         self.round_timeout = request.get("round_timeout_s", 10)
-        self.ctl = shared_controller(self.store, request.get("delta_q_ms", 300) / 1000)
+        self.ctl = shared_controller(self.store, request.get("delta_q_ms", 300) / 1000, self.target)
 
 
 def reset(ctx):
@@ -169,6 +178,8 @@ def execute_once(ctx, workload, policy, digests=False):
         observer.close()
 
     problems = soundness_problems(events)
+    if ctl.shared_connections and forced:
+        problems.append(f"{forced} forced decision(s) on a shared connection: attribution is not guaranteed")
     if harness_error is None and any(r and r["harness_failure"] for r in raw):
         harness_error = "proxy or store failure during the round"
     ops = [dict(r, status=oracle.classify(r, ctx.target["contract"])) for r in raw if r]
@@ -341,6 +352,9 @@ def serve():
     """JSON-lines session (one request per line in, one response per line out), so a host-side
     trial runner can drive every method through one execution counter. First line: settings."""
     settings = json.loads(sys.stdin.readline())
+    # started before "ready", so a service in its own container can connect to it at startup
+    shared_controller(tuple(settings["store"]), settings.get("delta_q_ms", 300) / 1000,
+                      settings["target"])
     contexts = {}
     print(json.dumps({"ready": True, "egress_probe": egress_probe(),
                       "python": sys.version.split()[0], "redis_py": redis.__version__}), flush=True)

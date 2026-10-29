@@ -1,0 +1,59 @@
+{
+ "dockerfile_sha256": "c8e5e7fe2fae27b255bb864b166fa54e74d866ec307aeede9a9ad5bacc9eb0c2",
+ "fix_commit": "060ee20677b4383f28277069b68d99e234b64dcb",
+ "tag_commit": "dedc0178918e260823323b8d95005a8cb924b007",
+ "variants": {
+  "buggy": {
+   "context_files": {
+    "pb/demo.proto": "28e2c4badedcbed88543afdafc8c60f9d9e9e5cc499ee3b7098a6438d3deaf85",
+    "src/cart/Directory.Build.props": "411339a72688258cf7d1782fbc5fb2bb09004e49588264fc7eec755519eca234",
+    "src/cart/Directory.Packages.props": "3b0d229d5c1ddd103b4381097163d5318e91832e19b99a46776c8ee8417e9229",
+    "src/cart/NuGet.config": "60d4246cae527e3d38b92ab1f227ee2f420846724bf895f6c4ab401f728b78fa",
+    "src/cart/README.md": "69d73535491d81ceee6c90cba8912f90330bb8074ae22a5a0218a6738df00863",
+    "src/cart/cart.slnx": "6636c36d493d6f71200bcb46ad6270ca2c1186f03b6935cfe1a53b9eebb169c8",
+    "src/cart/src/.dockerignore": "6fbd265c6e0bbc1649dd1b16589c5b7a95b832043eaefe6db5f0e3520aebf05e",
+    "src/cart/src/Dockerfile": "88883c65540e0364f28cb5ea33d998f623571ab078521bb6c234e8f0d896ee5f",
+    "src/cart/src/Log.cs": "07349ab48c378e118f5d67ae6e2b3c919c3ea7cc784ae18aa9723d2da476edef",
+    "src/cart/src/OpAmpClientSetup.cs": "5f84df81f553ca5070718c2139aa016414cc4f9e156de95e9c3054e48b8044a3",
+    "src/cart/src/Program.cs": "f6aea9843b092406dff42c9b8d89fd38a5459456abffa8879818ea8d8153118f",
+    "src/cart/src/appsettings.json": "8ecd6805243f91b3e62e1aebee3bbc7df4df1fbfb46183a105714b2ffddfb8dc",
+    "src/cart/src/cart.csproj": "9680e70fd07f32291b7762f20d0eb8cddec86b07c71418db0c4a41ce018db40b",
+    "src/cart/src/cartstore/ICartStore.cs": "761e35d4e773ccbbc8fa5888e6aec5a1bcfdb9c5907f3afb596b1e3384fdca5b",
+    "src/cart/src/cartstore/ValkeyCartStore.cs": "9f04993deaf8c6abbe66254d1567ba7406c0d872cf866b9ba969a4e9e88c1f71",
+    "src/cart/src/services/CartService.cs": "07523fd634eed14003fdbda57eca405ac449384ef51821b86982212d250fef43",
+    "src/cart/src/services/HealthCheckService.cs": "27851fac3aedff779619aaafbf521b85c86fe9f97ed07f4e3858b7fb90175aa6",
+    "src/cart/tests/CartServiceTests.cs": "41d9e8c36ec39d24b4f2f6106bf9c0bafc4dae543536a4894844a29f917cc803",
+    "src/cart/tests/cart.tests.csproj": "8e3b40d8103fa185db5f76ba54050c92dec11739aba71af2fb185cedd3934047"
+   },
+   "image": "mylonite-d1-cart:buggy-dedc0178",
+   "image_id": "sha256:b30d652223c5f732374c7c3653f9a6ad76538b42773b1cca3dc5f33ded13893e",
+   "store_sha256": "9f04993deaf8c6abbe66254d1567ba7406c0d872cf866b9ba969a4e9e88c1f71"
+  },
+  "fixed": {
+   "context_files": {
+    "pb/demo.proto": "28e2c4badedcbed88543afdafc8c60f9d9e9e5cc499ee3b7098a6438d3deaf85",
+    "src/cart/Directory.Build.props": "411339a72688258cf7d1782fbc5fb2bb09004e49588264fc7eec755519eca234",
+    "src/cart/Directory.Packages.props": "3b0d229d5c1ddd103b4381097163d5318e91832e19b99a46776c8ee8417e9229",
+    "src/cart/NuGet.config": "60d4246cae527e3d38b92ab1f227ee2f420846724bf895f6c4ab401f728b78fa",
+    "src/cart/README.md": "69d73535491d81ceee6c90cba8912f90330bb8074ae22a5a0218a6738df00863",
+    "src/cart/cart.slnx": "6636c36d493d6f71200bcb46ad6270ca2c1186f03b6935cfe1a53b9eebb169c8",
+    "src/cart/src/.dockerignore": "6fbd265c6e0bbc1649dd1b16589c5b7a95b832043eaefe6db5f0e3520aebf05e",
+    "src/cart/src/Dockerfile": "88883c65540e0364f28cb5ea33d998f623571ab078521bb6c234e8f0d896ee5f",
+    "src/cart/src/Log.cs": "07349ab48c378e118f5d67ae6e2b3c919c3ea7cc784ae18aa9723d2da476edef",
+    "src/cart/src/OpAmpClientSetup.cs": "5f84df81f553ca5070718c2139aa016414cc4f9e156de95e9c3054e48b8044a3",
+    "src/cart/src/Program.cs": "f6aea9843b092406dff42c9b8d89fd38a5459456abffa8879818ea8d8153118f",
+    "src/cart/src/appsettings.json": "8ecd6805243f91b3e62e1aebee3bbc7df4df1fbfb46183a105714b2ffddfb8dc",
+    "src/cart/src/cart.csproj": "9680e70fd07f32291b7762f20d0eb8cddec86b07c71418db0c4a41ce018db40b",
+    "src/cart/src/cartstore/ICartStore.cs": "761e35d4e773ccbbc8fa5888e6aec5a1bcfdb9c5907f3afb596b1e3384fdca5b",
+    "src/cart/src/cartstore/ValkeyCartStore.cs": "d18a915e502e7a3e70428658becaa777d56cdca2f6988a5c8b8449d90ecb5031",
+    "src/cart/src/services/CartService.cs": "07523fd634eed14003fdbda57eca405ac449384ef51821b86982212d250fef43",
+    "src/cart/src/services/HealthCheckService.cs": "27851fac3aedff779619aaafbf521b85c86fe9f97ed07f4e3858b7fb90175aa6",
+    "src/cart/tests/CartServiceTests.cs": "41d9e8c36ec39d24b4f2f6106bf9c0bafc4dae543536a4894844a29f917cc803",
+    "src/cart/tests/cart.tests.csproj": "8e3b40d8103fa185db5f76ba54050c92dec11739aba71af2fb185cedd3934047"
+   },
+   "image": "mylonite-d1-cart:fixed-pr3825-060ee206",
+   "image_id": "sha256:c507c7437cb573cdb3e4336e3c75b9146c1d03bce42914ff3825a2edc996abad",
+   "store_sha256": "d18a915e502e7a3e70428658becaa777d56cdca2f6988a5c8b8449d90ecb5031"
+  }
+ }
+}

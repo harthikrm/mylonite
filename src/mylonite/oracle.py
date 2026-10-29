@@ -32,13 +32,42 @@ def counter_conserved(clause, ops, pre, post):
     return failures
 
 
+def item_quantity_conserved(clause, ops, pre, post):
+    """Observations map each owner to {item: quantity}. For every (owner, item): the quantity
+    after the round equals the quantity before plus ``amount_arg`` over ok calls of ``op`` on
+    that pair, plus the amounts of any subset of info calls. If a ``reset_op`` call on the owner
+    may have taken effect, the quantity may instead be the sum of any subset of the round's calls
+    on that pair: each one is ordered either after the last reset or before it and wiped.
+    Real-time order is not used, so every serial outcome is allowed (some violations are missed)."""
+    failures = []
+    for owner in sorted(set(pre) | set(post)):
+        before, after = pre.get(owner) or {}, post.get(owner) or {}
+        calls = [o for o in ops if o["args"].get(clause["owner_arg"]) == owner]
+        resets = [o for o in calls if o["op"] == clause["reset_op"] and o["status"] != "fail"]
+        adds = [o for o in calls if o["op"] == clause["op"]]
+        for item in sorted(set(before) | set(after) | {o["args"][clause["item_arg"]] for o in adds}):
+            mine = [o for o in adds if o["args"][clause["item_arg"]] == item]
+            ok = [o["args"][clause["amount_arg"]] for o in mine if o["status"] == "ok"]
+            maybe = [o["args"][clause["amount_arg"]] for o in mine if o["status"] == "info"]
+            allowed = set()
+            if not any(o["status"] == "ok" for o in resets):
+                allowed |= {before.get(item, 0) + sum(ok) + s for s in _subset_sums(maybe)}
+            if resets:
+                allowed |= _subset_sums(ok + maybe)
+            if after.get(item, 0) not in allowed:
+                failures.append({"key": f"{owner}/{item}", "before": before.get(item, 0),
+                                 "observed": after.get(item, 0), "allowed": sorted(allowed)})
+    return failures
+
+
 def non_negative(clause, ops, pre, post):
     """Every observed value is >= 0 after the round. A state invariant: no history needed."""
     return [{"key": key, "observed": value} for key, value in sorted(post.items())
             if value is not None and value < 0]
 
 
-INVARIANTS = {"counter_conserved": counter_conserved, "non_negative": non_negative}
+INVARIANTS = {"counter_conserved": counter_conserved, "non_negative": non_negative,
+              "item_quantity_conserved": item_quantity_conserved}
 
 
 def classify(op_result, contract):

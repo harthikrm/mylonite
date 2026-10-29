@@ -1,0 +1,60 @@
+{
+  "target": "d1-otel-cart",
+  "revision": {
+    "repo": "open-telemetry/opentelemetry-demo",
+    "tag": "3.1.0",
+    "commit": "dedc0178918e260823323b8d95005a8cb924b007",
+    "fix": "PR #3825 head 060ee20677b4383f28277069b68d99e234b64dcb, src/cart/src/cartstore/ValkeyCartStore.cs only"
+  },
+  "variants": {
+    "buggy": "mylonite.adapters.otel_cart",
+    "fixed": "mylonite.adapters.otel_cart"
+  },
+  "services": {
+    "buggy": {"container": "cart-buggy", "image": "mylonite-d1-cart:buggy-dedc0178", "port": 7070},
+    "fixed": {"container": "cart-fixed", "image": "mylonite-d1-cart:fixed-pr3825-060ee206", "port": 7070}
+  },
+  "store_client": "multiplexed",
+  "service_runtime": {
+    "user": "1654:1654",
+    "memory": "160m",
+    "env": {"CART_PORT": "7070", "ASPNETCORE_URLS": "http://*:7070", "OTEL_SERVICE_NAME": "cart"},
+    "notes": "Memory limit as in the demo's compose.yaml. No flagd and no collector: the cart starts without them, flag evaluation returns its default (cartFailure off) and telemetry export fails in the background."
+  },
+  "model_view": {"files": {
+    "Program.cs": "targets/checkouts/otel-demo-3.1.0/src/cart/src/Program.cs",
+    "Log.cs": "targets/checkouts/otel-demo-3.1.0/src/cart/src/Log.cs",
+    "OpAmpClientSetup.cs": "targets/checkouts/otel-demo-3.1.0/src/cart/src/OpAmpClientSetup.cs",
+    "cartstore/ICartStore.cs": "targets/checkouts/otel-demo-3.1.0/src/cart/src/cartstore/ICartStore.cs",
+    "cartstore/ValkeyCartStore.cs": "targets/checkouts/otel-demo-3.1.0/src/cart/src/cartstore/ValkeyCartStore.cs",
+    "services/CartService.cs": "targets/checkouts/otel-demo-3.1.0/src/cart/src/services/CartService.cs",
+    "services/HealthCheckService.cs": "targets/checkouts/otel-demo-3.1.0/src/cart/src/services/HealthCheckService.cs",
+    "demo.proto": "targets/checkouts/otel-demo-3.1.0/pb/demo.proto"
+  }},
+  "operations": {
+    "AddItem": {"args": {"user_id": {"domain": "user"}, "product_id": {"domain": "product"}, "quantity": {"domain": "quantity"}}},
+    "GetCart": {"args": {"user_id": {"domain": "user"}}},
+    "EmptyCart": {"args": {"user_id": {"domain": "user"}}}
+  },
+  "domains": {
+    "user": ["u1", "u2"],
+    "product": ["OLJCESPC7Z", "66VCHSJNUP", "1YMWWN1N4O"],
+    "quantity": [1, 2, 3]
+  },
+  "domain_sources": {
+    "product": "src/load-generator/locustfile.py at 3.1.0, lines 109-119 (the demo's own product list)",
+    "quantity": "subset of the load generator's {1, 2, 3, 4, 5, 10}; the race does not depend on the amount"
+  },
+  "observe": {"op": "GetCart", "arg": "user_id", "for_each": "user"},
+  "contract": {
+    "statement": "AddItem(user, product, quantity) adds quantity to that product's quantity in the user's cart; EmptyCart(user) removes every item. GetCart(user) shows the result.",
+    "source": "issue #3824 (expected behavior); ValkeyCartStore.AddItemAsync at 3.1.0, lines 154-162 (an existing item's quantity is increased by the requested quantity); the serial check in experiments/2026-10-28-d1-gate (serial adds of 1, 2 and 3 give 6). The service's maintainers have not confirmed or disputed #3824.",
+    "status": "proposed: needs the owner's approval before any D1 experiment",
+    "invariants": [{"id": "no_lost_quantity", "kind": "item_quantity_conserved", "op": "AddItem",
+                    "owner_arg": "user_id", "item_arg": "product_id", "amount_arg": "quantity",
+                    "reset_op": "EmptyCart"}],
+    "atomic_groups": [],
+    "allowed_anomalies": [],
+    "status_semantics": {}
+  }
+}

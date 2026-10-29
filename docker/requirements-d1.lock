@@ -1,0 +1,8 @@
+# D1 executor runtime dependencies, pinned with hashes (THREAT_MODEL.md T10).
+# requirements.lock plus a gRPC client for the OTel cart. grpcio 1.84.0 (2026-09-14) rather than
+# 1.85.0 (2026-10-26): a release with six weeks of exposure. Wheels for aarch64 and x86_64.
+redis==8.1.0 --hash=sha256:a4fe1aac3d3b3cc791d4b3d5931c5a956045dc951ee74d1c913ee3ac4d2ee9fb
+grpcio==1.84.0 \
+    --hash=sha256:fff5ef3fe1bba7d6147e5f19e01e5e122ac2c076486887ddcb8d42e663400fbe \
+    --hash=sha256:986e9751d416d7a6eaa2fecdac38da63153d63a4b340ba7d624889c490451500
+typing-extensions==4.15.0 --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548

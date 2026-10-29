@@ -226,3 +226,40 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
     estimates 281–311 on seeds 1–4. It was rejected because it is worse in the typical case.
 - If accepted: freeze M3+arg at C1 with everything else, and run it beside M3+ (not instead of
   it) on held-out targets. Report both.
+
+## D-025 Multiplexed store clients: read-ahead, attribution by running operation, TCP_NODELAY
+- Date: 2026-10-28. Status: **Accepted** (technical; found by the D1 gate, before any D1 experiment).
+- Context:
+  - The D1 cart (StackExchange.Redis 3.2.1) puts every operation on **one RESP3 connection**.
+  - The proxy read a connection's next command only after the previous one ran. A command
+    queued behind a held one was invisible, so its operation looked "running"; every such
+    decision waited for the 300 ms Δq timeout.
+  - Attribution was by connection, so every command on the shared connection was credited to
+    the first operation.
+  - On D1 this gave 3–6 forced decisions and 0.9–1.8 s per execution (an artifact), with
+    misattributed traces. The soundness check did not flag it.
+- Decision:
+  - For a target whose spec says `"store_client": "multiplexed"`, a second thread per
+    connection reads commands as they arrive and registers them with the scheduler.
+  - Each command belongs to the operation running when it arrived (`ARCHITECTURE.md` §5.3).
+    Only a connection's head command can be chosen.
+  - A forced decision on a shared connection is a soundness problem: attribution would no
+    longer be guaranteed, so the execution is inconclusive.
+  - Per-connection targets keep the original single-thread path and attribution. Reading ahead
+    there costs about 2 ms per D3 execution and gains nothing.
+  - The proxy sets `TCP_NODELAY` on both of its sockets, as Valkey and the clients do. Without it,
+    two replies in a row on one connection waited for a delayed ACK: about 48 ms instead of 5 ms
+    per D1 execution.
+- Evidence (`experiments/2026-10-28-d1-gate/`):
+  - All 30 pilot trials re-run from the recorded Muse answers give identical results. All 6,766
+    events are identical: every decision list, verdict and trace hash, every profile and every
+    verification. The 10 planner requests are byte-identical.
+  - On D3 the per-execution time is unchanged within noise in a same-session A/B: old proxy 8.2
+    and 8.5 ms, new 8.0 and 8.2 ms.
+- Consequences:
+  - D2 and D3 behave exactly as in the pilot and A2.
+  - D1 schedules are controllable: 0 forced decisions, about 5 ms per execution.
+  - Out-of-process services run as hardened containers on the internal network, with their own
+    image and explicit environment (`Sandbox.start_service`).
+  - The D1 executor image (`docker/executor-d1.Dockerfile`) adds pinned `grpcio`. The D2/D3 image is
+    unchanged.

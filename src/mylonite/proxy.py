@@ -4,9 +4,16 @@ One thread per client connection, each with its own upstream connection. A conne
 commands are handled strictly in arrival order, so per-connection order can never be broken;
 the scheduler can only decide *when* a connection's head command runs, and which connection
 goes next. A single lock keeps at most one gated command (or block) in flight to the store.
+
+A multiplexed client (several operations on one connection, as StackExchange.Redis does) gets a
+second thread per connection that reads ahead (§5.4): a command queued behind a held one is
+known to the scheduler at once, so its operation counts as waiting, not running, and no timeout
+is needed to move on. With one connection per operation nothing can queue behind a held
+command, so reading ahead would only add a thread hop (about 2 ms per D3 execution).
 """
 
 import hashlib
+import queue
 import socket
 import threading
 import time
@@ -17,6 +24,13 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()[:16]
 
 
+def nodelay(sock):
+    """Valkey sets TCP_NODELAY on its own sockets, and so do the clients we test; without it,
+    two small replies in a row on one connection wait for a delayed ACK (about 40 ms on Linux),
+    a delay the service would never see without the proxy."""
+    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
+
 class Held:
     def __init__(self, op, conn, name, key_digest):
         self.op, self.conn, self.name, self.key_digest = op, conn, name, key_digest
@@ -25,10 +39,17 @@ class Held:
 
 
 class Controller:
-    """State shared by proxy threads (which hold commands) and the decision loop (which permits them)."""
+    """State shared by proxy threads (which hold commands) and the decision loop (which permits them).
 
-    def __init__(self, delta_q):
+    Attribution (§5.3): with one connection per operation, a connection belongs to the
+    operation that was running when its first gated command arrived. With ``shared_connections``
+    (a multiplexed client), each command belongs to the operation running when it arrived; each
+    decision lets at most one operation run, so that is the only one that can have sent it.
+    """
+
+    def __init__(self, delta_q, shared_connections=False):
         self.delta_q = delta_q
+        self.shared_connections = shared_connections
         self.cv = threading.Condition()
         self.exec_lock = threading.Lock()
         self.active = False
@@ -40,8 +61,9 @@ class Controller:
         self.n_ops = n_ops
         self.admitted = set()
         self.done = set()
-        self.held = {}        # op -> Held
-        self.conn_op = {}     # conn id -> op
+        self.held = {}        # op -> [Held], in arrival order
+        self.queues = {}      # conn id -> [Held], in arrival order (the head is the next to run)
+        self.conn_op = {}     # conn id -> op (one connection per operation)
         self.running_op = None
         self.unattributed = 0
 
@@ -50,26 +72,38 @@ class Controller:
         self.events.append({"seq": self._seq, "event": kind, **fields})
 
     # --- called by proxy connection threads -------------------------------------------------
-    def gate(self, conn, name, key_digest):
-        """Hold a gated command until the scheduler permits it. Returns None in pass-through."""
+    def _attribute(self, conn):
+        if self.shared_connections:
+            op = self.running_op
+            return op if op is not None and op not in self.done else None
+        op = self.conn_op.get(conn)
+        if op is None and self.running_op is not None:
+            op = self.conn_op[conn] = self.running_op
+        return op
+
+    def arrive(self, conn, name, key_digest):
+        """A gated command was read from a connection. Returns its ticket, or None in
+        pass-through or when no operation can have sent it."""
         with self.cv:
             if not self.active:
                 return None
-            op = self.conn_op.get(conn)
+            op = self._attribute(conn)
             if op is None:
-                op = self.running_op
-                if op is None:
-                    self.unattributed += 1
-                    self.event("unattributed", conn=conn, cmd=name)
-                    return None
-                self.conn_op[conn] = op
+                self.unattributed += 1
+                self.event("unattributed", conn=conn, cmd=name)
+                return None
             held = Held(op, conn, name, key_digest)
-            self.held[op] = held
+            self.held.setdefault(op, []).append(held)
+            self.queues.setdefault(conn, []).append(held)
             self.event("arrive", op=op, conn=conn, cmd=name, key=key_digest)
             self.cv.notify_all()
+            return held
+
+    def wait_permit(self, held):
+        """Block the connection at this command until the scheduler permits it."""
+        with self.cv:
             while not held.permitted and self.active:
                 self.cv.wait()
-            return held
 
     def ungated(self, conn, name):
         """A command outside the gated set arrived during a round (checked by soundness)."""
@@ -82,8 +116,9 @@ class Controller:
             self.event("exec", op=held.op, conn=held.conn, cmd=held.name, key=held.key_digest,
                        args=args_digest, reply=reply_digest)
             held.executed = True
-            if self.held.get(held.op) is held:
-                del self.held[held.op]
+            for waiting in (self.held.get(held.op, []), self.queues.get(held.conn, [])):
+                if held in waiting:
+                    waiting.remove(held)
             self.cv.notify_all()
 
     # --- called by the decision loop --------------------------------------------------------
@@ -112,7 +147,8 @@ class Controller:
 
     def permit(self, op):
         with self.cv:
-            held = self.held[op]
+            held = self.held[op][0]
+            assert self.queues[held.conn][0] is held, "only a connection's head command can run"
             held.permitted = True
             self.running_op = op
             self.cv.notify_all()
@@ -120,7 +156,7 @@ class Controller:
                 self.cv.wait()
 
     def _running(self):
-        return [k for k in self.admitted if k not in self.done and k not in self.held]
+        return [k for k in self.admitted if k not in self.done and not self.held.get(k)]
 
     def wait_quiescent(self):
         """Block until no admitted operation is running. Returns True if Δq forced a decision."""
@@ -138,14 +174,17 @@ class Controller:
             return len(self.done) == self.n_ops
 
     def choices(self):
+        """Admit a pending operation, or run an operation's command at the head of its
+        connection. On a shared connection a command behind another one cannot run yet."""
         with self.cv:
             admits = [f"admit:{k}" for k in range(self.n_ops) if k not in self.admitted]
-            execs = [f"exec:{k}" for k in sorted(self.held)]
+            execs = [f"exec:{k}" for k in sorted(self.held)
+                     if self.held[k] and self.queues[self.held[k][0].conn][0] is self.held[k][0]]
             return admits + execs
 
     def held_commands(self):
         with self.cv:
-            return {k: h.name for k, h in self.held.items()}
+            return {k: hs[0].name for k, hs in self.held.items() if hs}
 
 
 class Proxy:
@@ -162,6 +201,7 @@ class Proxy:
     def _accept(self, server):
         while True:
             client, _ = server.accept()
+            nodelay(client)
             with self._lock:
                 self._conn_ids += 1
                 conn_id = self._conn_ids
@@ -171,35 +211,67 @@ class Proxy:
         with self._lock:
             self.passthrough_counts[name] = self.passthrough_counts.get(name, 0) + 1
 
+    def _commands(self, conn_id, client):
+        """Yield the client's commands in arrival order as (frame, name, gated, ticket),
+        registering each gated one with the scheduler as it arrives. Blocks are tracked here,
+        so a block's inner commands are never gated. A SUBSCRIBE frame carries the rest of the
+        buffered bytes and ends the stream: the raw pump takes over."""
+        inbuf, in_block = bytearray(), False
+        while True:
+            try:
+                end = resp.frame_end(inbuf)
+            except resp.Incomplete:
+                chunk = client.recv(65536)
+                if not chunk:
+                    return
+                inbuf += chunk
+                continue
+            frame = bytes(inbuf[:end])
+            del inbuf[:end]
+            parts = resp.command_parts(frame)
+            name = resp.command_name(parts)
+            if name in resp.PUBSUB:
+                yield frame + bytes(inbuf), name, False, None
+                return
+            gated = (name in resp.GATED or name in resp.SCRIPTS
+                     or name in resp.BLOCK_OPENERS) and not in_block
+            held = self.ctl.arrive(conn_id, name, digest(resp.command_key(parts))) if gated else None
+            if gated and name in resp.BLOCK_OPENERS:
+                in_block = True
+            elif in_block and name in resp.BLOCK_CLOSERS:
+                in_block = False
+            yield frame, name, gated, held
+
+    def _read_ahead(self, conn_id, client, frames):
+        try:
+            for item in self._commands(conn_id, client):
+                frames.put(item)
+        except OSError:
+            pass
+        frames.put(None)
+
     def _serve(self, conn_id, client):
         upstream = socket.create_connection(self.upstream)
-        inbuf, upbuf = bytearray(), bytearray()
+        nodelay(upstream)
+        if self.ctl.shared_connections:
+            frames = queue.Queue()
+            threading.Thread(target=self._read_ahead, args=(conn_id, client, frames),
+                             daemon=True).start()
+            commands = iter(frames.get, None)
+        else:  # read the next command only when the previous one is done, as before
+            commands = self._commands(conn_id, client)
+        upbuf = bytearray()
         in_block = False
         try:
-            while True:
-                try:
-                    end = resp.frame_end(inbuf)
-                except resp.Incomplete:
-                    chunk = client.recv(65536)
-                    if not chunk:
-                        return
-                    inbuf += chunk
-                    continue
-                frame = bytes(inbuf[:end])
-                del inbuf[:end]
-                parts = resp.command_parts(frame)
-                name = resp.command_name(parts)
-
+            for frame, name, gated, held in commands:
                 if name in resp.PUBSUB:
                     upstream.sendall(frame)
                     self._pump(client, upstream)
                     return
 
-                gated = (name in resp.GATED or name in resp.SCRIPTS
-                         or name in resp.BLOCK_OPENERS) and not in_block
-                held = None
                 if gated:
-                    held = self.ctl.gate(conn_id, name, digest(resp.command_key(parts)))
+                    if held is not None:
+                        self.ctl.wait_permit(held)
                     self.ctl.exec_lock.acquire()
                     if name in resp.BLOCK_OPENERS:
                         in_block = True  # keep the lock until the block closes
