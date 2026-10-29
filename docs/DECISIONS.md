@@ -154,7 +154,9 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
   is D-020.
 
 ## D-020 Sole-developer held-out protocol
-- Date: 2026-10-28. Status: **Proposed** (owner decision needed before the freeze).
+- Date: 2026-10-28. Status: **Accepted in principle** by the owner on 2026-10-28, with methods
+  frozen before any held-out defect is constructed. Still open: the freeze date, the Python-only
+  scope, and the timestamp mechanism (D-028).
 - Decision: `docs/HELDOUT_PROTOCOL.md`. In short:
   - freeze methods and prompt first;
   - write correct base services and their contracts after the freeze;
@@ -204,7 +206,9 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
 
 
 ## D-024 M3+arg: an argument-aware variant of M3+, as an additional baseline
-- Date: 2026-10-28. Status: **Proposed** (needs the owner's decision; **post-pilot development**).
+- Date: 2026-10-28. Status: **Accepted** by the owner on 2026-10-28 (**post-pilot development**).
+  The original M3+ and every pilot and A2 result stay as they are. The emulated M3+arg numbers
+  below are estimates, not measurements. Not yet implemented in `methods.py`.
 - Context:
   - M3+'s pair priority (D-023) keeps one pair per command signature. Calls that differ only in
     argument values share a signature.
@@ -245,6 +249,13 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
     Only a connection's head command can be chosen.
   - A forced decision on a shared connection is a soundness problem: attribution would no
     longer be guaranteed, so the execution is inconclusive.
+  - **The client's transaction lock is modeled.** StackExchange.Redis holds the connection
+    from writing `WATCH`/`MULTI` until it writes the closing command (confirmed with `MONITOR`).
+    - While a block is open, the other operations count as blocked, not running.
+    - When it closes, the single blocked operation is the one that writes next.
+    - Two or more blocked operations cannot be told apart, so that execution is inconclusive.
+    - A gated write during the lock means the model is wrong, and is flagged.
+    - Without this, the #3825 cart was inconclusive in 12 of 18 schedules of one workload.
   - Per-connection targets keep the original single-thread path and attribution. Reading ahead
     there costs about 2 ms per D3 execution and gains nothing.
   - The proxy sets `TCP_NODELAY` on both of its sockets, as Valkey and the clients do. Without it,
@@ -258,8 +269,48 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
     and 8.5 ms, new 8.0 and 8.2 ms.
 - Consequences:
   - D2 and D3 behave exactly as in the pilot and A2.
-  - D1 schedules are controllable: 0 forced decisions, about 5 ms per execution.
+  - D1 schedules are controllable: 0 forced decisions, about 5 ms per execution, once warm.
+    With three or more concurrent operations, some schedules of the transactional (#3825) cart
+    remain inconclusive by design.
+  - Residual timing assumption: after a block closes, the blocked operation writes before the
+    owner's next command. The #3825 code sleeps at least 2 ms before retrying, and replay checks
+    would expose a violation of this assumption.
   - Out-of-process services run as hardened containers on the internal network, with their own
     image and explicit environment (`Sandbox.start_service`).
   - The D1 executor image (`docker/executor-d1.Dockerfile`) adds pinned `grpcio`. The D2/D3 image is
     unchanged.
+
+## D-026 Re-scope: AI-guided concurrency counterexample generation, verified deterministically
+- Date: 2026-10-28. Status: **Accepted** by the owner after the pilot and A2.
+- Decision:
+  - The claim is about generating concurrency counterexamples, with AI guidance, that are
+    verified deterministically (replay, corrected variant, the contract oracle).
+  - **Execution efficiency (E₁) is reported separately from wall-clock time and total cost**,
+    with the break-even per-execution cost for each target.
+  - No claim that Muse "wins" overall. The question is where AI-directed experiments give
+    measurable engineering value over strong conventional methods.
+- Consequences:
+  - Every comparison table gets separate E₁, method-seconds and dollar columns.
+  - The D1 gate (`experiments/2026-10-28-d1-gate/`) measures the real cart's per-execution cost
+    against the A2 break-even estimates.
+
+## D-027 A3 interface obfuscation: designed, not run
+- Date: 2026-10-28. Status: **Accepted for design only** (owner, 2026-10-28). Implementing and
+  running it need a separate approval.
+- Decision: `docs/A3_DESIGN.md`.
+  - A mechanical, order-preserving renaming of operations, arguments, string values, errors,
+    key prefixes and source identifiers, in Muse's view only.
+  - Plans are translated back by code before validation, so the oracle, budgets and
+    verification are unchanged.
+  - Baselines must behave identically on both specs (checked event by event).
+  - An audit and a noninterference test show that original names cannot reach the model.
+- Not applicable to D1: its names are the public gRPC API.
+
+## D-028 External timestamp for the freeze and the sealed bases
+- Date: 2026-10-28. Status: **Proposed** (owner decision; every submission is a public action).
+- Decision (proposal): `docs/HELDOUT_PROTOCOL.md`, "External timestamp mechanism".
+  - Salted SHA-256 commitments to the C1 and C2 manifests.
+  - Timestamped with two RFC 3161 TSAs and OpenTimestamps.
+  - Only digests leave the machine before the reveal at C6.
+- Rejected as primary: a GitHub push (it publishes the repository and relies on the platform's
+  clock).

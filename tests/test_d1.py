@@ -109,6 +109,46 @@ class SharedConnectionTest(unittest.TestCase):
         self.assertEqual(ctl.held[0][0].name, "SET")
         ctl.end_round()
 
+    def test_transaction_blocks_the_other_operations(self):
+        ctl = Controller(delta_q=1, shared_connections=True)
+        ctl.begin_round(2)
+        ctl.admit(0)
+        ctl.arrive(7, "HGET", "k")
+        self.run_permit(ctl, 0)
+        ctl.arrive(7, "WATCH", "k")   # op 0's transaction: the client now holds the connection
+        ctl.admit(1)                  # op 1 cannot write: blocked, not running
+        self.assertFalse(ctl.wait_quiescent())
+        self.assertEqual(ctl.choices(), ["exec:0"])
+        self.run_permit(ctl, 0)       # WATCH runs; op 0 sends the rest of the block
+        ctl.block_closed(7)           # EXEC written: the lock is released and op 1 resumes
+        self.assertIsNotNone(ctl.arrive(7, "HGET", "k"))
+        self.assertEqual(ctl.held[1][0].name, "HGET")  # op 1's, although op 0 ran last
+        ctl.arrive(7, "HGET", "k")    # op 0's retry: the running operation again
+        self.assertEqual(ctl.held[0][0].name, "HGET")
+        ctl.end_round()
+
+    def test_two_blocked_operations_cannot_be_attributed(self):
+        ctl = Controller(delta_q=1, shared_connections=True)
+        ctl.begin_round(3)
+        ctl.admit(0)
+        ctl.arrive(7, "WATCH", "k")
+        ctl.admit(1)
+        ctl.admit(2)
+        self.run_permit(ctl, 0)
+        ctl.block_closed(7)
+        self.assertIsNone(ctl.arrive(7, "HGET", "k"))
+        self.assertIn("ambiguous_resume", [e["event"] for e in ctl.events])
+        ctl.end_round()
+
+    def test_write_during_the_lock_is_flagged(self):
+        ctl = Controller(delta_q=1, shared_connections=True)
+        ctl.begin_round(2)
+        ctl.admit(0)
+        ctl.arrive(7, "WATCH", "k")
+        self.assertIsNone(ctl.arrive(7, "HGET", "k"))
+        self.assertIn("write_during_client_lock", [e["event"] for e in ctl.events])
+        ctl.end_round()
+
     def test_command_with_no_running_operation_is_unattributed(self):
         ctl = Controller(delta_q=1, shared_connections=True)
         ctl.begin_round(1)

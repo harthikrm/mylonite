@@ -1,8 +1,11 @@
 """Bring up D1 in the sandbox: Valkey, the executor (with the proxy) and both cart builds.
 
 The carts are started after the executor, because they connect to the proxy at startup and
-exit if they cannot. Each cart is ready when a GetCart through the proxy succeeds; those
-readiness calls also warm up the .NET JIT, as any long-running deployment would be.
+exit if they cannot. Each cart is ready when a GetCart through the proxy succeeds. Then it is
+warmed up, as any long-running deployment would be: every catalog operation serially, and one
+depth-first pass over two concurrent AddItem calls, so that the conflict and retry paths are
+compiled. A cold fixed cart took more than the 300 ms quiescence timeout on its first
+transaction. Warm-up executions are discarded and are the same whatever method runs next.
 """
 
 import contextlib
@@ -15,9 +18,26 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 
 from mylonite.sandbox import EXECUTOR_D1_IMAGE, Sandbox, docker  # noqa: E402
+from mylonite.scheduler import next_prefix  # noqa: E402
 
 TARGET = REPO / "targets/d1-otel-cart/target.json"
 READY = {"setup": [{"op": "GetCart", "args": {"user_id": "u1"}}], "concurrent": []}
+_ADD = {"op": "AddItem", "args": {"user_id": "u1", "product_id": "OLJCESPC7Z", "quantity": 1}}
+WARM_SERIAL = {"setup": [_ADD, _ADD, {"op": "GetCart", "args": {"user_id": "u1"}},
+                         {"op": "EmptyCart", "args": {"user_id": "u1"}}], "concurrent": []}
+WARM_RACE = {"setup": [], "concurrent": [_ADD, _ADD]}
+
+
+def warm_up(session, variant, serial):
+    for _ in range(serial):
+        session.request({"op": "execute", "variant": variant, "workload": WARM_SERIAL,
+                         "policy": {"kind": "prefix", "prefix": []}})
+    prefix, schedules = [], 0
+    while prefix is not None:
+        out, _ = session.request({"op": "execute", "variant": variant, "workload": WARM_RACE,
+                                  "policy": {"kind": "prefix", "prefix": prefix}})
+        prefix, schedules = next_prefix(out["steps"]), schedules + 1
+    return schedules
 
 
 def load_target(box):
@@ -59,9 +79,8 @@ def bringup(name="mylonite-d1", delta_q_ms=300, round_timeout_s=10, warmup=50):
                                   runtime["user"])
                 started[variant] = {"ready_s": wait_ready(session, variant),
                                     "start_to_ready_s": round(time.monotonic() - t0, 2)}
-                for _ in range(warmup):
-                    session.request({"op": "execute", "variant": variant, "workload": READY,
-                                     "policy": {"kind": "prefix", "prefix": []}})
+                started[variant]["warm_up"] = {"serial": warmup,
+                                               "race_schedules": warm_up(session, variant, warmup)}
             info = {"ready": session.ready, "services": started, "policy": box.inspect_policy(),
                     "images": box.image_ids(),
                     "service_images": {v: docker("image", "inspect", "--format", "{{.Id}}",

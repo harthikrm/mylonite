@@ -1,7 +1,9 @@
 # Held-out Evaluation Protocol (sole developer)
 
-Status: **Proposed 2026-10-28 (D-020); needs the owner's approval before the freeze.**
-It replaces the "Author" bullet of `EVALUATION_PLAN.md` §4.2 if approved.
+Status: **Approved in principle by the owner on 2026-10-28 (D-020).** Methods are frozen before
+any held-out defect exists. The external timestamp mechanism below is proposed (D-028). The
+freeze date and the Python-only scope remain owner decisions. It replaces the "Author" bullet of
+`EVALUATION_PLAN.md` §4.2.
 
 ## Premise
 
@@ -62,8 +64,8 @@ commit time + 10 minutes.
 **Mandatory external timestamp.** Commit times are self-asserted. Without an external
 timestamp, the author could backdate C2 to name a round that is already published, or re-roll by
 recommitting.
-- The C2 commit hash is therefore published before the named round: a push to the project's
-  GitHub repository, or an OpenTimestamps submission.
+- The C2 commitment is therefore timestamped externally before the named round, by the
+  mechanism below (proposed), or by a push to the project's GitHub repository.
 - Either one is a public action and needs the owner's approval at the time.
 - If neither happens before the round, C2 is redone with a later round. The abandoned C2 hash is
   reported.
@@ -113,6 +115,59 @@ No human reads target code or intermediate results before the results commit:
 - not-shown-buggy mutants are reported separately and excluded from the E₁ comparison for every
   method alike; this is the only exclusion rule;
 - the sealed directory is then published.
+
+## External timestamp mechanism (proposed 2026-10-28, D-028)
+
+Goal: anyone can later check that the freeze (C1) and the sealed bases (C2) existed before a
+given time, while **nothing but a 32-byte digest leaves the machine before C6**.
+
+**What is committed.** A plain-text manifest per step, kept with the sealed material:
+- **C1:** the `freeze` tag's commit and tree hashes, the SHA-256 of every file under `src/` and
+  of the held-out experiment directory, and the prompt fingerprint.
+- **C2:** the SHA-256 of every file in the sealed directory (bases, contracts, catalogs), plus
+  the C2 commit hash.
+
+The published value is `SHA-256(salt ‖ manifest)`, with a fresh 32-byte random salt per step,
+kept private with the sealed material. Without the salt nobody can confirm a guess about a
+small file, for example a suspected mutant.
+
+**Where it is timestamped.** Two independent mechanisms, both digest-only:
+1. **RFC 3161 time-stamp authorities.** These return a signed time within seconds.
+   - Request with `openssl ts -query -data <file> -sha512 -no_nonce -cert -out <file>.tsq`.
+   - Send by HTTP POST with `Content-Type: application/timestamp-query`.
+   - Verify with `openssl ts -verify -data <file> -in <file>.tsr -CAfile <ca> -untrusted <tsa.crt>`.
+   - Use FreeTSA (`https://freetsa.org/tsr`; these commands are from its documentation) and a
+     second public TSA chosen at use time. Two TSAs mean no single signer has to be trusted.
+2. **OpenTimestamps.** Submit the same digest to the public calendars: the OpenTimestamps client
+   defaults are `a.pool.opentimestamps.org`, `b.pool.opentimestamps.org`,
+   `a.pool.eternitywall.com` and `ots.btc.catallaxy.com`, and submission is an HTTP POST of the
+   digest to `/digest`. After a few hours the proof upgrades to a Bitcoin block attestation, which
+   anyone can verify without trusting a calendar.
+
+`openssl` and `curl` are already on the host, so no new dependency is needed to submit. OTS
+proofs are verified later with the client inside a container.
+
+**Ordering with the beacon.** C2 names drand round R. The RFC 3161 time of the C2 commitment
+must come before R's scheduled publication time (genesis + period × R), with a margin of at
+least 2 minutes. Otherwise C2 is redone with a later round, as above, and the abandoned
+commitment is reported.
+
+**Reveal (C6).** Publish the manifests, the salts, the sealed directory, the `.tsr` tokens and
+the `.ots` proofs. Verification is a hash comparison plus the two time checks.
+
+**What it does not prove.** That nothing else was prepared earlier; that the author did not
+look at the sealed files (the blind runner and the order of commits address that); or anything
+about C4–C5 beyond the beacon's lower bound and the results commit's own timestamp (which
+should be stamped the same way).
+
+**Rejected as primary.**
+- A GitHub push publishes the repository early and relies on the platform's clock.
+- A public gist or notary repository holding only digests is acceptable as a fallback, but it
+  is still platform-trusted.
+- drand alone gives only a lower bound.
+
+**Approval.** Every submission sends data to an external service, even if only a digest. It is
+done by the owner, or by the assistant only after the owner approves that specific submission.
 
 ## Composition rules (fixed at C1; revised from §4.2 for one author)
 

@@ -114,6 +114,10 @@ def soundness_problems(events):
                 queue.pop(0)  # per-connection FIFO: the oldest arrival is the one executed
         elif e["event"] == "unattributed":
             problems.append(f"unattributed {e['cmd']} on conn {e['conn']}")
+        elif e["event"] == "write_during_client_lock":  # the transaction-lock model was wrong
+            problems.append(f"{e['cmd']} written during a client transaction on conn {e['conn']}")
+        elif e["event"] == "ambiguous_resume":
+            problems.append(f"operations {e['ops']} all resumed after a transaction on conn {e['conn']}")
         elif e["event"] == "ungated":
             problems.append(f"unscheduled {e['cmd']} on conn {e['conn']}")
     return problems

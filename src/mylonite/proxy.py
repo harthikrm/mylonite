@@ -45,6 +45,13 @@ class Controller:
     operation that was running when its first gated command arrived. With ``shared_connections``
     (a multiplexed client), each command belongs to the operation running when it arrived; each
     decision lets at most one operation run, so that is the only one that can have sent it.
+
+    A multiplexed client also locks its connection for a transaction: from writing WATCH or
+    MULTI until it writes the closing EXEC, DISCARD or UNWATCH, no other operation can write
+    (StackExchange.Redis does this; seen with MONITOR, experiments/2026-10-28-d1-gate). While
+    the lock is held, the other operations are blocked in the client, not running. When the block
+    closes, the one operation that was blocked writes next. If several were blocked, which one
+    writes first is up to the client, so the execution cannot be attributed.
     """
 
     def __init__(self, delta_q, shared_connections=False):
@@ -64,6 +71,8 @@ class Controller:
         self.held = {}        # op -> [Held], in arrival order
         self.queues = {}      # conn id -> [Held], in arrival order (the head is the next to run)
         self.conn_op = {}     # conn id -> op (one connection per operation)
+        self.client_lock = {}  # shared conn id -> op whose transaction holds the client's connection
+        self.resuming = {}     # shared conn id -> ops that were blocked by a transaction just closed
         self.running_op = None
         self.unattributed = 0
 
@@ -72,8 +81,17 @@ class Controller:
         self.events.append({"seq": self._seq, "event": kind, **fields})
 
     # --- called by proxy connection threads -------------------------------------------------
-    def _attribute(self, conn):
+    def _attribute(self, conn, name):
         if self.shared_connections:
+            if conn in self.client_lock:
+                self.event("write_during_client_lock", conn=conn, cmd=name)
+                return None
+            blocked = self.resuming.pop(conn, [])
+            if len(blocked) == 1:
+                return blocked[0]
+            if blocked:
+                self.event("ambiguous_resume", conn=conn, ops=blocked)
+                return None
             op = self.running_op
             return op if op is not None and op not in self.done else None
         op = self.conn_op.get(conn)
@@ -87,7 +105,7 @@ class Controller:
         with self.cv:
             if not self.active:
                 return None
-            op = self._attribute(conn)
+            op = self._attribute(conn, name)
             if op is None:
                 self.unattributed += 1
                 self.event("unattributed", conn=conn, cmd=name)
@@ -96,8 +114,19 @@ class Controller:
             self.held.setdefault(op, []).append(held)
             self.queues.setdefault(conn, []).append(held)
             self.event("arrive", op=op, conn=conn, cmd=name, key=key_digest)
+            if self.shared_connections and name in resp.BLOCK_OPENERS:
+                self.client_lock[conn] = op
             self.cv.notify_all()
             return held
+
+    def block_closed(self, conn):
+        """The client wrote a block's closing command, so its transaction lock is released."""
+        with self.cv:
+            owner = self.client_lock.pop(conn, None)
+            if owner is not None and self.active:
+                self.resuming[conn] = [k for k in sorted(self.admitted) if k != owner
+                                       and k not in self.done and not self.held.get(k)]
+                self.cv.notify_all()
 
     def wait_permit(self, held):
         """Block the connection at this command until the scheduler permits it."""
@@ -156,7 +185,9 @@ class Controller:
                 self.cv.wait()
 
     def _running(self):
-        return [k for k in self.admitted if k not in self.done and not self.held.get(k)]
+        owners = set(self.client_lock.values())  # with one shared connection, at most one
+        return [k for k in self.admitted if k not in self.done and not self.held.get(k)
+                and not (owners and k not in owners)]
 
     def wait_quiescent(self):
         """Block until no admitted operation is running. Returns True if Δq forced a decision."""
@@ -240,6 +271,8 @@ class Proxy:
                 in_block = True
             elif in_block and name in resp.BLOCK_CLOSERS:
                 in_block = False
+                if self.ctl.shared_connections:
+                    self.ctl.block_closed(conn_id)
             yield frame, name, gated, held
 
     def _read_ahead(self, conn_id, client, frames):
