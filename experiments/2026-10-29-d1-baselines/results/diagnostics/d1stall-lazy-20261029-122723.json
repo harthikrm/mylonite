@@ -1,0 +1,54 @@
+{
+ "label": "lazy",
+ "commit": "20f16661020c6bb8763eecbea012dd0c902508ee",
+ "src_dirty": true,
+ "builds": {
+  "buggy": {
+   "schedules": 31,
+   "executions": 1200,
+   "verdicts": {
+    "VIOLATION": 195,
+    "PASS": 1005
+   },
+   "over_100ms": 0,
+   "forced_decisions": 0,
+   "soundness_problems": {},
+   "unstable_schedules": 0,
+   "median_ms": 5.51,
+   "p99_ms": 9.66,
+   "wall_s": 7.8
+  },
+  "fixed": {
+   "schedules": 24,
+   "executions": 1200,
+   "verdicts": {
+    "PASS": 1200
+   },
+   "over_100ms": 0,
+   "forced_decisions": 0,
+   "soundness_problems": {},
+   "unstable_schedules": 0,
+   "median_ms": 7.15,
+   "p99_ms": 19.65,
+   "wall_s": 11.3
+  }
+ },
+ "services": {
+  "buggy": {
+   "ready_s": 1.59,
+   "start_to_ready_s": 1.7,
+   "warm_up": {
+    "serial": 50,
+    "race_schedules": 8
+   }
+  },
+  "fixed": {
+   "ready_s": 1.57,
+   "start_to_ready_s": 1.68,
+   "warm_up": {
+    "serial": 50,
+    "race_schedules": 6
+   }
+  }
+ }
+}

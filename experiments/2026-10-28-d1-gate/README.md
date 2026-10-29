@@ -227,3 +227,18 @@ probe. That is 1–2 calls, under $0.10, and needs your approval.
 - **Single seed-0 baselines.** Feasibility only.
 - **Machine noise** of about ±25% between sessions. Break-evens compare same-session numbers
   where it matters.
+
+## Errata (added 2026-10-29, before the D1 baseline experiment)
+
+- **§4, "no host mounts".** Wrong for the executor container. It has two read-only bind mounts
+  of our own `src/` and `fixtures/`. The carts and Valkey have none. See
+  `../2026-10-29-d1-baselines/SECURITY_CHECK.md`, item 9.
+- **§7, item 1: the stall hypothesis was wrong.** The 1.7% fixed-build stall was a harness race
+  in the transaction-lock model, not CPU starvation. A finished operation whose reply had not
+  yet reached the harness was taken as blocked (D-030).
+  - Fixed and measured: 17/1,200 inconclusive before, 0/1,200 after, in one session.
+  - A rarer cart pause (1 in 4,000) remains; its cause is untested.
+- **§4, "the formal checklist".** Recorded for no-model runs in D-032, after this gate had
+  already run the cart.
+
+The measurements and results above are unchanged.

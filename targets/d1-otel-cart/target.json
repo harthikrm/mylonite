@@ -46,10 +46,11 @@
     "quantity": "subset of the load generator's {1, 2, 3, 4, 5, 10}; the race does not depend on the amount"
   },
   "observe": {"op": "GetCart", "arg": "user_id", "for_each": "user"},
+  "limits": {"concurrent_max": 2, "reason": "D-029: with 3 or more concurrent operations on the multiplexed client, the corrected build cannot always be attributed, so a witness could not be verified. Applies to every method."},
   "contract": {
     "statement": "AddItem(user, product, quantity) adds quantity to that product's quantity in the user's cart; EmptyCart(user) removes every item. GetCart(user) shows the result.",
     "source": "issue #3824 (expected behavior); ValkeyCartStore.AddItemAsync at 3.1.0, lines 154-162 (an existing item's quantity is increased by the requested quantity); the serial check in experiments/2026-10-28-d1-gate (serial adds of 1, 2 and 3 give 6). The service's maintainers have not confirmed or disputed #3824.",
-    "status": "proposed: needs the owner's approval before any D1 experiment",
+    "status": "approved by the owner on 2026-10-29 (D-029)",
     "invariants": [{"id": "no_lost_quantity", "kind": "item_quantity_conserved", "op": "AddItem",
                     "owner_arg": "user_id", "item_arg": "product_id", "amount_arg": "quantity",
                     "reset_op": "EmptyCart"}],

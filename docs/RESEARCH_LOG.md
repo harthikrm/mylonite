@@ -334,3 +334,22 @@ and a human read of REINS.
 - **Recommendation.** Continue the re-scoped project; D1 becomes the realism anchor and a
   "baselines win" case. Next: a D1 baseline-only experiment after fixing the fixed-build stall
   and 3+-operation verification.
+
+## 2026-10-29: D1 baseline experiment, pre-registration (no model calls)
+
+- **Inputs.** Owner approved the D1 contract and a no-model D1 baseline experiment (D-029).
+- **Stall diagnosis.**
+  - FACT: the gate's 1.7% fixed-build stall was a harness race in the transaction-lock model,
+    not CPU starvation. A finished operation was taken as blocked, because its reply had not
+    reached the harness yet (D-030).
+  - FACT: with the fix, same session: 17/1,200 inconclusive before, 0/1,200 after.
+  - FACT: a residual cart pause longer than Δq remains, 1 in 4,000 random fixed-build
+    executions. HYPOTHESIS, untested: the 1-CPU limit or synchronous console logging.
+  - Verification now re-runs an inconclusive execution at most twice (D-030).
+- **Built.**
+  - M0 stress, reproduced under the scheduler on a hit (D-031).
+  - D1's 2-call size limit (D-029).
+  - §8 evidence for no-model third-party runs (D-032).
+  - 67 unit tests pass; the pilot regression is identical.
+- **Seed-0 smoke**, which is not data: E₁ = 77 (M0), 39 (M1), 23 (M3+); all verified.
+- **Protocol:** `experiments/2026-10-29-d1-baselines/PROTOCOL.md`.

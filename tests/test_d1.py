@@ -1,14 +1,17 @@
 """Tests for what D1 added: the cart contract's invariant, shared-connection attribution in the
-controller, and the cart adapter's message encoding. Standard library only (no gRPC needed)."""
+controller, the target's space limit, and the cart adapter's message encoding. Standard library only (no gRPC needed)."""
 
+import json
+import random
 import sys
 import threading
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 
-from mylonite import oracle  # noqa: E402
+from mylonite import oracle, space  # noqa: E402
 from mylonite.proxy import Controller  # noqa: E402
 
 CLAUSE = {"id": "no_lost_quantity", "kind": "item_quantity_conserved", "op": "AddItem",
@@ -127,6 +130,24 @@ class SharedConnectionTest(unittest.TestCase):
         self.assertEqual(ctl.held[0][0].name, "HGET")
         ctl.end_round()
 
+    def test_operation_finishing_after_the_close_is_not_resumed(self):
+        ctl = Controller(delta_q=1, shared_connections=True)
+        ctl.begin_round(2)
+        ctl.admit(0)
+        ctl.admit(1)
+        ctl.arrive(7, "WATCH", "k")   # op 1's transaction (the last admitted is running)
+        self.run_permit(ctl, 1)
+        ctl.block_closed(7)           # op 1's EXEC: op 0 was blocked and writes next
+        ctl.arrive(7, "WATCH", "k")
+        self.assertEqual(ctl.held[0][0].name, "WATCH")
+        self.run_permit(ctl, 0)
+        ctl.block_closed(7)           # op 0's UNWATCH: op 1 has not reported done yet
+        ctl.op_done(1)                # its reply reaches the harness now
+        ctl.arrive(7, "HGET", "k")    # op 0's retry, not op 1's
+        self.assertEqual(ctl.held[0][0].name, "HGET")
+        self.assertFalse(ctl.held[1])
+        ctl.end_round()
+
     def test_two_blocked_operations_cannot_be_attributed(self):
         ctl = Controller(delta_q=1, shared_connections=True)
         ctl.begin_round(3)
@@ -155,6 +176,19 @@ class SharedConnectionTest(unittest.TestCase):
         self.assertIsNone(ctl.arrive(7, "HGET", "k"))
         self.assertEqual([e["event"] for e in ctl.events], ["unattributed"])
         ctl.end_round()
+
+
+class SpaceLimitTest(unittest.TestCase):
+    def test_d1_lowers_the_concurrent_size_for_every_method(self):
+        target = json.loads((ROOT / "targets/d1-otel-cart/target.json").read_text())
+        rng = random.Random(0)
+        self.assertEqual({len(space.random_workload(target, rng)["concurrent"]) for _ in range(200)}, {2})
+        three = {"setup": [], "concurrent": [{"op": "GetCart", "args": {"user_id": "u1"}}] * 3}
+        self.assertIn("concurrent size", space.workload_problems(target, three))
+
+    def test_a_target_cannot_raise_the_limit(self):
+        self.assertEqual(space.max_concurrent({}), space.MAX_CONCURRENT)
+        self.assertEqual(space.max_concurrent({"limits": {"concurrent_max": 9}}), space.MAX_CONCURRENT)
 
 
 class CartCodecTest(unittest.TestCase):

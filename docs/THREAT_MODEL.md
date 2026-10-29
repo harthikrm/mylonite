@@ -146,6 +146,10 @@ runs. Research used read-only web and GitHub API access.
 A Phase 1 build may run third-party code only when every item is checked and recorded in
 `DECISIONS.md` with the commit that satisfied it.
 
+Status (2026-10-29): recorded for **no-model** runs of the D1 cart in D-032
+(`experiments/2026-10-29-d1-baselines/SECURITY_CHECK.md`), with its open items. Not yet recorded
+for model runs on third-party code.
+
 - [ ] Planner output is validated against a JSON Schema with `additionalProperties: false`;
       invalid output is rejected (one repair retry max) and logged, never partially executed.
 - [ ] Operation names in plans are checked against the adapter registry; argument values are

@@ -1,0 +1,20 @@
+{
+  "experiment": "2026-10-29 D1 baseline experiment: M0, M1 and M3+ on the real OTel cart, no model calls",
+  "status": "pre-registered 2026-10-29, before any D1 trial at seeds 1-5 (PROTOCOL.md)",
+  "target": "targets/d1-otel-cart/target.json",
+  "methods": ["M0", "M1", "M3+"],
+  "seeds": [1, 2, 3, 4, 5],
+  "concurrent_max": 2,
+  "budget": {"executions": 1000, "method_seconds": 900, "schedules_per_experiment": 50},
+  "verification": {"replays": 20, "corrected_exhaustive_cap": 5000, "corrected_bounded_random": 2000, "inconclusive_reruns": 2},
+  "executor": {"delta_q_ms": 300, "round_timeout_s": 10},
+  "prices": {"input": 1.25, "cached": 0.15, "output": 4.25, "compute_per_second": 1.11e-05},
+  "report_success_at": [10, 30, 100, 300, 1000],
+  "notes": {
+    "budget, executor, prices": "identical to the pilot (experiments/2026-10-29-pilot/config.json)",
+    "verification": "the pilot's, plus inconclusive_reruns (D-030)",
+    "space": "D1's catalog and domains (target.json); setup <= 6 calls; exactly 2 concurrent calls for every method (D-029)",
+    "seeds": "M0 and M1 seed workload draws (M1 also its schedules); M3+ seeds only the order of calls and pairs. Seed 0 was used by the gate's feasibility trials and the smoke run, and is excluded.",
+    "order": "for each seed, M0 then M1 then M3+, against one warm cart; every execution starts from FLUSHALL"
+  }
+}

@@ -96,9 +96,9 @@ def state_digest(ctx):
         admin.close()
 
 
-def execute_once(ctx, workload, policy, digests=False):
-    started = time.perf_counter()
-    svc, ctl = ctx.module, ctx.ctl
+def run_setup(ctx, workload):
+    """Reset the store, run the setup calls one at a time, and observe."""
+    svc = ctx.module
     reset(ctx)
     setup_client = svc.connect(*PROXY)
     setup_outcomes, setup_failure = [], None
@@ -115,25 +115,37 @@ def execute_once(ctx, workload, policy, digests=False):
         pre = observe(ctx, setup_client)
     finally:
         setup_client.close()
+    return setup_outcomes, setup_failure, pre
+
+
+def call_op(ctx, call):
+    svc = ctx.module
+    value, error, harness = None, None, False
+    try:
+        client = svc.connect(*PROXY)
+        try:
+            value = getattr(svc, call["op"])(client, **call["args"])
+        finally:
+            client.close()
+    except HARNESS_FAILURES as exc:
+        error, harness = type(exc).__name__, True
+    except Exception as exc:  # the service's failure is data for the oracle
+        error = type(exc).__name__
+    return {"op": call["op"], "args": call["args"], "value": value, "error": error,
+            "harness_failure": harness}
+
+
+def execute_once(ctx, workload, policy, digests=False):
+    started = time.perf_counter()
+    svc, ctl = ctx.module, ctx.ctl
+    setup_outcomes, setup_failure, pre = run_setup(ctx, workload)
     state_before = state_digest(ctx) if digests else None
 
     calls = workload["concurrent"]
     raw = [None] * len(calls)
 
     def run_op(k):
-        value, error, harness = None, None, False
-        try:
-            client = svc.connect(*PROXY)
-            try:
-                value = getattr(svc, calls[k]["op"])(client, **calls[k]["args"])
-            finally:
-                client.close()
-        except HARNESS_FAILURES as exc:
-            error, harness = type(exc).__name__, True
-        except Exception as exc:  # the service's failure is data for the oracle
-            error = type(exc).__name__
-        raw[k] = {"op": calls[k]["op"], "args": calls[k]["args"], "value": value, "error": error,
-                  "harness_failure": harness}
+        raw[k] = call_op(ctx, calls[k])
         ctl.op_done(k)
 
     decisions, steps, threads = [], [], []
@@ -209,6 +221,51 @@ def execute_once(ctx, workload, policy, digests=False):
         record["state_before"], record["state_after"] = state_before, state_digest(ctx)
     record["ms"] = round((time.perf_counter() - started) * 1000, 2)
     return record
+
+
+def stress_once(ctx, workload):
+    """M0 (stress): the concurrent calls start together and run in real time, with the proxy in
+    pass-through. The oracle reads only states and outcomes, so a violation here is real, but
+    no schedule is controlled or recorded: the method has to reproduce it under the scheduler
+    before it can be verified (methods.run_m0)."""
+    started = time.perf_counter()
+    svc = ctx.module
+    setup_outcomes, harness_error, pre = run_setup(ctx, workload)
+    calls = workload["concurrent"]
+    raw = [None] * len(calls)
+    start = threading.Barrier(len(calls))
+
+    def run_op(k):
+        start.wait()
+        raw[k] = call_op(ctx, calls[k])
+
+    threads = [threading.Thread(target=run_op, args=(k,), daemon=True) for k in range(len(calls))]
+    for thread in threads:
+        thread.start()
+    deadline = time.monotonic() + ctx.round_timeout
+    for thread in threads:
+        thread.join(timeout=max(deadline - time.monotonic(), 0))
+    if harness_error is None and any(thread.is_alive() for thread in threads):
+        harness_error = "round timeout"
+
+    observer = svc.connect(*PROXY)
+    try:
+        post = observe(ctx, observer)
+    finally:
+        observer.close()
+
+    if harness_error is None and any(r and r["harness_failure"] for r in raw):
+        harness_error = "proxy or store failure during the round"
+    ops = [dict(r, status=oracle.classify(r, ctx.target["contract"])) for r in raw if r]
+    if harness_error or len(ops) != len(calls):
+        verdict, details = oracle.INCONCLUSIVE, []
+    else:
+        verdict, details = oracle.check(ctx.target["contract"], ops, pre, post)
+    return {"workload": workload, "setup_outcomes": setup_outcomes, "decisions": [], "steps": [],
+            "verdict": verdict, "violations": details, "ops": ops, "pre": pre, "post": post,
+            "forced_decisions": 0, "soundness_problems": [], "harness_error": harness_error,
+            "trace": [], "trace_hash": None, "uncontrolled": True,
+            "ms": round((time.perf_counter() - started) * 1000, 2)}
 
 
 def profile(ctx, setup, call):
@@ -369,6 +426,8 @@ def serve():
                 out = execute_once(ctx, request["workload"], make_policy(request["policy"]))
             elif request["op"] == "profile":
                 out = profile(ctx, request["setup"], request["call"])
+            elif request["op"] == "stress":
+                out = stress_once(ctx, request["workload"])
             else:
                 raise ValueError(f"unknown op {request['op']!r}")
         except Exception as exc:  # reported to the host, which stops the trial

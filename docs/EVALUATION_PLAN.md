@@ -283,3 +283,15 @@ None yet (nothing has been frozen).
   - there is a model retry rule;
   - non-smoke runs are refused on a dirty tree;
   - commands the proxy does not schedule are flagged as soundness problems.
+
+### D1 baseline amendments (2026-10-29, before any D1 trial at seeds 1–5)
+
+- **M0 as implemented** (D-031). Stress runs M1's draw without schedule control. A hit is
+  reproduced by depth-first exploration under the scheduler, and every execution counts. This
+  replaces "replay the command order the proxy saw", which a multiplexed client makes
+  impossible to attribute.
+- **D1's concurrent size is 2 for every method** (D-029). A target spec may lower the shared
+  maximum, never raise it.
+- **Verification re-runs an inconclusive execution**, at most `inconclusive_reruns` times
+  (D-030; D1: 2). A completed run with the wrong verdict or trace is never re-run. §8's "20/20"
+  counts completed replays. Re-runs are reported.

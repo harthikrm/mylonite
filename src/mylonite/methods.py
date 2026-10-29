@@ -5,6 +5,8 @@ verified. The methods differ only in how they choose workloads and schedules. Th
 catalog, domains and size limits (space.py), the contract (checked by the executor's oracle on
 every execution), the per-experiment schedule cap, and the verification procedure.
 
+- M0  stress: M1's workload draw run in real time without schedule control; a hit is then
+      reproduced under the scheduler, since an uncontrolled run has no schedule to replay.
 - M1  random workload (space.random_workload) under a random schedule, one execution each.
 - M3+ greybox setup search plus conflict-directed exhaustive exploration of pairs.
 - M4  Muse proposes experiments; each runs hint-first, then depth-first up to the cap; the model
@@ -96,6 +98,17 @@ class Trial:
             self._on_violation(record)
         return record
 
+    def stress(self, workload):
+        """One uncontrolled execution (M0). Its verdict is never verified directly: there is
+        no decision list to replay."""
+        self.check_budget()
+        record = self._request({"op": "stress", "variant": "buggy", "workload": workload})
+        self.executions += 1
+        self.stats["stress"] += 1
+        self.stats[f"stress_{record['verdict']}"] += 1
+        self.log({"event": "stress", "n": self.executions, "record": record})
+        return record
+
     def profile(self, setup, call):
         self.check_budget()
         out = self._request({"op": "profile", "variant": "buggy", "setup": setup, "call": call})
@@ -145,40 +158,75 @@ def verify(session, target, record, cfg):
     """Replay the witness ``cfg['replays']`` times on the original variant, then explore the same
     workload on the corrected variant: exhaustively if it fits under the cap, otherwise the cap's
     depth-first schedules plus ``cfg['corrected_bounded_random']`` random ones (reported as
-    bounded)."""
+    bounded).
+
+    An INCONCLUSIVE execution is a harness problem, not evidence either way: with
+    ``cfg['inconclusive_reruns']`` (default 0) it is run again, at most that many times. A run
+    that completes with the wrong verdict or trace is never re-run. Rejected runs are listed."""
     workload, decisions = record["workload"], record["decisions"]
-    replays = [session.request({"op": "execute", "variant": "buggy", "workload": workload,
-                                "policy": {"kind": "replay", "decisions": decisions}})[0]
+    reruns, rejected = collections.Counter(), []
+
+    def run(variant, policy):
+        for attempt in range(cfg.get("inconclusive_reruns", 0) + 1):
+            out = session.request({"op": "execute", "variant": variant, "workload": workload,
+                                   "policy": policy})[0]
+            if out["verdict"] == "INCONCLUSIVE" and len(rejected) < 5:
+                rejected.append({"variant": variant} | {k: out[k] for k in (
+                    "decisions", "soundness_problems", "harness_error", "ms")})
+            if out["verdict"] != "INCONCLUSIVE" or attempt == cfg.get("inconclusive_reruns", 0):
+                return out
+            reruns[variant] += 1
+
+    replays = [run("buggy", {"kind": "replay", "decisions": decisions})
                for _ in range(cfg["replays"])]
     replay_ok = all(r["verdict"] == "VIOLATION" and r["trace_hash"] == record["trace_hash"]
                     for r in replays)
     corrected = {"mode": None, "schedules": 0, "verdicts": collections.Counter(),
                  "soundness_problems": 0}
     if "fixed" in target["variants"]:
-        def run(policy):
-            out = session.request({"op": "execute", "variant": "fixed", "workload": workload,
-                                   "policy": policy})[0]
+        def run_corrected(policy):
+            out = run("fixed", policy)
             corrected["schedules"] += 1
             corrected["verdicts"][out["verdict"]] += 1
             corrected["soundness_problems"] += len(out["soundness_problems"])
             return out
         prefix, exhausted = [], False
         while corrected["schedules"] < cfg["corrected_exhaustive_cap"]:
-            prefix = next_prefix(run({"kind": "prefix", "prefix": prefix})["steps"])
+            prefix = next_prefix(run_corrected({"kind": "prefix", "prefix": prefix})["steps"])
             if prefix is None:
                 exhausted = True
                 break
         if not exhausted:
             for i in range(cfg["corrected_bounded_random"]):
-                run({"kind": "random", "seed": f"verify:{record['trace_hash']}:{i}"})
+                run_corrected({"kind": "random", "seed": f"verify:{record['trace_hash']}:{i}"})
         corrected["mode"] = "exhaustive" if exhausted else "bounded"
     corrected_ok = (corrected["mode"] is not None and corrected["soundness_problems"] == 0
                     and corrected["verdicts"]["PASS"] == corrected["schedules"])
     corrected["verdicts"] = dict(corrected["verdicts"])
-    return {"replays": len(replays),
-            "replay_violations": sum(r["verdict"] == "VIOLATION" for r in replays),
-            "replay_hash_matches": sum(r["trace_hash"] == record["trace_hash"] for r in replays),
-            "corrected": corrected, "verified": bool(replay_ok and corrected_ok)}
+    result = {"replays": len(replays),
+              "replay_violations": sum(r["verdict"] == "VIOLATION" for r in replays),
+              "replay_hash_matches": sum(r["trace_hash"] == record["trace_hash"] for r in replays),
+              "corrected": corrected, "verified": bool(replay_ok and corrected_ok)}
+    if reruns or rejected:  # absent when nothing was rejected, as in every pilot verification
+        result["inconclusive_reruns"], result["rejected"] = dict(reruns), rejected
+    return result
+
+
+# --- M0 -----------------------------------------------------------------------------------------
+
+def run_m0(trial, target, seed, cfg):
+    """Stress, as a practitioner with this harness would run it: M1's workload draw, one
+    uncontrolled execution each. On a hit, explore that workload depth-first under the
+    scheduler, up to the per-workload cap; the first controlled violation goes through the
+    shared verification. Every execution of both kinds counts. (EVALUATION_PLAN.md §3 planned to
+    replay the command order the proxy saw. On a multiplexed client that order cannot be
+    attributed to operations, so the hit is reproduced instead, D-031.)"""
+    rng = random.Random(f"M0:{seed}")
+    while True:
+        workload = space.random_workload(target, rng)
+        if trial.stress(workload)["verdict"] == "VIOLATION":
+            trial.stats["m0_reproductions"] += 1
+            trial.explore(workload, cfg["schedules_per_experiment"])
 
 
 # --- M1 -----------------------------------------------------------------------------------------
@@ -303,7 +351,7 @@ def run_m4(trial, target, seed, cfg, model, repo_root):
     trial.stats["m4_rounds_exhausted"] = 1
 
 
-METHODS = {"M1": run_m1, "M3+": run_m3plus, "M4": run_m4}
+METHODS = {"M0": run_m0, "M1": run_m1, "M3+": run_m3plus, "M4": run_m4}
 
 
 def run_trial(method, session, target, seed, cfg, log, model=None, repo_root=None):

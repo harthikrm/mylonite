@@ -299,7 +299,7 @@ class FakeSession:
         policy = req.get("policy", {})
         base = {"ms": 1.0, "steps": [], "soundness_problems": [], "trace": [], "ops": [],
                 "pre": {}, "post": {}, "setup_outcomes": [], "workload": req.get("workload"),
-                "decisions": ["admit:0"], "violations": []}
+                "decisions": ["admit:0"], "violations": [], "harness_error": None}
         if req["variant"] == "fixed":
             return {**base, "verdict": "PASS", "trace_hash": "f"}, 0.002
         if policy.get("kind") == "replay":
@@ -341,6 +341,76 @@ class TrialAccountingTest(unittest.TestCase):
         trial.execute({"setup": [], "concurrent": []}, {"kind": "prefix", "prefix": []})
         self.assertEqual(len(trial.unverified), 1)
         self.assertEqual(trial.executions, 2)
+
+
+class RerunTest(unittest.TestCase):
+    """Verification re-runs an inconclusive execution; it never re-runs a wrong verdict."""
+
+    class Flaky(FakeSession):
+        def __init__(self, fixed_verdicts):
+            super().__init__([])
+            self.fixed_verdicts = list(fixed_verdicts)
+
+        def request(self, req):
+            out, rtt = super().request(req)
+            if req["variant"] == "fixed" and self.fixed_verdicts:
+                out = {**out, "verdict": self.fixed_verdicts.pop(0)}
+            return out, rtt
+
+    def verify(self, fixed_verdicts, reruns):
+        from mylonite.methods import verify
+        record = {"workload": {}, "decisions": ["admit:0"], "trace_hash": "h"}
+        cfg = {**TrialAccountingTest.CFG, "replays": 2, "inconclusive_reruns": reruns}
+        return verify(self.Flaky(fixed_verdicts), TrialAccountingTest.TARGET, record, cfg)
+
+    def test_inconclusive_is_rerun(self):
+        result = self.verify(["INCONCLUSIVE", "PASS"], reruns=2)
+        self.assertTrue(result["verified"])
+        self.assertEqual(result["inconclusive_reruns"], {"fixed": 1})
+        self.assertEqual(result["corrected"]["schedules"], 1)
+
+    def test_without_reruns_an_inconclusive_schedule_fails(self):
+        self.assertFalse(self.verify(["INCONCLUSIVE", "PASS"], reruns=0)["verified"])
+
+    def test_reruns_are_bounded(self):
+        self.assertFalse(self.verify(["INCONCLUSIVE"] * 3 + ["PASS"], reruns=2)["verified"])
+
+    def test_violation_on_the_corrected_variant_is_not_rerun(self):
+        result = self.verify(["VIOLATION", "PASS"], reruns=2)
+        self.assertFalse(result["verified"])
+        self.assertNotIn("inconclusive_reruns", result)
+
+    def test_nothing_rejected_leaves_the_result_unchanged(self):
+        self.assertEqual(sorted(self.verify([], reruns=2)),
+                         ["corrected", "replay_hash_matches", "replay_violations", "replays", "verified"])
+
+
+class StressTest(unittest.TestCase):
+    """M0: an uncontrolled hit is reproduced under the scheduler before it can be verified."""
+    TARGET = {**TrialAccountingTest.TARGET, "operations": {"get": {"args": {}}}, "domains": {}}
+    CFG = {"budget": {"executions": 6, "method_seconds": 60, "schedules_per_experiment": 50},
+           "verification": TrialAccountingTest.CFG, "prices": TrialAccountingTest.PRICES}
+
+    def run_m0(self, verdicts):
+        from mylonite.methods import run_trial
+        session = FakeSession(verdicts)
+        requests = []
+        request = session.request
+        session.request = lambda req: requests.append(req["op"]) or request(req)
+        return run_trial("M0", session, self.TARGET, 1, self.CFG, lambda event: None), requests
+
+    def test_hit_is_verified_through_a_controlled_schedule(self):
+        result, requests = self.run_m0(["PASS", "VIOLATION", "VIOLATION"])
+        self.assertEqual(result["status"], "verified")
+        self.assertEqual(result["e1_executions"], 3)  # two stress runs, one explored schedule
+        self.assertEqual(requests[:3], ["stress", "stress", "execute"])
+        self.assertEqual(result["counters"]["m0_reproductions"], 1)
+
+    def test_hit_that_does_not_reproduce_is_not_a_finding(self):
+        result, _ = self.run_m0(["VIOLATION"] + ["PASS"] * 5)
+        self.assertEqual(result["status"], "censored:executions")
+        self.assertEqual(result["counters"]["stress_VIOLATION"], 1)
+        self.assertEqual(result["unverified_violations"], [])
 
 
 if __name__ == "__main__":

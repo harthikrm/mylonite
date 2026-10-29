@@ -1,0 +1,212 @@
+{
+ "label": "lazy2",
+ "commit": "20f16661020c6bb8763eecbea012dd0c902508ee",
+ "src_dirty": true,
+ "builds": {
+  "buggy": {
+   "pairs": {
+    "executions": 600,
+    "verdicts": {
+     "VIOLATION": 98,
+     "PASS": 502
+    },
+    "over_100ms": 0,
+    "forced_decisions": 0,
+    "soundness_problems": {},
+    "unstable_schedules": 0,
+    "median_ms": 5.22,
+    "p99_ms": 9.69,
+    "wall_s": 3.7,
+    "inconclusive_examples": [],
+    "schedules": 31
+   },
+   "random": {
+    "executions": 4000,
+    "verdicts": {
+     "PASS": 3865,
+     "VIOLATION": 135
+    },
+    "over_100ms": 0,
+    "forced_decisions": 0,
+    "soundness_problems": {},
+    "unstable_schedules": 0,
+    "median_ms": 6.57,
+    "p99_ms": 11.23,
+    "wall_s": 29.5,
+    "inconclusive_examples": []
+   }
+  },
+  "fixed": {
+   "pairs": {
+    "executions": 600,
+    "verdicts": {
+     "PASS": 600
+    },
+    "over_100ms": 0,
+    "forced_decisions": 0,
+    "soundness_problems": {},
+    "unstable_schedules": 0,
+    "median_ms": 5.83,
+    "p99_ms": 17.82,
+    "wall_s": 4.9,
+    "inconclusive_examples": [],
+    "schedules": 24
+   },
+   "random": {
+    "executions": 4000,
+    "verdicts": {
+     "PASS": 3999,
+     "INCONCLUSIVE": 1
+    },
+    "over_100ms": 2,
+    "forced_decisions": 2,
+    "soundness_problems": {
+     "forced decision(s) on a shared connection: attribution is not guaranteed": 1
+    },
+    "unstable_schedules": 0,
+    "median_ms": 6.52,
+    "p99_ms": 17.84,
+    "wall_s": 32.1,
+    "inconclusive_examples": [
+     {
+      "workload": {
+       "setup": [
+        {
+         "op": "AddItem",
+         "args": {
+          "product_id": "OLJCESPC7Z",
+          "quantity": 3,
+          "user_id": "u2"
+         }
+        },
+        {
+         "op": "GetCart",
+         "args": {
+          "user_id": "u1"
+         }
+        },
+        {
+         "op": "GetCart",
+         "args": {
+          "user_id": "u1"
+         }
+        },
+        {
+         "op": "EmptyCart",
+         "args": {
+          "user_id": "u1"
+         }
+        },
+        {
+         "op": "GetCart",
+         "args": {
+          "user_id": "u2"
+         }
+        }
+       ],
+       "concurrent": [
+        {
+         "op": "AddItem",
+         "args": {
+          "product_id": "OLJCESPC7Z",
+          "quantity": 2,
+          "user_id": "u1"
+         }
+        },
+        {
+         "op": "GetCart",
+         "args": {
+          "user_id": "u2"
+         }
+        }
+       ]
+      },
+      "decisions": [
+       "admit:0",
+       "admit:1",
+       "exec:0",
+       "exec:1",
+       "exec:1"
+      ],
+      "soundness_problems": [
+       "2 forced decision(s) on a shared connection: attribution is not guaranteed"
+      ],
+      "harness_error": null,
+      "ms": 919.22,
+      "ops": [
+       {
+        "op": "AddItem",
+        "args": {
+         "product_id": "OLJCESPC7Z",
+         "quantity": 2,
+         "user_id": "u1"
+        },
+        "value": null,
+        "error": null,
+        "harness_failure": false,
+        "status": "ok"
+       },
+       {
+        "op": "GetCart",
+        "args": {
+         "user_id": "u2"
+        },
+        "value": {
+         "OLJCESPC7Z": 3
+        },
+        "error": null,
+        "harness_failure": false,
+        "status": "ok"
+       }
+      ],
+      "trace": [
+       [
+        "admit",
+        0,
+        null
+       ],
+       [
+        "admit",
+        1,
+        null
+       ],
+       [
+        "exec",
+        0,
+        "HGET"
+       ],
+       [
+        "exec",
+        1,
+        "HGET"
+       ],
+       [
+        "exec",
+        1,
+        "WATCH"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "services": {
+  "buggy": {
+   "ready_s": 1.61,
+   "start_to_ready_s": 1.7,
+   "warm_up": {
+    "serial": 50,
+    "race_schedules": 8
+   }
+  },
+  "fixed": {
+   "ready_s": 1.58,
+   "start_to_ready_s": 1.69,
+   "warm_up": {
+    "serial": 50,
+    "race_schedules": 6
+   }
+  }
+ }
+}

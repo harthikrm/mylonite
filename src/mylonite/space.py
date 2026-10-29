@@ -10,6 +10,13 @@ import itertools
 MAX_SETUP, MIN_CONCURRENT, MAX_CONCURRENT = 6, 2, 4
 
 
+def max_concurrent(target):
+    """A target spec may lower the shared maximum for every method, never raise it. D1 sets 2:
+    on a multiplexed client, a witness with two operations queued behind one transaction cannot
+    be attributed on the corrected build, so it could never be verified (D-029)."""
+    return min(target.get("limits", {}).get("concurrent_max", MAX_CONCURRENT), MAX_CONCURRENT)
+
+
 def op_calls(target):
     """Every catalog call: each operation with each combination of its argument domains."""
     calls = []
@@ -46,7 +53,7 @@ def workload_problems(target, workload):
     problems = []
     if len(workload["setup"]) > MAX_SETUP:
         problems.append("setup size")
-    if not MIN_CONCURRENT <= len(workload["concurrent"]) <= MAX_CONCURRENT:
+    if not MIN_CONCURRENT <= len(workload["concurrent"]) <= max_concurrent(target):
         problems.append("concurrent size")
     for call in workload["setup"] + workload["concurrent"]:
         problems += call_problems(target, call)
@@ -62,4 +69,4 @@ def random_workload(target, rng):
         return {"op": op, "args": {n: rng.choice(target["domains"][args[n]["domain"]])
                                    for n in sorted(args)}}
     return {"setup": [call() for _ in range(rng.randint(0, MAX_SETUP))],
-            "concurrent": [call() for _ in range(rng.randint(MIN_CONCURRENT, MAX_CONCURRENT))]}
+            "concurrent": [call() for _ in range(rng.randint(MIN_CONCURRENT, max_concurrent(target)))]}

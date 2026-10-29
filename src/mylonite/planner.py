@@ -93,7 +93,7 @@ def model_view_source(text):
 def catalog_view(target):
     return {"operations": target["operations"], "domains": target["domains"],
             "limits": {"setup_max": space.MAX_SETUP, "concurrent_min": space.MIN_CONCURRENT,
-                       "concurrent_max": space.MAX_CONCURRENT},
+                       "concurrent_max": space.max_concurrent(target)},
             "observation": target["observe"]}
 
 

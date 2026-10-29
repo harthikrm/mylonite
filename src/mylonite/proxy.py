@@ -72,7 +72,7 @@ class Controller:
         self.queues = {}      # conn id -> [Held], in arrival order (the head is the next to run)
         self.conn_op = {}     # conn id -> op (one connection per operation)
         self.client_lock = {}  # shared conn id -> op whose transaction holds the client's connection
-        self.resuming = {}     # shared conn id -> ops that were blocked by a transaction just closed
+        self.resuming = {}     # shared conn id -> owner of the transaction that just closed there
         self.running_op = None
         self.unattributed = 0
 
@@ -86,7 +86,11 @@ class Controller:
             if conn in self.client_lock:
                 self.event("write_during_client_lock", conn=conn, cmd=name)
                 return None
-            blocked = self.resuming.pop(conn, [])
+            # Who was blocked is decided now, not when the block closed: an operation whose last
+            # command ran may finish (and report done) only after the closer was read.
+            owner = self.resuming.pop(conn, None)
+            blocked = [] if owner is None else [k for k in sorted(self.admitted) if k != owner
+                                                and k not in self.done and not self.held.get(k)]
             if len(blocked) == 1:
                 return blocked[0]
             if blocked:
@@ -124,8 +128,7 @@ class Controller:
         with self.cv:
             owner = self.client_lock.pop(conn, None)
             if owner is not None and self.active:
-                self.resuming[conn] = [k for k in sorted(self.admitted) if k != owner
-                                       and k not in self.done and not self.held.get(k)]
+                self.resuming[conn] = owner
                 self.cv.notify_all()
 
     def wait_permit(self, held):

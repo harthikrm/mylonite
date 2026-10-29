@@ -314,3 +314,90 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
   - Only digests leave the machine before the reveal at C6.
 - Rejected as primary: a GitHub push (it publishes the repository and relies on the platform's
   clock).
+
+## D-029 D1 contract approved; D1 limited to 2 concurrent calls for every method
+- Date: 2026-10-29. Status: **Accepted.** The contract and the no-model D1 baseline experiment
+  were approved by the owner on 2026-10-29; the size limit is technical.
+- Decision:
+  - The D1 contract `no_lost_quantity` (`item_quantity_conserved`, `targets/d1-otel-cart/target.json`)
+    is approved as proposed in the gate report §3, including its caveat: the maintainers have
+    neither confirmed nor disputed #3824.
+  - A target spec may lower the shared concurrent-size maximum for every method, never raise it
+    (`space.max_concurrent`). D1 sets 2.
+- Why the limit: with 3 or more concurrent calls on the multiplexed client, two operations can
+  queue behind one transaction. Which one writes next is up to the client, so the corrected
+  build's execution cannot be attributed and a correct witness could never be verified. The
+  lost update needs only 2 calls.
+- Consequences:
+  - M1's draws on D1 have exactly 2 concurrent calls; M3+ already explores pairs only; a future
+    M4 or A2 request on D1 shows `concurrent_max: 2` in its limits.
+  - D2 and D3 are unchanged: the pilot regression is identical in every event.
+
+## D-030 Resume attribution decided at arrival; verification re-runs inconclusive executions
+- Date: 2026-10-29. Status: **Accepted** (technical; before any D1 trial at seeds 1–5).
+- Context:
+  - The gate's 1.7% fixed-build stall was attributed, untested, to CPU starvation. The raw
+    records show a harness race instead. When a transaction closed, `block_closed` took a
+    snapshot of the operations that were not done as the ones blocked. An operation that had
+    already finished in the cart, but whose reply had not reached the harness, was in it. The
+    other operation's retry was credited to it, the next command was unattributed, and Δq
+    forced a decision. Every one of the 17 stalls in 1,200 runs was an `unattributed WATCH`.
+  - After the fix, a rarer case remains: a cart pause longer than Δq (300 ms) mid-operation,
+    1 in 4,000 random fixed-build executions, 0 in 4,600 buggy ones. It forces a decision, which
+    is correctly inconclusive. Its cause is untested (the 1-CPU limit and the cart's
+    info-level console logging are candidates).
+- Decision:
+  - The set of blocked operations is computed when the next command arrives, not when the
+    block closes, so operations that finished in between are excluded. A unit test reproduces
+    the race and fails on the old code.
+  - Verification (`methods.verify`) re-runs an INCONCLUSIVE execution, replay or corrected,
+    at most `inconclusive_reruns` times (D1: 2). A run that completes with the wrong verdict or
+    trace hash is never re-run. Re-runs and their causes are listed in the verification result.
+    The default is 0, so the pilot and A2 configurations behave as before.
+- Evidence (`experiments/2026-10-29-d1-baselines/results/diagnostics/`):
+  - fixed build, 1,200 cycled schedules of the gate's 2-operation workloads: 17 inconclusive
+    before, 0 after, same session;
+  - buggy build: identical verdicts (195 violations) before and after;
+  - all 30 pilot trials re-run from recorded answers are identical in all 6,766 events.
+- Consequences:
+  - The gate's "untested hypothesis: `--cpus 1` starves the .NET thread pool" was wrong for the
+    1.7%. Recorded as an erratum in the gate report.
+
+## D-031 M0 (stress) as implemented
+- Date: 2026-10-29. Status: **Accepted** (implements a required method; before any D1 trial at
+  seeds 1–5).
+- Decision:
+  - M0 draws workloads as M1 does (its own seed stream) and runs each once without schedule
+    control. The concurrent calls start together, with the proxy in pass-through
+    (`executor.stress_once`). The oracle reads only states and outcomes, so the verdict needs
+    no schedule.
+  - On a hit, M0 explores that workload depth-first under the scheduler, up to `K`, and the
+    first controlled violation goes through the shared verification (`methods.run_m0`). Every
+    stress and exploration execution counts.
+- **Deviation from `EVALUATION_PLAN.md` §3:** the plan's M0 replays "the command order the proxy
+  saw". On a multiplexed client that order cannot be attributed to operations without control
+  (D-025), so the hit is reproduced instead. On per-connection targets the plan's version would
+  be possible, but it is not built.
+- Consequences: a stress hit that does not reproduce under the scheduler is not a finding; the
+  trial continues.
+
+## D-032 THREAT_MODEL §8 for running third-party code without a model
+- Date: 2026-10-29. Status: **Accepted** for no-model runs; **open** for model runs on
+  third-party code.
+- Decision: `experiments/2026-10-29-d1-baselines/SECURITY_CHECK.md` records every §8 item for
+  running the D1 cart without a model. The evidence is `sandbox_check.py` at the
+  pre-registration commit and `tests/test_sandbox.py`.
+  - Met: the static flag set (now unit-tested); no egress; non-root; a read-only root; all
+    capabilities dropped; limits holding against fork-bomb, busy-loop, memory and tmpfs
+    fixtures; the canary key absent from every container; images built from source; the
+    soundness check on every trace.
+  - Deviation: the executor has two read-only binds of our own `src/` and `fixtures/`.
+  - Open:
+    - NuGet packages are not hash-locked;
+    - Docker Desktop file sharing is at its default (the owner's setting);
+    - there is no pre-commit secret hook;
+    - no fixture shows that a hung service always ends as INCONCLUSIVE rather than a trial
+      error;
+    - every model-path item for third-party targets.
+- The gate ran the cart before this record existed. That is disclosed in the record and in the
+  gate's errata.
