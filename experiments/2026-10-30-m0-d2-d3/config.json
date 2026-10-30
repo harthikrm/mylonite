@@ -1,0 +1,19 @@
+{
+  "experiment": "2026-10-30 stress (M0) on D2 and D3, no model calls",
+  "status": "pre-registered 2026-10-30, before any M0 trial at seeds 1-5 (PROTOCOL.md)",
+  "targets": ["fixtures/dev/d2_counter/target.json", "fixtures/dev/d3_inventory/target.json"],
+  "methods": ["M0"],
+  "seeds": [1, 2, 3, 4, 5],
+  "budget": {"executions": 1000, "method_seconds": 900, "schedules_per_experiment": 50},
+  "verification": {"replays": 20, "corrected_exhaustive_cap": 5000, "corrected_bounded_random": 2000},
+  "executor": {"delta_q_ms": 300, "round_timeout_s": 10},
+  "prices": {"input": 1.25, "cached": 0.15, "output": 4.25, "compute_per_second": 1.11e-05},
+  "report_success_at": [10, 30, 100, 300, 1000],
+  "pilot_raw_run": "runs/pilot-20261028-165020",
+  "notes": {
+    "same as the pilot": "targets, seeds, budget, verification (no inconclusive re-runs), executor and prices are the pilot's (experiments/2026-10-29-pilot/config.json)",
+    "space": "the pilot's: setup <= 6 calls, 2-4 concurrent calls (D2 and D3 set no lower limit)",
+    "seeds": "M0 seeds its workload draws only (M0:<seed>); real timing is not seeded. Seed 0 was used by the smoke run and is excluded.",
+    "reference": "after the M0 trials, regression.py re-runs the 30 pilot trials (M1, M3+ and M4 from recorded answers; no API call) in the same session: the same-session timing reference, and a check that the harness still reproduces the pilot exactly"
+  }
+}
