@@ -373,3 +373,23 @@ and a human read of REINS.
 - **Interpretation.** D1 is a confirmed "baselines win" case, and plain stress is the strongest
   conventional method on it. M0 has never run on D2 or D3; the pilot's D3 efficiency signal is
   against M1 and M3+ only.
+
+## 2026-10-30: Stress (M0) on D2 and D3 (no model calls)
+
+- **Run.**
+  - Prereg `1f7207b`; run `experiments/2026-10-30-m0-d2-d3/results/20261030-175616/`.
+  - Validity: 9 of 10 pass. V9 fails on the letter because the runner wrote its own results
+    before the regression recorded `git status`. No tracked file differed. The regression was
+    identical in all 6,766 events.
+- **Results.**
+  - FACT: D2 M0 E₁ 9, 5, 25, 32, 4 (median 9), against M1 median 5 and M3+ 8.
+  - FACT: D3 M0 censored 5/5, with 0 hits in 5,000 stress runs.
+  - All three predictions are correct.
+- **Stress depends on the target's real timing.**
+  - FACT: draws that could fail lost an update 5/5 times on D1 and 5/12 on D2.
+  - HYPOTHESIS: thread start-up and the interpreter lock in the in-process Python service.
+- **Interpretation.**
+  - D3's strongest conventional method is still M3+. The pilot's D3 break-even (60 ms for M4,
+    215 ms for A2) stands against all three required conventional methods.
+  - D2, like D1, is a "baselines win" case on wall-clock.
+- **Lesson.** A runner must not write into the tree before it records the tree's state.

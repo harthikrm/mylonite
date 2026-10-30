@@ -1,0 +1,26 @@
+{
+ "run_dir": "runs/d1gate-regression-20261030-175822",
+ "trials": 30,
+ "identical_trials": 30,
+ "identical_event_streams": 30,
+ "events_compared": 6766,
+ "differences": [],
+ "exec_ms_median": {
+  "d2-loyalty-points": {
+   "pilot": 7.44,
+   "now": 7.37,
+   "executions": [
+    42,
+    42
+   ]
+  },
+  "d3-inventory": {
+   "pilot": 7.2,
+   "now": 8.21,
+   "executions": [
+    6035,
+    6035
+   ]
+  }
+ }
+}

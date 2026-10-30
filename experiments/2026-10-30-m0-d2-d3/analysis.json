@@ -1,0 +1,917 @@
+{
+ "status": "exploratory, development-only; Muse numbers are recorded, not new",
+ "run": "runs/m0-20261030-175616",
+ "results": "experiments/2026-10-30-m0-d2-d3/results/20261030-175616",
+ "targets": {
+  "d2-loyalty-points": {
+   "methods": {
+    "M0": {
+     "e1": [
+      9,
+      5,
+      25,
+      32,
+      4
+     ],
+     "statuses": [
+      "verified",
+      "verified",
+      "verified",
+      "verified",
+      "verified"
+     ],
+     "median_e1_censored_at_budget_plus_1": 9,
+     "success_at": {
+      "10": {
+       "k": 3,
+       "n": 5,
+       "wilson95": [
+        0.231,
+        0.882
+       ]
+      },
+      "30": {
+       "k": 4,
+       "n": 5,
+       "wilson95": [
+        0.376,
+        0.964
+       ]
+      },
+      "100": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "300": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "1000": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      }
+     },
+     "method_s": [
+      0.074,
+      0.043,
+      0.283,
+      0.343,
+      0.025
+     ],
+     "median_method_s": 0.074,
+     "median_method_s_to_verified_censored_at_cap_plus_1": 0.074,
+     "median_model_s": 0.0,
+     "median_s_per_execution": 0.0086,
+     "stress": {
+      "per_trial": [
+       {
+        "stress": 7,
+        "hits": 1,
+        "unreproduced_hits": 0,
+        "exploration_executions": 2,
+        "inconclusive_stress": 0
+       },
+       {
+        "stress": 3,
+        "hits": 1,
+        "unreproduced_hits": 0,
+        "exploration_executions": 2,
+        "inconclusive_stress": 0
+       },
+       {
+        "stress": 8,
+        "hits": 1,
+        "unreproduced_hits": 0,
+        "exploration_executions": 17,
+        "inconclusive_stress": 0
+       },
+       {
+        "stress": 15,
+        "hits": 1,
+        "unreproduced_hits": 0,
+        "exploration_executions": 17,
+        "inconclusive_stress": 0
+       },
+       {
+        "stress": 2,
+        "hits": 1,
+        "unreproduced_hits": 0,
+        "exploration_executions": 2,
+        "inconclusive_stress": 0
+       }
+      ],
+      "hit_rate": 0.1429
+     }
+    },
+    "M1": {
+     "e1": [
+      9,
+      5,
+      7,
+      5,
+      1
+     ],
+     "statuses": [
+      "verified",
+      "verified",
+      "verified",
+      "verified",
+      "verified"
+     ],
+     "median_e1_censored_at_budget_plus_1": 5,
+     "success_at": {
+      "10": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "30": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "100": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "300": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "1000": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      }
+     },
+     "method_s": [
+      0.071,
+      0.048,
+      0.07,
+      0.031,
+      0.006
+     ],
+     "median_method_s": 0.048,
+     "median_method_s_to_verified_censored_at_cap_plus_1": 0.048,
+     "median_model_s": 0.0,
+     "median_s_per_execution": 0.00789,
+     "source": "same-session regression"
+    },
+    "M3+": {
+     "e1": [
+      8,
+      8,
+      8,
+      8,
+      8
+     ],
+     "statuses": [
+      "verified",
+      "verified",
+      "verified",
+      "verified",
+      "verified"
+     ],
+     "median_e1_censored_at_budget_plus_1": 8,
+     "success_at": {
+      "10": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "30": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "100": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "300": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "1000": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      }
+     },
+     "method_s": [
+      0.063,
+      0.065,
+      0.044,
+      0.044,
+      0.044
+     ],
+     "median_method_s": 0.044,
+     "median_method_s_to_verified_censored_at_cap_plus_1": 0.044,
+     "median_model_s": 0.0,
+     "median_s_per_execution": 0.0055,
+     "source": "same-session regression"
+    },
+    "M4": {
+     "e1": [
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "statuses": [
+      "verified",
+      "verified",
+      "verified",
+      "verified",
+      "verified"
+     ],
+     "median_e1_censored_at_budget_plus_1": 1,
+     "success_at": {
+      "10": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "30": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "100": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "300": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "1000": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      }
+     },
+     "method_s": [
+      11.802,
+      14.412,
+      14.859,
+      14.139,
+      10.43
+     ],
+     "median_method_s": 14.139,
+     "median_method_s_to_verified_censored_at_cap_plus_1": 14.139,
+     "median_model_s": 14.13,
+     "median_s_per_execution": 0.01,
+     "source": "same-session regression"
+    },
+    "A2": {
+     "e1": [
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "statuses": [
+      "verified",
+      "verified",
+      "verified",
+      "verified",
+      "verified"
+     ],
+     "median_e1_censored_at_budget_plus_1": 1,
+     "success_at": {
+      "10": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "30": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "100": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "300": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "1000": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      }
+     },
+     "method_s": [
+      17.508,
+      14.049,
+      16.335,
+      15.428,
+      17.681
+     ],
+     "median_method_s": 16.335,
+     "median_method_s_to_verified_censored_at_cap_plus_1": 16.335,
+     "median_model_s": 16.31,
+     "median_s_per_execution": 0.021,
+     "source": "A2 run, 2026-10-28 (different session)"
+    }
+   },
+   "break_even_per_execution": {
+    "M4": {
+     "M0": {
+      "e_b": 9,
+      "e_m": 1,
+      "seconds": 1.7663,
+      "bound": "point",
+      "measured_s_per_execution": 0.0086
+     },
+     "M1": {
+      "e_b": 5,
+      "e_m": 1,
+      "seconds": 3.5325,
+      "bound": "point",
+      "measured_s_per_execution": 0.00789
+     },
+     "M3+": {
+      "e_b": 8,
+      "e_m": 1,
+      "seconds": 2.0186,
+      "bound": "point",
+      "measured_s_per_execution": 0.0055
+     }
+    },
+    "A2": {
+     "M0": {
+      "e_b": 9,
+      "e_m": 1,
+      "seconds": 2.0387,
+      "bound": "point",
+      "measured_s_per_execution": 0.0086
+     },
+     "M1": {
+      "e_b": 5,
+      "e_m": 1,
+      "seconds": 4.0775,
+      "bound": "point",
+      "measured_s_per_execution": 0.00789
+     },
+     "M3+": {
+      "e_b": 8,
+      "e_m": 1,
+      "seconds": 2.33,
+      "bound": "point",
+      "measured_s_per_execution": 0.0055
+     }
+    }
+   },
+   "strongest_conventional_by_median_e1": [
+    "M1"
+   ],
+   "strongest_conventional_by_median_method_s": [
+    "M3+"
+   ]
+  },
+  "d3-inventory": {
+   "methods": {
+    "M0": {
+     "e1": [
+      null,
+      null,
+      null,
+      null,
+      null
+     ],
+     "statuses": [
+      "censored:executions",
+      "censored:executions",
+      "censored:executions",
+      "censored:executions",
+      "censored:executions"
+     ],
+     "median_e1_censored_at_budget_plus_1": 1001,
+     "success_at": {
+      "10": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      },
+      "30": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      },
+      "100": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      },
+      "300": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      },
+      "1000": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      }
+     },
+     "method_s": [
+      7.041,
+      7.009,
+      8.187,
+      9.471,
+      9.583
+     ],
+     "median_method_s": 8.187,
+     "median_method_s_to_verified_censored_at_cap_plus_1": 901,
+     "median_model_s": 0.0,
+     "median_s_per_execution": 0.00819,
+     "stress": {
+      "per_trial": [
+       {
+        "stress": 1000,
+        "hits": 0,
+        "unreproduced_hits": 0,
+        "exploration_executions": 0,
+        "inconclusive_stress": 0
+       },
+       {
+        "stress": 1000,
+        "hits": 0,
+        "unreproduced_hits": 0,
+        "exploration_executions": 0,
+        "inconclusive_stress": 0
+       },
+       {
+        "stress": 1000,
+        "hits": 0,
+        "unreproduced_hits": 0,
+        "exploration_executions": 0,
+        "inconclusive_stress": 0
+       },
+       {
+        "stress": 1000,
+        "hits": 0,
+        "unreproduced_hits": 0,
+        "exploration_executions": 0,
+        "inconclusive_stress": 0
+       },
+       {
+        "stress": 1000,
+        "hits": 0,
+        "unreproduced_hits": 0,
+        "exploration_executions": 0,
+        "inconclusive_stress": 0
+       }
+      ],
+      "hit_rate": 0.0
+     }
+    },
+    "M1": {
+     "e1": [
+      null,
+      null,
+      null,
+      null,
+      null
+     ],
+     "statuses": [
+      "censored:executions",
+      "censored:executions",
+      "censored:executions",
+      "censored:executions",
+      "censored:executions"
+     ],
+     "median_e1_censored_at_budget_plus_1": 1001,
+     "success_at": {
+      "10": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      },
+      "30": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      },
+      "100": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      },
+      "300": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      },
+      "1000": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      }
+     },
+     "method_s": [
+      6.757,
+      6.752,
+      9.329,
+      9.904,
+      9.744
+     ],
+     "median_method_s": 9.329,
+     "median_method_s_to_verified_censored_at_cap_plus_1": 901,
+     "median_model_s": 0.0,
+     "median_s_per_execution": 0.00933,
+     "source": "same-session regression"
+    },
+    "M3+": {
+     "e1": [
+      211,
+      246,
+      211,
+      211,
+      775
+     ],
+     "statuses": [
+      "verified",
+      "verified",
+      "verified",
+      "verified",
+      "verified"
+     ],
+     "median_e1_censored_at_budget_plus_1": 211,
+     "success_at": {
+      "10": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      },
+      "30": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      },
+      "100": {
+       "k": 0,
+       "n": 5,
+       "wilson95": [
+        0.0,
+        0.434
+       ]
+      },
+      "300": {
+       "k": 4,
+       "n": 5,
+       "wilson95": [
+        0.376,
+        0.964
+       ]
+      },
+      "1000": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      }
+     },
+     "method_s": [
+      1.274,
+      1.73,
+      1.904,
+      1.839,
+      6.748
+     ],
+     "median_method_s": 1.839,
+     "median_method_s_to_verified_censored_at_cap_plus_1": 1.839,
+     "median_model_s": 0.0,
+     "median_s_per_execution": 0.00871,
+     "source": "same-session regression"
+    },
+    "M4": {
+     "e1": [
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "statuses": [
+      "verified",
+      "verified",
+      "verified",
+      "verified",
+      "verified"
+     ],
+     "median_e1_censored_at_budget_plus_1": 1,
+     "success_at": {
+      "10": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "30": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "100": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "300": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "1000": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      }
+     },
+     "method_s": [
+      11.274,
+      13.817,
+      11.067,
+      12.687,
+      12.585
+     ],
+     "median_method_s": 12.585,
+     "median_method_s_to_verified_censored_at_cap_plus_1": 12.585,
+     "median_model_s": 12.57,
+     "median_s_per_execution": 0.017,
+     "source": "same-session regression"
+    },
+    "A2": {
+     "e1": [
+      1,
+      1,
+      114,
+      71,
+      71
+     ],
+     "statuses": [
+      "verified",
+      "verified",
+      "verified",
+      "verified",
+      "verified"
+     ],
+     "median_e1_censored_at_budget_plus_1": 71,
+     "success_at": {
+      "10": {
+       "k": 2,
+       "n": 5,
+       "wilson95": [
+        0.118,
+        0.769
+       ]
+      },
+      "30": {
+       "k": 2,
+       "n": 5,
+       "wilson95": [
+        0.118,
+        0.769
+       ]
+      },
+      "100": {
+       "k": 4,
+       "n": 5,
+       "wilson95": [
+        0.376,
+        0.964
+       ]
+      },
+      "300": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      },
+      "1000": {
+       "k": 5,
+       "n": 5,
+       "wilson95": [
+        0.566,
+        1.0
+       ]
+      }
+     },
+     "method_s": [
+      27.821,
+      21.497,
+      30.945,
+      44.953,
+      33.837
+     ],
+     "median_method_s": 30.945,
+     "median_method_s_to_verified_censored_at_cap_plus_1": 30.945,
+     "median_model_s": 30.07,
+     "median_s_per_execution": 0.00799,
+     "source": "A2 run, 2026-10-28 (different session)"
+    }
+   },
+   "break_even_per_execution": {
+    "M4": {
+     "M0": {
+      "e_b": 1001,
+      "e_m": 1,
+      "seconds": 0.0126,
+      "bound": "upper bound (baseline median censored)",
+      "measured_s_per_execution": 0.00819
+     },
+     "M1": {
+      "e_b": 1001,
+      "e_m": 1,
+      "seconds": 0.0126,
+      "bound": "upper bound (baseline median censored)",
+      "measured_s_per_execution": 0.00933
+     },
+     "M3+": {
+      "e_b": 211,
+      "e_m": 1,
+      "seconds": 0.0599,
+      "bound": "point",
+      "measured_s_per_execution": 0.00871
+     }
+    },
+    "A2": {
+     "M0": {
+      "e_b": 1001,
+      "e_m": 71,
+      "seconds": 0.0323,
+      "bound": "upper bound (baseline median censored)",
+      "measured_s_per_execution": 0.00819
+     },
+     "M1": {
+      "e_b": 1001,
+      "e_m": 71,
+      "seconds": 0.0323,
+      "bound": "upper bound (baseline median censored)",
+      "measured_s_per_execution": 0.00933
+     },
+     "M3+": {
+      "e_b": 211,
+      "e_m": 71,
+      "seconds": 0.2148,
+      "bound": "point",
+      "measured_s_per_execution": 0.00871
+     }
+    }
+   },
+   "strongest_conventional_by_median_e1": [
+    "M3+"
+   ],
+   "strongest_conventional_by_median_method_s": [
+    "M3+"
+   ]
+  }
+ },
+ "predictions": {
+  "P1 D2: all 5 M0 trials verified": true,
+  "P2 D2: M0 median E1 in 2-15": true,
+  "P3 D3: M0 censored in all 5": true,
+  "P4, P5": "see check_validity.py V7, V8, V9"
+ }
+}

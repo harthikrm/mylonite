@@ -1,0 +1,122 @@
+{
+ "git_commit": "1f7207b71cff29e85fe16ee4151969eaa02c5993",
+ "git_dirty": [],
+ "files_sha256": {
+  "docker/executor-d1.Dockerfile": "f18bc82b78e57e94cf09a1bd60a322fd4f52fbbe8af8dac3759cf7c046202539",
+  "docker/executor.Dockerfile": "afb1f6ffe2f0c9440ba1ba68937a238c3e300a27c206214ee59c7823614a2e88",
+  "docker/requirements-d1.lock": "b724aabbcd652932b79b6f4d0f87cc1e0663b24b6562c76a53fd54481ba4fff8",
+  "docker/requirements.lock": "ad8dfc86aad735afc2b032d0bbac3404fde42cf9cc9a6f3ad215695d26855a08",
+  "experiments/2026-10-30-m0-d2-d3/analyze.py": "828e5bd4c6f38f9b4525699a5e01112779acf56def88d36446cc2625c5411581",
+  "experiments/2026-10-30-m0-d2-d3/check_validity.py": "7c242b79b6bf391f613ae7397f1c635253ef97ec1016b060be58ff0a93271da6",
+  "experiments/2026-10-30-m0-d2-d3/config.json": "cc04b7addff45c37ae0c3943b09f1832e65f2aa53d63dadaae05599209bbb8fd",
+  "experiments/2026-10-30-m0-d2-d3/run_m0.py": "d2a2aa075cc662ee087eae4d74f962659d1ea24a1f76351046c83e195ffd4bb5",
+  "fixtures/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "fixtures/dev/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "fixtures/dev/d2_counter/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "fixtures/dev/d2_counter/service.py": "4d9b815ad000812e9bb550f967a19aa5876903bda5f281f2c9e8a390d5a77e35",
+  "fixtures/dev/d2_counter/service_fixed.py": "a38350ae2913de496d650b2c7455337dc6513053351358b67e952aefcfb82de9",
+  "fixtures/dev/d2_counter/target.json": "2201c6d412309dc86a218cfaab86f57b8ebae10041172f8589ccfef7b3350613",
+  "fixtures/dev/d3_inventory/DESIGN.md": "96d43eb13e40550bd545f5dcee69d4d649f95e960791ada062829b63184dddec",
+  "fixtures/dev/d3_inventory/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "fixtures/dev/d3_inventory/service.py": "a08ca47d15a3fa01e22e7fe48ffafb67ad428b318c99696ed355a538396262e8",
+  "fixtures/dev/d3_inventory/service_fixed.py": "1fd5228e7d2988a7d7de4e9386258e806fc0b957cf83e2adbd7c37d27171e593",
+  "fixtures/dev/d3_inventory/target.json": "594b535a21e35b7c5a726b578be2c87f3b4c52912df00382dc3685e6f8025da0",
+  "src/mylonite/__init__.py": "980ce6b63c80396d40e46796bc524236b86c3242014325bee3492016d8bb81df",
+  "src/mylonite/adapters/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/mylonite/adapters/otel_cart.py": "e276b02ac9ee6f04d755270793ee67f5531ab5a03b9237495de2c1f59845145d",
+  "src/mylonite/audit.py": "08c0f5049467308124efe34bea490d48a644376c68ab7c1117fb368adfc7e779",
+  "src/mylonite/executor.py": "6baa877876f4d7783d4e149bb02d4a53c9a2eef287ffc0d6c1d71fef6dfb5348",
+  "src/mylonite/methods.py": "4e12eab75631783216abbcdaa21bc825e445158db47fe84b452adc7a0beddcde",
+  "src/mylonite/oracle.py": "be1f7a4bb671bab10ee1678af66db930c98996aa84208c180b4b90f8e578fdc2",
+  "src/mylonite/planner.py": "ea422cb5a92471c0ae40a29cd8b36acf9b47dcd1628ac238e42759795cc2d9c1",
+  "src/mylonite/proxy.py": "6b1cdae9bd380a7d37fd29b0ae5b5ea83a94bf99df911785e36cf37f135ff940",
+  "src/mylonite/resp.py": "3ebaee0b6ca3bbf9ccea6edf9cbc262bcb64483ba77de7ac46762ed5eacb2b6f",
+  "src/mylonite/sandbox.py": "d892842ef3214fde47bea2e2fe745d515d21c8651b2f59dc38add0bbea167a26",
+  "src/mylonite/scheduler.py": "d698006eb74f051cf8ba8ad94efeb5525e3bbfe10442d959b0c3fb3f44cfb8f3",
+  "src/mylonite/space.py": "c4f0947ed270a5fc55f38f75f62cbf06df08308b60834afbe5ba29205ad5fe20",
+  "tests/test_contamination.py": "a5ff574f9678564ee5f6b34dbd2f54c07d3a0dd021c87d2644521fabde620b50",
+  "tests/test_core.py": "e2ac935124b7d3be95dd25fd933874c8b9ad49e95fd264f93323bfcb66b657cd",
+  "tests/test_d1.py": "23fe955524ec9837034bdd44c0d3e57a96b54679b248a53da9ca21aa6f802a5d",
+  "tests/test_sandbox.py": "2f9a97ed05d79882dbf63686315dc9ff559ec8f5bf534e830307c6dbbf96613a"
+ },
+ "host_python": "3.14.5",
+ "images": {
+  "executor": "sha256:fc531f255610701165b8eb231bc8bc6863a90189fb6752c73c15f55f60ab7c33",
+  "valkey": "ghcr.io/valkey-io/valkey@sha256:107b203169a20ef7c87548c157f4e4a833dbbbd20fefd3a26740b7f98ac80216"
+ },
+ "config": {
+  "experiment": "2026-10-30 stress (M0) on D2 and D3, no model calls",
+  "status": "pre-registered 2026-10-30, before any M0 trial at seeds 1-5 (PROTOCOL.md)",
+  "targets": [
+   "fixtures/dev/d2_counter/target.json",
+   "fixtures/dev/d3_inventory/target.json"
+  ],
+  "methods": [
+   "M0"
+  ],
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "budget": {
+   "executions": 1000,
+   "method_seconds": 900,
+   "schedules_per_experiment": 50
+  },
+  "verification": {
+   "replays": 20,
+   "corrected_exhaustive_cap": 5000,
+   "corrected_bounded_random": 2000
+  },
+  "executor": {
+   "delta_q_ms": 300,
+   "round_timeout_s": 10
+  },
+  "prices": {
+   "input": 1.25,
+   "cached": 0.15,
+   "output": 4.25,
+   "compute_per_second": 1.11e-05
+  },
+  "report_success_at": [
+   10,
+   30,
+   100,
+   300,
+   1000
+  ],
+  "pilot_raw_run": "runs/pilot-20261028-165020",
+  "notes": {
+   "same as the pilot": "targets, seeds, budget, verification (no inconclusive re-runs), executor and prices are the pilot's (experiments/2026-10-29-pilot/config.json)",
+   "space": "the pilot's: setup <= 6 calls, 2-4 concurrent calls (D2 and D3 set no lower limit)",
+   "seeds": "M0 seeds its workload draws only (M0:<seed>); real timing is not seeded. Seed 0 was used by the smoke run and is excluded.",
+   "reference": "after the M0 trials, regression.py re-runs the 30 pilot trials (M1, M3+ and M4 from recorded answers; no API call) in the same session: the same-session timing reference, and a check that the harness still reproduces the pilot exactly"
+  }
+ },
+ "argv": [],
+ "started": "2026-10-30T17:56:16-0500",
+ "executor": {
+  "d2-loyalty-points": {
+   "ready": true,
+   "egress_probe": {
+    "tcp_1.1.1.1:443": "blocked (OSError)",
+    "dns_pypi.org": "blocked (gaierror)"
+   },
+   "python": "3.13.18",
+   "redis_py": "8.1.0"
+  },
+  "d3-inventory": {
+   "ready": true,
+   "egress_probe": {
+    "tcp_1.1.1.1:443": "blocked (OSError)",
+    "dns_pypi.org": "blocked (gaierror)"
+   },
+   "python": "3.13.18",
+   "redis_py": "8.1.0"
+  }
+ },
+ "finished": "2026-10-30T17:58:22-0500"
+}

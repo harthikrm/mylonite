@@ -1,0 +1,118 @@
+[
+ {
+  "criterion": "V1 provenance",
+  "pass": true,
+  "detail": {
+   "manifest_commit": "1f7207b71cff29e85fe16ee4151969eaa02c5993",
+   "dirty": [],
+   "config_sha256": "cc04b7addff45c37ae0c3943b09f1832e65f2aa53d63dadaae05599209bbb8fd",
+   "images": {
+    "executor": "sha256:fc531f255610701165b8eb231bc8bc6863a90189fb6752c73c15f55f60ab7c33",
+    "valkey": "ghcr.io/valkey-io/valkey@sha256:107b203169a20ef7c87548c157f4e4a833dbbbd20fefd3a26740b7f98ac80216"
+   },
+   "pilot_images": {
+    "executor": "sha256:fc531f255610701165b8eb231bc8bc6863a90189fb6752c73c15f55f60ab7c33",
+    "valkey": "ghcr.io/valkey-io/valkey@sha256:107b203169a20ef7c87548c157f4e4a833dbbbd20fefd3a26740b7f98ac80216"
+   }
+  }
+ },
+ {
+  "criterion": "V2 trials",
+  "pass": true,
+  "detail": {
+   "trials": 10,
+   "errors": []
+  }
+ },
+ {
+  "criterion": "V3 verification",
+  "pass": true,
+  "detail": {
+   "failing": [],
+   "modes": {
+    "d2-loyalty-points/1": "exhaustive",
+    "d2-loyalty-points/2": "exhaustive",
+    "d2-loyalty-points/3": "exhaustive",
+    "d2-loyalty-points/4": "exhaustive",
+    "d2-loyalty-points/5": "exhaustive"
+   }
+  }
+ },
+ {
+  "criterion": "V4 workloads in the space",
+  "pass": true,
+  "detail": {
+   "invalid": [],
+   "count": 0
+  }
+ },
+ {
+  "criterion": "V5 budgets",
+  "pass": true,
+  "detail": {
+   "over_budget": [],
+   "censored_early": []
+  }
+ },
+ {
+  "criterion": "V6 E1 from the raw log",
+  "pass": true,
+  "detail": {
+   "mismatches": []
+  }
+ },
+ {
+  "criterion": "V7 no violation on the corrected build",
+  "pass": true,
+  "detail": {
+   "found": []
+  }
+ },
+ {
+  "criterion": "V8 harness health",
+  "pass": true,
+  "detail": {
+   "by_target": {
+    "d2-loyalty-points": {
+     "search_executions": 75,
+     "inconclusive": 0
+    },
+    "d3-inventory": {
+     "search_executions": 5000,
+     "inconclusive": 0
+    }
+   }
+  }
+ },
+ {
+  "criterion": "V9 same-session regression",
+  "pass": false,
+  "detail": {
+   "trials": 30,
+   "identical_trials": 30,
+   "identical_event_streams": 30,
+   "events_compared": 6766,
+   "differences": [],
+   "commit": [
+    "1f7207b71cff29e85fe16ee4151969eaa02c5993",
+    "dirty"
+   ]
+  }
+ },
+ {
+  "criterion": "V10 earlier experiments and fixtures unchanged",
+  "pass": true,
+  "detail": {
+   "since": "c301ecf",
+   "paths": [
+    "experiments/2026-10-29-pilot",
+    "experiments/2026-10-28-a2-no-source",
+    "experiments/2026-10-28-d1-gate",
+    "experiments/2026-10-29-d1-baselines",
+    "fixtures"
+   ],
+   "fixtures_since_pilot": "db1f84f"
+  }
+ }
+]
+SOME CHECKS FAILED
