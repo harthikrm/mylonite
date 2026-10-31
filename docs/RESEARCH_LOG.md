@@ -393,3 +393,18 @@ and a human read of REINS.
     215 ms for A2) stands against all three required conventional methods.
   - D2, like D1, is a "baselines win" case on wall-clock.
 - **Lesson.** A runner must not write into the tree before it records the tree's state.
+
+## 2026-10-31: M3+arg implemented (D-033; no model calls)
+
+- **Change.** `methods.run_m3plus_arg` is M3+ with one change: after the frontier, the argument
+  variants of the explored pairs go first among the deferred pairs (D-024). Registered as
+  `M3+arg`. M3+ itself is refactored only.
+- **Checks.**
+  - FACT: on the pilot's recorded D3 data (no execution), M3+ still reproduces the pilot logs.
+    M3+arg gives D-024's estimate exactly: 211, 246, 211, 211, 555.
+  - FACT: the same-session regression is identical in all 30 pilot trials and 6,766 events.
+  - FACT: smoke at seed 0 (not data):
+    - D2: both methods at E₁ 8;
+    - D3: M3+ 775 and M3+arg 555, with the same witness and identical events through the
+      frontier.
+- **Not measured.** No M3+arg trial at seeds 1–5. The D3 numbers there remain an estimate.

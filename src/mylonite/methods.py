@@ -9,6 +9,8 @@ every execution), the per-experiment schedule cap, and the verification procedur
       reproduced under the scheduler, since an uncontrolled run has no schedule to replay.
 - M1  random workload (space.random_workload) under a random schedule, one execution each.
 - M3+ greybox setup search plus conflict-directed exhaustive exploration of pairs.
+- M3+arg  M3+, except that the argument variants of the pairs it explored come first among its
+      deferred pairs (D-024).
 - M4  Muse proposes experiments; each runs hint-first, then depth-first up to the cap; the model
       sees results of its own experiments only (planner.feedback_entry).
 """
@@ -253,13 +255,18 @@ def unserializable_pair(pa, pb):
     return any(l > i or k < j for i, j in pairs for l, k in pairs)
 
 
+def pair_signature(a, b):
+    """A pair's command signature: both profiles' commands and key digests, not argument values."""
+    return tuple(map(tuple, a[1])), tuple(map(tuple, b[1]))
+
+
 def pair_priority(pairs, observed_keys):
     """Split a state's candidate pairs into (now, later). Now: pairs with a conflict on a key the
     contract's observation reads, one per distinct command signature. Later: everything else,
     deferred rather than dropped. Uses only what M3+ measured itself."""
     now, later, signatures = [], [], set()
     for a, b in pairs:
-        signature = (tuple(map(tuple, a[1])), tuple(map(tuple, b[1])))
+        signature = pair_signature(a, b)
         relevant = any(conflict(x, y) and x[1] in observed_keys for x in a[1] for y in b[1])
         if relevant and signature not in signatures:
             signatures.add(signature)
@@ -269,18 +276,23 @@ def pair_priority(pairs, observed_keys):
     return now, later
 
 
-def run_m3plus(trial, target, seed, cfg):
+def run_m3plus(trial, target, seed, cfg, promote_variants=False):
     """Breadth-first over setup states. At each state, profile every catalog call alone (one
     execution each). A call whose behavior (operation, command names, outcome) is new and which
     leads to a new store state extends the frontier. Then explore, depth-first up to the cap,
     the pairs of calls whose profiles at that state can interleave unserializably: first the
     contract-relevant ones (``pair_priority``), the rest after the frontier is exhausted.
-    Seeds only shuffle the order of calls and pairs."""
+    Seeds only shuffle the order of calls and pairs.
+
+    ``promote_variants`` is M3+arg (D-024): of the deferred pairs, those deferred only because
+    they share a command signature with a pair explored at the same state, that is, the same
+    calls with other argument values, are explored first, in the order M3+ would have reached
+    them. M3+arg uses M3+'s seed stream, so it is M3+ exactly until the frontier is exhausted."""
     rng = random.Random(f"M3+:{seed}")
     calls = space.op_calls(target)
     observe_op = target["observe"]["op"]
     behaviors, states = set(), set()
-    frontier, deferred = collections.deque([[]]), []
+    frontier, variants, deferred = collections.deque([[]]), [], []
     while frontier:
         setup = frontier.popleft()
         order = calls[:]
@@ -305,12 +317,21 @@ def run_m3plus(trial, target, seed, cfg):
         trial.stats["m3_states"] += 1
         trial.stats["m3_pairs"] += len(pairs)
         trial.stats["m3_pairs_deferred"] += len(later)
-        deferred += [(setup, a, b) for a, b in later]
+        explored = {pair_signature(a, b) for a, b in now}
+        for a, b in later:
+            promoted = promote_variants and pair_signature(a, b) in explored
+            (variants if promoted else deferred).append((setup, a, b))
         for (a, _), (b, _) in now:
             trial.explore({"setup": setup, "concurrent": [a, b]}, cfg["schedules_per_experiment"])
-    for setup, (a, _), (b, _) in deferred:
+    if promote_variants:  # M3+'s counters stay exactly as in the pilot
+        trial.stats["m3arg_variants_promoted"] += len(variants)
+    for setup, (a, _), (b, _) in variants + deferred:
         trial.explore({"setup": setup, "concurrent": [a, b]}, cfg["schedules_per_experiment"])
     trial.stats["m3_plan_exhausted"] = 1
+
+
+def run_m3plus_arg(trial, target, seed, cfg):
+    run_m3plus(trial, target, seed, cfg, promote_variants=True)
 
 
 # --- M4 -----------------------------------------------------------------------------------------
@@ -351,7 +372,7 @@ def run_m4(trial, target, seed, cfg, model, repo_root):
     trial.stats["m4_rounds_exhausted"] = 1
 
 
-METHODS = {"M0": run_m0, "M1": run_m1, "M3+": run_m3plus, "M4": run_m4}
+METHODS = {"M0": run_m0, "M1": run_m1, "M3+": run_m3plus, "M3+arg": run_m3plus_arg, "M4": run_m4}
 
 
 def run_trial(method, session, target, seed, cfg, log, model=None, repo_root=None):

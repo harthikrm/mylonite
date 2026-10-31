@@ -68,6 +68,7 @@ Only workload choice and scheduling policy vary.
 | M0 | **Stress** | Random over catalog × domains | Real concurrency; the proxy records the command order it saw so that a hit can be replayed | Required. What practitioners do today. |
 | M1 | **Random** | Per execution: 0–6 setup calls and 2–4 concurrent calls, lengths uniform, each call's operation and arguments uniform | `random(seed)` | Required |
 | M3+ | **Conflict-directed systematic, with greybox setup search** | Breadth-first over setup states. At each state, profile every catalog call alone through the proxy (one execution each) to get its command sequence with key digests. A call whose behavior (operation, command names, outcome) is new and which leads to a new store-state digest extends the frontier (≤ 6 setup calls). Then every pair of calls whose profiles admit an unserializable interleaving (`methods.unserializable_pair`: the two-transaction conflict-cycle condition) is explored. Pairs with a conflict on a key read by the contract's observation are explored first, one per command signature; the rest are deferred until the frontier is exhausted, never dropped (`methods.pair_priority`, D-023). Seeds only shuffle call and pair order. Pairs only; triples are not implemented. Novelty ignores argument values, so M3+ builds one state per new behavior (for example, a single restock quantity) | `exhaustive`, ≤ `K` per pair | Required. **The strongest non-LLM baseline.** |
+| M3+arg | **M3+, argument-aware** (post-pilot addition) | As M3+, with M3+'s seed stream, until its frontier is exhausted. Then, ahead of its other deferred pairs, the pairs it deferred only because they share a command signature with a pair it explored at the same state: the same calls with other argument values (`methods.run_m3plus_arg`, D-024, D-033) | `exhaustive`, ≤ `K` per pair | Run beside M3+ on held-out targets, never instead of it. Both are reported |
 | M4 | **Muse** | Up to 5 planning rounds per trial. Each round makes one call returning ≤ 3 experiments; each valid experiment runs hint-first, then depth-first. A hint lists store commands in the order they should run; an operation's earlier, unlisted commands run as needed to reach the listed one (`scheduler.HintPolicy`). The next round's request adds feedback on the model's own experiments only (`planner.feedback_entry`: workload, schedules explored, outcome, command names and observations of the first schedule) | `hint → exhaustive`, ≤ `K` per experiment | Required |
 | A2 | Muse without source | Catalog and domains only | `hint → exhaustive` | Required. Is reading code what helps? |
 | M2 | PCT | Random | `pct(seed, d=2,3)` | If time allows |
@@ -295,3 +296,11 @@ None yet (nothing has been frozen).
 - **Verification re-runs an inconclusive execution**, at most `inconclusive_reruns` times
   (D-030; D1: 2). A completed run with the wrong verdict or trace is never re-run. §8's "20/20"
   counts completed replays. Re-runs are reported.
+
+### Post-pilot amendment (2026-10-31, before the method freeze)
+
+- **M3+arg is added as a conventional baseline** (D-024 accepted 2026-10-28; implemented in
+  D-033). It runs beside M3+ on held-out targets, and both are reported. M3+ is unchanged: the
+  pilot's 30 trials still reproduce event for event.
+- How M3+arg enters §7's comparisons (for example, against the better of M3+ and M3+arg per
+  target) is fixed at the freeze, not here.

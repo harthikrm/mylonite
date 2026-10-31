@@ -208,7 +208,7 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
 ## D-024 M3+arg: an argument-aware variant of M3+, as an additional baseline
 - Date: 2026-10-28. Status: **Accepted** by the owner on 2026-10-28 (**post-pilot development**).
   The original M3+ and every pilot and A2 result stay as they are. The emulated M3+arg numbers
-  below are estimates, not measurements. Not yet implemented in `methods.py`.
+  below are estimates, not measurements. Implemented on 2026-10-31 (D-033).
 - Context:
   - M3+'s pair priority (D-023) keeps one pair per command signature. Calls that differ only in
     argument values share a signature.
@@ -401,3 +401,60 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
     - every model-path item for third-party targets.
 - The gate ran the cart before this record existed. That is disclosed in the record and in the
   gate's errata.
+
+## D-033 M3+arg as implemented
+- Date: 2026-10-31. Status: **Accepted** (implements D-024; the owner approved implementation
+  on 2026-10-31, "Yes, implement it"). No M3+arg trial at seeds 1–5 on any target.
+- Decision:
+  - `methods.run_m3plus_arg`, registered as `M3+arg`, is `run_m3plus` with
+    `promote_variants=True`.
+  - It uses M3+'s seed stream (`M3+:<seed>`). So it is M3+ exactly until the frontier is
+    exhausted.
+  - **Variants.** At each state, a deferred pair is a variant if its command signature equals
+    that of a pair explored at that state. The signature (`methods.pair_signature`) is both
+    profiles' commands and key digests.
+    - The same signature means the same commands at the same state.
+    - So a variant was deferred only by the one-pair-per-signature rule: it is the same calls
+      with other argument values.
+  - **Order after the frontier.**
+    - First the variants: states in breadth-first order, and M3+'s shuffled order within a
+      state.
+    - Then the other deferred pairs, in M3+'s order.
+    - Nothing is dropped or added.
+  - This is D-024's proposal, and the A2 emulator's prototype, line for line.
+  - **For M3+, the change is a refactor.**
+    - The signature becomes a named function.
+    - The deferred list is split in two, and the first part is always empty for M3+.
+    - M3+'s counters are unchanged. M3+arg adds `m3arg_variants_promoted`.
+- Evidence (no model calls; development seeds only):
+  - `tests/test_m3arg.py`:
+    - **On a two-state fake, seeds 1–5:** the same pairs as M3+, and M3+'s order through the
+      frontier. Then the variants, state by state, then the rest.
+    - **On the pilot's recorded D3 data, with no execution:**
+      - M3+ still reproduces every profile and exploration in the pilot logs.
+      - `methods.run_m3plus_arg`, used in place of the emulator's prototype, gives D-024's
+        estimate exactly: 211, 246, 211, 211, 555. No pair it reaches lacks a recorded cost.
+    - **With the promotion switched off,** both checks fail: 775 on seed 5, and a different
+      order.
+  - **Same-session regression** on the working tree that became this commit (`methods.py`
+    sha256 `07676669…`):
+    - all 30 pilot trials are identical in all 6,766 events;
+    - raw output in `runs/d1gate-regression-20261031-130057/` (git-ignored).
+  - **Smoke at seed 0, with the pilot's settings, not data** (`runs/m3arg-smoke-20261031-130325/`):
+    - **D2:** M3+ and M3+arg are identical, at E₁ 8. The hit came before the frontier was
+      exhausted.
+    - **D3:** seed 0 hit the blind spot.
+      - M3+ reached E₁ 775 and M3+arg 555, with the same witness: stock 2, `purchase` 2 ∥ 1.
+      - The event streams are identical through the last profile (event 328). They first
+        differ at the start of an exploration, and 8 variants were promoted.
+      - Both witnesses verified 20/20. The corrected build passed all 6 schedules.
+- Consequences:
+  - **Where M3+arg can differ from M3+:** only on a run where M3+ exhausts its frontier
+    without a verified hit.
+    - On D1 and D2, M3+ hit before that in every recorded trial. So M3+arg would have been
+      identical there.
+    - On the pilot's D3 seeds, the estimate differs only on seed 5.
+  - M3+arg's D3 numbers at seeds 1–5 are still the emulator's estimate, not a run. A run needs
+    its own pre-registration, and seed 0 is now used.
+  - M3+arg freezes at C1 with everything else, and runs beside M3+ on held-out targets (D-024;
+    `EVALUATION_PLAN.md`, post-pilot amendment).
