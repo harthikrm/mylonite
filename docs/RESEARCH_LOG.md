@@ -462,3 +462,29 @@ and a human read of REINS.
   beacon, and binds it in the salted commitment.
 - **Lesson.** A commitment scheme needs every input to the selection committed before the
   randomness exists, not only the files. Any value derived later is a choice.
+
+## 2026-11-01: held-out bases α and β (C2 preparation; no model calls)
+
+- **Written** to the specifications fixed at v1.0, sealed outside the repository. No round is
+  named, and no mutant has been run under concurrency.
+- FACT: the frozen C2 checks pass for both:
+  - serial 150/150;
+  - deterministic; pass-through clean; audit clean;
+  - all 13 sites serially equivalent;
+  - minimums met on live sites. One α site is dead.
+- FACT: an author-side safety check, pre-registered, explored only the unmutated bases under
+  concurrency: 41,378 executions, 0 violations.
+  - Its positive control, a toy check-then-act race, was flagged.
+  - Two toy mutants were not flagged, correctly: `non_negative` cannot see them.
+- **Review.** No must-fix defect. Should-fix items done before C2:
+  - two docstrings were false under concurrency, and were corrected (code unchanged);
+  - the strata's dependence on style is disclosed;
+  - the design notes are bound by hash.
+- FACT: redis-py 8.1.0 retries a timed-out command up to 10 times. This is a low-likelihood
+  double-execution path for every target, disclosed.
+- **Lesson.**
+  - Under `non_negative`, a lost update is visible only if it can overwrite a give-back.
+  - A check-then-act race is visible only if the take is relative, as with `DECRBY`. A computed
+    `SET` hides it.
+  - Two of my own toy controls showed this. The kind of contract decides which mutants can count
+    at all.

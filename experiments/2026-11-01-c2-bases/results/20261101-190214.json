@@ -1,0 +1,76 @@
+{
+ "started_utc": "2026-11-01T19:02:14Z",
+ "limits": {
+  "pair_cap": 2000,
+  "groups": 1000,
+  "group_schedules": 5,
+  "stress": 1000,
+  "minutes_per_base": 60
+ },
+ "results": {
+  "alpha": {
+   "stages": {
+    "pairs": {
+     "planned": 1992,
+     "explored": 1992,
+     "exhausted": 1992,
+     "capped": 0
+    },
+    "groups": {
+     "planned": 1000,
+     "run": 1000
+    },
+    "stress": {
+     "planned": 1000,
+     "run": 1000
+    }
+   },
+   "setups": 6,
+   "counts": {
+    "executions": 20384,
+    "PASS": 20384,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0,
+    "soundness_problems": 0,
+    "harness_errors": 0,
+    "forced_decisions": 0
+   },
+   "flagged": 0,
+   "passes": true,
+   "complete": true,
+   "seconds": 224.7
+  },
+  "beta": {
+   "stages": {
+    "pairs": {
+     "planned": 1470,
+     "explored": 1470,
+     "exhausted": 1470,
+     "capped": 0
+    },
+    "groups": {
+     "planned": 1000,
+     "run": 1000
+    },
+    "stress": {
+     "planned": 1000,
+     "run": 1000
+    }
+   },
+   "setups": 7,
+   "counts": {
+    "executions": 20994,
+    "PASS": 20994,
+    "VIOLATION": 0,
+    "INCONCLUSIVE": 0,
+    "soundness_problems": 0,
+    "harness_errors": 0,
+    "forced_decisions": 0
+   },
+   "flagged": 0,
+   "passes": true,
+   "complete": true,
+   "seconds": 237.4
+  }
+ }
+}

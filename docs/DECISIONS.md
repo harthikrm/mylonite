@@ -599,3 +599,42 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
     - the dialect can hide a site;
     - C6 caps each pair at 5,000 schedules;
     - the BLS signature is not checked by the tooling.
+
+## D-040 Held-out bases α and β written (C2 preparation)
+- Date: 2026-11-01. Status: **Bases ready; C2 not yet committed.** The owner said "Yes, write
+  the bases". C2 waits for the owner's approval of its outside requests.
+- Decision: the two bases, to the specifications fixed at v1.0
+  (`HELDOUT_PROTOCOL.md`, "Minimum scope v1.0"), sealed outside the repository:
+  - **α, event seat reservations:** 8 operations, 2 lifecycle operations, depth 2;
+  - **β, background-job leases:** 8 operations, 3 distractors, depth 1.
+  - Both contracts use `non_negative` on the resource left: seats, or ready jobs. "Once
+    operations finish": a read during a round can briefly see a value being given back.
+- Evidence (`experiments/2026-11-01-c2-bases/`):
+  - The frozen C2 checks pass:
+    - 150/150 serial PASS; deterministic; pass-through clean; audit clean;
+    - every site serially equivalent;
+    - 3 kinds (O1, O2, O3); at least 3 live sites per stratum.
+  - An author-side safety check, pre-registered as `0e06212`, ran the unmutated bases under
+    concurrency: 41,378 executions, 0 violations, complete coverage. It is not a frozen C2 check.
+  - An independent review found no must-fix defect. Its should-fix items are all done:
+    - docstrings corrected (executable code byte-identical);
+    - disclosures added;
+    - the design notes' SHA-256 bound in the repository.
+- Disclosed, not changed:
+  - **Design intent.** Both bases were written knowing the operators, so that losing atomicity
+    can violate the contract. The exception is each base's O3 site, which the author expects
+    to be excluded at C6. It is also each base's only route to a third operator kind.
+  - Both bases use the same two take idioms.
+  - Strata rest on style choices: β's pause check before its WATCH, and α's existence checks
+    inside its WATCHes.
+  - One dead site: α `O1:reserve:83`.
+  - Uncontracted interleavings:
+    - a reservation can finish after `close_sales`;
+    - a lease can finish after `pause`.
+  - A redis-py retry-on-timeout residual that affects every target.
+- Consequences:
+  - Next: `commit-c2`. It needs drand's chain info, an approved public GET, to name round R at
+    least 6 hours ahead. The named R is binding.
+  - The C2 digest timestamp and the round-R fetch each need approval.
+  - Do not edit `target.json` after the passing `check-bases`. `commit-c2` checks only each
+    `service.py` against the report.
