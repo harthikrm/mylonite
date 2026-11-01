@@ -488,3 +488,12 @@ and a human read of REINS.
     `SET` hides it.
   - Two of my own toy controls showed this. The kind of contract decides which mutants can count
     at all.
+
+## 2026-11-01: C2 committed and timestamped (round R = 6605131)
+
+- FACT: C2 commit `50fe826` at 19:57:14Z names drand mainnet round 6605131, scheduled
+  2026-11-02T02:02:30Z, 6 h 5 min later.
+- FACT: FreeTSA signed the C2 digest at 19:57:54Z. Four OTS calendar receipts are pending.
+- So the C2 → R ordering has an external witness: a signed time 6 h before the round. The OTS
+  Bitcoin attestations come later.
+- Next: C4 once R is out, then the owner's go for C5.

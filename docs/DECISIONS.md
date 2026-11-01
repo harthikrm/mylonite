@@ -638,3 +638,29 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
   - The C2 digest timestamp and the round-R fetch each need approval.
   - Do not edit `target.json` after the passing `check-bases`. `commit-c2` checks only each
     `service.py` against the report.
+
+## D-041 C2 committed: round R = 6605131, externally timestamped
+- Date: 2026-11-01. Status: **Done.** Owner approval: "Approve all three". That covers the
+  drand chain-info fetch, the C2 digest timestamp, and the round-R fetch.
+- **Chain info.** One GET of `https://api.drand.sh/info` at 19:56:58 UTC, saved verbatim in the
+  sealed private directory.
+  - Chain `8990e7a9…2ce`: League of Entropy mainnet, beacon "default", `pedersen-bls-chained`.
+  - Period 30 s; genesis 1595431050.
+- **C2 commit:** `50fe826`, at 2026-11-01T19:57:14Z. It names **R = 6605131**, scheduled
+  2026-11-02T02:02:30Z (21:02:30 ET Nov 1), 6 h 5 min after the commit.
+  - Rule, applied mechanically: the first round scheduled at least 6 h + 5 min after the
+    computation (19:57:13Z).
+  - The margin keeps R at least 6 h after the commit, as `HELDOUT_PROTOCOL.md` requires. It
+    selects a round a few later than "the first round 6 h after the commit". Disclosed.
+  - R is binding.
+- **Timestamps** (`experiments/heldout-v1/sealed/c2_timestamps/`, commit `9d09957`):
+  - FreeTSA signed the digest of `c2_commitment.json` at 19:57:54Z, 6 h 4 min before R.
+  - Four OpenTimestamps calendars returned pending receipts.
+  - Done with curl and openssl only. No `ots` client was installed: that would need a separate
+    approval.
+- **Not done:**
+  - FreeTSA root-chain verification (it needs their CA file);
+  - the OTS upgrade and verification (they need the client);
+  - the v1.0 and v1.1 manifest anchors, which are still unapproved.
+- Next: after R is published, fetch it (approved), then `generate`, `commit-c4` and `verify`.
+  C5 waits for the owner's `--approved-cap 30`.
