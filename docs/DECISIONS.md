@@ -458,3 +458,28 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
     its own pre-registration, and seed 0 is now used.
   - M3+arg freezes at C1 with everything else, and runs beside M3+ on held-out targets (D-024;
     `EVALUATION_PLAN.md`, post-pilot amendment).
+
+## D-034 Muse is compared with the better of M3+ and M3+arg
+- Date: 2026-10-31. Status: **Accepted** by the owner on 2026-10-31 ("Yes, better of both"),
+  before the method freeze and before any held-out code exists.
+- Context: D-024 and D-033 add M3+arg beside M3+, and both are reported. It was left open how
+  M3+arg enters `EVALUATION_PLAN.md` §7.
+- Decision (`EVALUATION_PLAN.md` §7):
+  - M3+ and M3+arg count as one systematic baseline. Every comparison of a Muse condition with
+    M3+ is made against both, and the result less favorable to Muse counts.
+  - **Tests.** Per target, the larger of the two p-values enters the Holm correction across
+    targets. This is an intersection–union test: rejecting both nulls at level α has level α,
+    so the pair needs no further correction. Â₁₂ is reported against both, and the less
+    favorable one counts.
+  - **Summary.** Better only if better than both; worse if worse than either; otherwise tied.
+    Each co-primary metric (E₁; wall-clock time and dollars) is judged separately.
+  - **Break-even per execution,** t* = L / (E_b − E_m): against the one with the lower median
+    E₁. That gives the larger t*, so the baseline wins on wall-clock over the wider range of
+    per-execution costs.
+  - Both baselines' own results are always reported.
+- Consequences:
+  - The rule can only make Muse look worse, never better. Picking the stronger baseline after
+    seeing results is therefore not a source of bias in Muse's favor.
+  - Development targets: M3+arg has no trial at seeds 1–5 on D1, D2 or D3. Comparisons there
+    use M3+ alone and say so. D-024's D3 estimate (median 211, the same as M3+) is not a
+    measurement.

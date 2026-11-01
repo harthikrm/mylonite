@@ -408,3 +408,8 @@ and a human read of REINS.
     - D3: M3+ 775 and M3+arg 555, with the same witness and identical events through the
       frontier.
 - **Not measured.** No M3+arg trial at seeds 1–5. The D3 numbers there remain an estimate.
+- **Owner decision (D-034).** Muse is compared with the better of M3+ and M3+arg on each
+  target and co-primary metric; the result less favorable to Muse counts. Per target, the
+  larger p-value enters Holm (an intersection–union test). The break-even uses the lower median
+  E₁, which gives the larger t*. Development comparisons stay against M3+ alone until M3+arg has
+  trials there.

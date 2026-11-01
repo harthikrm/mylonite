@@ -67,7 +67,7 @@ Only workload choice and scheduling policy vary.
 |---|---|---|---|---|
 | M0 | **Stress** | Random over catalog × domains | Real concurrency; the proxy records the command order it saw so that a hit can be replayed | Required. What practitioners do today. |
 | M1 | **Random** | Per execution: 0–6 setup calls and 2–4 concurrent calls, lengths uniform, each call's operation and arguments uniform | `random(seed)` | Required |
-| M3+ | **Conflict-directed systematic, with greybox setup search** | Breadth-first over setup states. At each state, profile every catalog call alone through the proxy (one execution each) to get its command sequence with key digests. A call whose behavior (operation, command names, outcome) is new and which leads to a new store-state digest extends the frontier (≤ 6 setup calls). Then every pair of calls whose profiles admit an unserializable interleaving (`methods.unserializable_pair`: the two-transaction conflict-cycle condition) is explored. Pairs with a conflict on a key read by the contract's observation are explored first, one per command signature; the rest are deferred until the frontier is exhausted, never dropped (`methods.pair_priority`, D-023). Seeds only shuffle call and pair order. Pairs only; triples are not implemented. Novelty ignores argument values, so M3+ builds one state per new behavior (for example, a single restock quantity) | `exhaustive`, ≤ `K` per pair | Required. **The strongest non-LLM baseline.** |
+| M3+ | **Conflict-directed systematic, with greybox setup search** | Breadth-first over setup states. At each state, profile every catalog call alone through the proxy (one execution each) to get its command sequence with key digests. A call whose behavior (operation, command names, outcome) is new and which leads to a new store-state digest extends the frontier (≤ 6 setup calls). Then every pair of calls whose profiles admit an unserializable interleaving (`methods.unserializable_pair`: the two-transaction conflict-cycle condition) is explored. Pairs with a conflict on a key read by the contract's observation are explored first, one per command signature; the rest are deferred until the frontier is exhausted, never dropped (`methods.pair_priority`, D-023). Seeds only shuffle call and pair order. Pairs only; triples are not implemented. Novelty ignores argument values, so M3+ builds one state per new behavior (for example, a single restock quantity) | `exhaustive`, ≤ `K` per pair | Required. **The strongest non-LLM baseline.** Muse is compared with the better of M3+ and M3+arg (§7, D-034) |
 | M3+arg | **M3+, argument-aware** (post-pilot addition) | As M3+, with M3+'s seed stream, until its frontier is exhausted. Then, ahead of its other deferred pairs, the pairs it deferred only because they share a command signature with a pair it explored at the same state: the same calls with other argument values (`methods.run_m3plus_arg`, D-024, D-033) | `exhaustive`, ≤ `K` per pair | Run beside M3+ on held-out targets, never instead of it. Both are reported |
 | M4 | **Muse** | Up to 5 planning rounds per trial. Each round makes one call returning ≤ 3 experiments; each valid experiment runs hint-first, then depth-first. A hint lists store commands in the order they should run; an operation's earlier, unlisted commands run as needed to reach the listed one (`scheduler.HintPolicy`). The next round's request adds feedback on the model's own experiments only (`planner.feedback_entry`: workload, schedules explored, outcome, command names and observations of the first schedule) | `hint → exhaustive`, ≤ `K` per experiment | Required |
 | A2 | Muse without source | Catalog and domains only | `hint → exhaustive` | Required. Is reading code what helps? |
@@ -199,8 +199,20 @@ Secondary:
   (10,000 resamples); survival curves.
 - M4 vs each required baseline per target: Mann–Whitney U on E₁ (censored values = `B_exec` + 1),
   Vargha–Delaney Â₁₂ (≥ 0.71 = large). Holm correction across the 6 held-out buggy targets.
-- Summary: targets where M4 is better, tied, or worse than M3+, separately for the shallow and
-  precondition subsets, on both co-primary metrics.
+- **M3+ and M3+arg count as one systematic baseline** (D-034). Wherever a Muse condition is
+  compared with M3+, it is compared with both, and the result less favorable to Muse counts:
+  - tests: per target, the larger of the two p-values enters the Holm correction (an
+    intersection–union test, so the pair needs no further correction). Â₁₂ is reported against
+    both, and the one less favorable to Muse counts;
+  - summary: better only if better than both; worse if worse than either; otherwise tied. Each
+    co-primary metric is judged separately;
+  - break-even per execution, t* = L / (E_b − E_m): against the one with the lower median E₁.
+    That gives the larger t*: the baseline wins on wall-clock at any per-execution cost below it.
+
+  Both baselines' own results are always reported. On a target where M3+arg has no trials (the
+  development targets so far), the comparison uses M3+ alone and says so.
+- Summary: targets where M4 is better, tied, or worse than the better of M3+ and M3+arg,
+  separately for the shallow and precondition subsets, on both co-primary metrics.
 - Development and held-out results are never pooled.
 
 ## 8. Independent verification of each reported failure
@@ -302,5 +314,6 @@ None yet (nothing has been frozen).
 - **M3+arg is added as a conventional baseline** (D-024 accepted 2026-10-28; implemented in
   D-033). It runs beside M3+ on held-out targets, and both are reported. M3+ is unchanged: the
   pilot's 30 trials still reproduce event for event.
-- How M3+arg enters §7's comparisons (for example, against the better of M3+ and M3+arg per
-  target) is fixed at the freeze, not here.
+- **Muse is compared with the better of M3+ and M3+arg** on each target and each co-primary
+  metric (§7; D-034, decided by the owner on 2026-10-31). This can only make Muse's results
+  look worse, never better.
