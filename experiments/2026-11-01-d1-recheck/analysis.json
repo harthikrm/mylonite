@@ -1,0 +1,146 @@
+{
+ "status": "estimates: Muse has never run on D1",
+ "baselines": {
+  "M0": {
+   "e1": 7,
+   "overhead_s": 0.0010000000000000009,
+   "method_s_median": 0.052
+  },
+  "M1": {
+   "e1": 18,
+   "overhead_s": 0.0020000000000000018,
+   "method_s_median": 0.143
+  },
+  "M3+": {
+   "e1": 23,
+   "overhead_s": 0.0020000000000000018,
+   "method_s_median": 0.121
+  }
+ },
+ "muse_scenarios": {
+  "M4-like (pilot M4 on D3: one call, with source)": {
+   "model_s": 12.57,
+   "model_s_range": [
+    11.05,
+    13.8
+   ],
+   "model_usd": 0.016184,
+   "calls": 1
+  },
+  "A2-like (A2 on D3: no source)": {
+   "model_s": 30.07,
+   "model_s_range": [
+    21.46,
+    44.4
+   ],
+   "model_usd": 0.036721,
+   "calls": 2
+  }
+ },
+ "measured_seconds_per_execution": {
+  "floor: reset + observe, empty workload": 0.002335,
+  "A_same_item, depth-first schedules (buggy)": 0.005625,
+  "A_same_item, depth-first schedules (fixed)": 0.00907,
+  "M1 draws: random workload, random schedule (buggy)": 0.005849999999999999,
+  "M3+ profile: one call after a random setup (buggy)": 0.007085
+ },
+ "reset_by_restart_s": 1.22,
+ "break_even": {
+  "M4-like (pilot M4 on D3: one call, with source), E_m = 1": {
+   "each": {
+    "M0": {
+     "status": "breaks_even",
+     "seconds_per_execution": 2.0948333333333333,
+     "dollar_tie_compute_seconds_per_execution": 243.003003003003
+    },
+    "M1": {
+     "status": "breaks_even",
+     "seconds_per_execution": 0.7392941176470588,
+     "dollar_tie_compute_seconds_per_execution": 85.76576576576576
+    },
+    "M3+": {
+     "status": "breaks_even",
+     "seconds_per_execution": 0.5712727272727273,
+     "dollar_tie_compute_seconds_per_execution": 66.27354627354627
+    }
+   },
+   "least_favorable": {
+    "status": "breaks_even",
+    "seconds_per_execution": 2.0948333333333333,
+    "dollar_tie_compute_seconds_per_execution": 243.003003003003
+   }
+  },
+  "M4-like (pilot M4 on D3: one call, with source), E_m = 3": {
+   "each": {
+    "M0": {
+     "status": "breaks_even",
+     "seconds_per_execution": 3.14225,
+     "dollar_tie_compute_seconds_per_execution": 364.5045045045045
+    },
+    "M1": {
+     "status": "breaks_even",
+     "seconds_per_execution": 0.8378666666666666,
+     "dollar_tie_compute_seconds_per_execution": 97.2012012012012
+    },
+    "M3+": {
+     "status": "breaks_even",
+     "seconds_per_execution": 0.6284,
+     "dollar_tie_compute_seconds_per_execution": 72.9009009009009
+    }
+   },
+   "least_favorable": {
+    "status": "breaks_even",
+    "seconds_per_execution": 3.14225,
+    "dollar_tie_compute_seconds_per_execution": 364.5045045045045
+   }
+  },
+  "A2-like (A2 on D3: no source), E_m = 1": {
+   "each": {
+    "M0": {
+     "status": "breaks_even",
+     "seconds_per_execution": 5.0115,
+     "dollar_tie_compute_seconds_per_execution": 551.3663663663663
+    },
+    "M1": {
+     "status": "breaks_even",
+     "seconds_per_execution": 1.7687058823529413,
+     "dollar_tie_compute_seconds_per_execution": 194.59989401165868
+    },
+    "M3+": {
+     "status": "breaks_even",
+     "seconds_per_execution": 1.3667272727272728,
+     "dollar_tie_compute_seconds_per_execution": 150.37264537264534
+    }
+   },
+   "least_favorable": {
+    "status": "breaks_even",
+    "seconds_per_execution": 5.0115,
+    "dollar_tie_compute_seconds_per_execution": 551.3663663663663
+   }
+  },
+  "A2-like (A2 on D3: no source), E_m = 3": {
+   "each": {
+    "M0": {
+     "status": "breaks_even",
+     "seconds_per_execution": 7.51725,
+     "dollar_tie_compute_seconds_per_execution": 827.0495495495494
+    },
+    "M1": {
+     "status": "breaks_even",
+     "seconds_per_execution": 2.0045333333333333,
+     "dollar_tie_compute_seconds_per_execution": 220.5465465465465
+    },
+    "M3+": {
+     "status": "breaks_even",
+     "seconds_per_execution": 1.5034,
+     "dollar_tie_compute_seconds_per_execution": 165.40990990990989
+    }
+   },
+   "least_favorable": {
+    "status": "breaks_even",
+    "seconds_per_execution": 7.51725,
+    "dollar_tie_compute_seconds_per_execution": 827.0495495495494
+   }
+  }
+ }
+}
