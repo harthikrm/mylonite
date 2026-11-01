@@ -413,3 +413,34 @@ and a human read of REINS.
   larger p-value enters Holm (an intersection–union test). The break-even uses the lower median
   E₁, which gives the larger t*. Development comparisons stay against M3+ alone until M3+arg has
   trials there.
+
+## 2026-11-01: method freeze v1.0 (late) and the D1 re-check (no model calls)
+
+- **Freeze.**
+  - FACT: the Oct 31 23:59 ET deadline passed without a freeze. The freeze commit `da3ca57`
+    (tag `freeze-v1.0`) carries its real time, about 5 hours late, and is recorded as a
+    deviation (D-035).
+  - FACT: the prompt fingerprint is the pilot's.
+  - FACT: manifest `b07fec5`; `freeze/manifest.py verify` and `check` pass.
+  - It is not anchored externally yet: OpenTimestamps needs the owner's approval.
+- **Analysis as code** (D-036). An independent review made two passes and found 10 must-fix
+  defects in the drafts. 3 of them favored Muse:
+  - unequal censoring of seconds and dollars;
+  - a break-even computed from successes only;
+  - a time-censored Muse trial that truncated E₁.
+
+  All were fixed before the freeze, and the counterexamples are now tests.
+- **Minimum held-out scope** (D-037): 2 drand-chosen mutants of 2 bases written after the
+  freeze, with the bases as negative controls, 20 trials per method, and a cut-off of Nov 3,
+  18:00 ET. None of it is built yet; C1b tooling comes first.
+- **D1 re-check** (`experiments/2026-11-01-d1-recheck/`). All pass criteria held at the frozen
+  code:
+  - FACT: the authentic defect reproduces (replays 20/20; 92.7% lost without the proxy);
+  - FACT: the #3825 build has 0 violations;
+  - FACT: an execution costs 5–9 ms;
+  - FACT: upstream `main` still has the bug.
+  - ESTIMATE: Muse would need 230–1,500× costlier executions to tie stress.
+  - Verdict: no-go for a Muse comparison on D1. M4 also cannot view C# under v1.0.
+- **Lesson.** The first draft's claim that every rule was "standard or less favorable to Muse"
+  was wrong twice in ways that only counterexamples exposed. Directional claims about
+  statistical rules need adversarial tests, not argument.
