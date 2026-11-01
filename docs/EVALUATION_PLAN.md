@@ -1,6 +1,9 @@
 # Evaluation Plan
 
-Status: **Approved design (2026-10-28, D-014 amended by D-018), not yet frozen.** It is
+Status: **Frozen as v1.0 on 2026-11-01** (`docs/FREEZE.md`, `freeze/v1.0/MANIFEST.json`; D-035),
+after the Oct 31 deadline, which is recorded as a protocol deviation. `FREEZE.md` §4 resolves
+every ambiguity in §6–§7 below, and `src/mylonite/analysis.py` implements it. Changes follow
+`docs/AMENDMENTS.md`. Approved design: 2026-10-28 (D-014, amended by D-018). It was
 pre-registered in two steps:
 1. The **pilot** (§9) runs on development targets on Oct 29 and may change budgets, domain sizes,
    and trial counts, which are recorded under "Deviations".
@@ -121,10 +124,15 @@ Only workload choice and scheduling policy vary.
 | D2 | Python counter fixture (redis-py, per-connection) | "A member's balance equals the sum of the points of all successful award calls for that member." | `GET` then `SET` lost update. Corrected: `INCRBY`. |
 | D3 | Python inventory fixture (8 operations, 24 calls; `fixtures/dev/d3_inventory/DESIGN.md`) | "A product's stock, as returned by stock(sku), is never negative." | Check-then-act in `purchase` (`GET` stock → compare → `DECRBY`). Reachable only after `create`, `restock`, `publish`; then two purchases that each fit and together exceed the stock. Corrected: check and decrement in one `EVAL`. Validated without search in `experiments/2026-10-28-d3-fixture/`. |
 | D4 | Node fixture (ioredis, multiplexed) | Fixture spec | Lost update over one shared connection |
-| D1 | **OTel Demo cart, built from source at tag `3.1.0`**, scenario A | Issue #3824 and the `AddItem` API meaning (quantity is added) | Concurrent `AddItem` lost update. Corrected: cart built with PR #3825's cart changes. Public bug, possibly memorized: never a discovery claim. |
+| D1 | **OTel Demo cart, built from source at tag `3.1.0`**, scenario A. **Development and feasibility target** (`FREEZE.md` §3) | Issue #3824 and the `AddItem` API meaning (quantity is added) | Concurrent `AddItem` lost update. Corrected: cart built with PR #3825's cart changes. Public bug, possibly memorized: never a discovery claim. |
 | D-ctl | Correct and weak-contract variants of D2–D4 | Fixture spec | None; must PASS |
 
 ### 4.2 Held-out set (sealed; the only source of effectiveness claims)
+
+**v1.0 uses the minimum scope** of `HELDOUT_PROTOCOL.md` (D-037): 2 mechanically generated
+mutants of 2 bases written after the freeze, with the bases as negative controls and 20 trials
+per method per target. The size and composition rules below are the original plan. Where the
+minimum scope differs, it governs, and the differences are disclosed with the results.
 
 - **Size:** 6 buggy services, 2 correct controls, 1 weak-contract control (for example,
   documented last-writer-wins, which must PASS), and 1 equivalent mutant (for example, a `WATCH`
@@ -166,7 +174,7 @@ Only workload choice and scheduling policy vary.
 | Risk | Control |
 |---|---|
 | Muse memorized #3824 | D1 is development only. **Memorization probe:** ask Muse, with no code, what concurrency bug the OTel demo cart has, and record the answer. Catalog names (`CartService/AddItem`) cannot be obfuscated, so A3-style renaming is not used on D1. |
-| Prompt tuned to the test set | Prompt, schemas and method code frozen before any held-out code exists (`HELDOUT_PROTOCOL.md` C1). The prompt fingerprint **and the SHA-256 of every file under `src/`** are recorded in every result manifest. Held-out results with any other hashes are discarded. |
+| Prompt tuned to the test set | Prompt, schemas and method code frozen before any held-out code exists (`HELDOUT_PROTOCOL.md` C1). The prompt fingerprint **and the SHA-256 of every file under `src/`** are recorded in every result manifest. ~~Held-out results with any other hashes are discarded.~~ **As frozen, this replaces discarding:** a held-out run refuses to start unless `freeze/manifest.py check` passes against the latest manifest version. Every version after v1.0 has an entry in `AMENDMENTS.md`, and nothing recorded is dropped. |
 | Author priors in the instructions | `planner.HYPOTHESIS_KINDS` names `lost_update` and `check_then_act`, which are exactly D2's and D3's bug classes and the classes the held-out mutation operators produce. It is the same for every target, but it is the author's prior. Disclosed; A2 does not remove it. |
 | Held-out leakage | Sealed archive outside the repository; hash committed first; prompt audit (fairness rule 4). |
 | Labels and answers in planner input | Fairness rules 5–6. All three leaks found in the Oct 28 tracer are closed:<br>• the "buggy variant" docstring (bare strings are now removed);<br>• the `fixtures/dev/` path (display names now);<br>• the witness-derived command enum (target-independent now).<br>The noninterference tests also found that later bare strings in a function survived the first normalizer; fixed. |
@@ -199,6 +207,17 @@ Secondary:
   (10,000 resamples); survival curves.
 - M4 vs each required baseline per target: Mann–Whitney U on E₁ (censored values = `B_exec` + 1),
   Vargha–Delaney Â₁₂ (≥ 0.71 = large). Holm correction across the 6 held-out buggy targets.
+  **As frozen (`FREEZE.md` §4):**
+  - exact two-sided tests with mid-ranks, on each co-primary metric separately;
+  - Holm across every held-out buggy target × co-primary metric;
+  - every non-finding counts as a failure;
+  - errored trials count against Muse;
+  - the stronger-baseline rule also applies to the group of all conventional baselines, which
+    is the headline;
+  - seconds and dollars are compared on a common scale, truncated at the smallest cost spent by
+    a censored trial;
+  - "tied" in this section means "no significant difference", which is not a claim of
+    equivalence.
 - **M3+ and M3+arg count as one systematic baseline** (D-034). Wherever a Muse condition is
   compared with M3+, it is compared with both, and the result less favorable to Muse counts:
   - tests: per target, the larger of the two p-values enters the Holm correction (an
@@ -261,8 +280,8 @@ Secondary:
 | T0 | Oct 28 | Tracer bullet on D2 end to end: controlled reproduction 20/20, corrected version PASS, one Muse call validated and executed, costs recorded. | Name the blocker; fix before anything else. |
 | P1 | Oct 29 EOD | Pilot complete; owner decision recorded. | Owner decides scope and claim. |
 | K | **Oct 30 EOD (kill gate)** | D1 verified on the real cart; #3825-patched cart PASSES under exhaustive exploration of the same workload. | If the proxy fails on the multiplexed client: Fallback A for fixtures, D1 by stress with a measured rate, and the claim narrows. |
-| F | Oct 31, 23:59 ET | Prompt and schema frozen; held-out sealed; pre-registration frozen. | Reduce Muse's role to A4 and freeze that instead. |
-| G3 | Nov 2, 12:00 ET | Held-out evaluation complete for the required methods. | Report what completed, with trial counts stated. |
+| F | Oct 31, 23:59 ET | Prompt and schema frozen; held-out sealed; pre-registration frozen. | Reduce Muse's role to A4 and freeze that instead. **Missed. The fallback was not taken, by owner decision; the freeze came on Nov 1 (Deviations).** |
+| G3 | Nov 2, 12:00 ET | Held-out evaluation complete for the required methods. | Report what completed, with trial counts stated. **Replaced by the v1.0 schedule and its Nov 3, 18:00 ET cut-off (`HELDOUT_PROTOCOL.md`).** |
 
 ## 12. Budget
 
@@ -275,7 +294,29 @@ Secondary:
 
 ## Deviations
 
-None yet (nothing has been frozen).
+### Freeze v1.0 (2026-11-01)
+
+- **The freeze is late.** Gate F was Oct 31, 23:59 ET. The last methodology commit before it is
+  `1e33881` (23:06 ET). The freeze commit carries its real time on Nov 1, and nothing is
+  backdated (`FREEZE.md` §1).
+- **Gate F's fallback (A4) is not taken.** That is the owner's decision ("prepare an immediate
+  freeze of the current approved methodology"), not a pre-registered branch.
+- **Held-out set.**
+  - It was not sealed by Oct 31.
+  - v1.0 uses the minimum scope (D-037): 2 mutants instead of 6, with no weak-contract control,
+    no equivalent mutant, Python per-connection clients only, and no style decoys.
+  - Gate G3 is replaced by the v1.0 schedule.
+- **Analysis.** Ambiguities resolved at the freeze, after every development result was known
+  (`FREEZE.md` §4, D-036):
+  - Holm runs across target × metric, not across targets only;
+  - every non-finding is a failure;
+  - errored trials count against Muse;
+  - the stronger-baseline rule is extended to the group of all conventional baselines;
+  - the break-even uses the least favorable baseline.
+
+  Each of these is the standard choice or the one less favorable to Muse.
+- **Held-out model cost cap:** $30, proposed. The owner must approve it before any held-out model
+  call.
 
 ### Pre-pilot amendments (2026-10-28, before any method ran on D3)
 

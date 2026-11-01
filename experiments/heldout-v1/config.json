@@ -1,0 +1,34 @@
+{
+  "experiment": "Held-out evaluation v1.0, minimum scope (docs/HELDOUT_PROTOCOL.md, 'Minimum scope v1.0')",
+  "status": "frozen with method freeze v1.0 (docs/FREEZE.md), before any held-out base, mutant or contract exists",
+  "targets": {
+    "buggy": "the 2 mutants generated at C4, one per base, named in the C4 manifest",
+    "negative_controls": "the 2 unmutated bases; each is also its mutant's corrected variant"
+  },
+  "methods": {
+    "buggy": ["M0", "M1", "M3+", "M3+arg", "M4", "A2"],
+    "negative_controls": ["M0", "M1", "M3+", "M3+arg", "M4"]
+  },
+  "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+  "runner": "experiments/heldout-v1/run_heldout.py (C1b), which refuses to run from any other path or if freeze/manifest.py check fails; outputs only under experiments/heldout-v1/results/ and experiments/heldout-v1/sealed/ (manifests of sealed material), raw logs under runs/",
+  "order": "buggy targets before controls; within a target, for each seed in order: M0, M1, M3+, M3+arg, M4, A2. If the model cost cap stops the run, every model trial not started is reported as not run, with its place in this order",
+  "budget": {"executions": 1000, "method_seconds": 900, "schedules_per_experiment": 50},
+  "M4": {"max_rounds": 5, "include_source": true, "reasoning_effort": "medium"},
+  "A2": {"max_rounds": 5, "include_source": false, "reasoning_effort": "medium"},
+  "verification": {"replays": 20, "corrected_exhaustive_cap": 5000, "corrected_bounded_random": 2000, "inconclusive_reruns": 2},
+  "executor": {"delta_q_ms": 300, "round_timeout_s": 10},
+  "prices": {"input": 1.25, "cached": 0.15, "output": 4.25, "compute_per_second": 1.11e-05},
+  "model_cost_cap_usd": 30.0,
+  "per_call_reserve_usd": 0.25,
+  "report_success_at": [10, 30, 100, 300, 1000],
+  "analysis": "src/mylonite/analysis.py, analyze(trials, config, shown_buggy_targets, control_targets)",
+  "notes": {
+    "budget, executor, prices, M4": "identical to the pilot (experiments/2026-10-29-pilot/config.json)",
+    "A2": "identical to the A2 ablation (experiments/2026-10-28-a2-no-source/config.json): methods.run_m4 with include_source false",
+    "verification": "the pilot's, plus inconclusive_reruns 2 (D-030), for every target",
+    "seeds": "the same 20 seed numbers for every method. M0, M1 and M3+ draw from their own streams (M3+arg shares M3+'s); M4 and A2 have no seed, so a seed number only labels a fresh planning session",
+    "cap": "strict, as in A2: a model call is refused when spend so far plus per_call_reserve_usd would exceed model_cost_cap_usd. The cap needs the owner's approval before any held-out model call",
+    "model retries": "the pilot's rule (run_pilot.LiveModel): up to 3 attempts on transport errors, HTTP 429 and 5xx, waiting 5 s then 15 s; failed attempts count as model latency",
+    "crash rule": "a trial that ends in error is re-run once with the same seed; both are reported. The analysis uses a Muse trial's first attempt (an error is a failure, never a fresh draw) and a baseline's second (docs/FREEZE.md §4, rule 3)"
+  }
+}

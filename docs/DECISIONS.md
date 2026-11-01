@@ -308,6 +308,9 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
 
 ## D-028 External timestamp for the freeze and the sealed bases
 - Date: 2026-10-28. Status: **Proposed** (owner decision; every submission is a public action).
+  2026-11-01: the steps for anchoring the v1.0 freeze manifest with OpenTimestamps are in
+  `FREEZE.md` §7. The C1 manifest is not salted, because nothing in it is secret. Nothing has
+  been submitted.
 - Decision (proposal): `docs/HELDOUT_PROTOCOL.md`, "External timestamp mechanism".
   - Salted SHA-256 commitments to the C1 and C2 manifests.
   - Timestamped with two RFC 3161 TSAs and OpenTimestamps.
@@ -461,7 +464,10 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
 
 ## D-034 Muse is compared with the better of M3+ and M3+arg
 - Date: 2026-10-31. Status: **Accepted** by the owner on 2026-10-31 ("Yes, better of both"),
-  before the method freeze and before any held-out code exists.
+  before the method freeze and before any held-out code exists. **Reaffirmed on 2026-11-01:**
+  "I approve D-034: Muse must outperform both M3+ and M3+arg to claim superiority over the
+  systematic baselines. Preserve the individual baseline results, separate co-primary metrics,
+  and appropriately account for paired observations." Implemented in `analysis.py` (D-036).
 - Context: D-024 and D-033 add M3+arg beside M3+, and both are reported. It was left open how
   M3+arg enters `EVALUATION_PLAN.md` §7.
 - Decision (`EVALUATION_PLAN.md` §7):
@@ -483,3 +489,93 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
   - Development targets: M3+arg has no trial at seeds 1–5 on D1, D2 or D3. Comparisons there
     use M3+ alone and say so. D-024's D3 estimate (median 211, the same as M3+) is not a
     measurement.
+
+## D-035 Method freeze v1.0, after the deadline
+- Date: 2026-11-01. Status: **Accepted.** The owner decided: "The original October 31, 23:59 ET
+  freeze deadline has passed. Do not backdate anything. Record the missed deadline as a protocol
+  deviation and prepare an immediate freeze of the current approved methodology."
+- Decision: `docs/FREEZE.md`.
+  - The freeze commit is tagged `freeze-v1.0` locally. `freeze/v1.0/MANIFEST.json`, committed
+    next, names the commit and tree and the SHA-256 of every tracked file, including the prompt
+    fingerprint `3da3aa34…`, unchanged since the pilot.
+  - `freeze/manifest.py verify` recomputes everything from git.
+- The deviation (`FREEZE.md` §1):
+  - the deadline was missed, and the last methodology commit came 53 minutes before it;
+  - gate F's A4 fallback is not taken, by the owner's decision;
+  - the held-out set was not sealed;
+  - G3 is replaced.
+- Consequences:
+  - The freeze time is self-asserted until the manifest is anchored externally (D-028, needs
+    approval).
+  - Changes from now on follow D-038.
+
+## D-036 Analysis rules resolved at the freeze
+- Date: 2026-11-01. Status:
+  - **Accepted** for ties, censoring, pairing and D-034's comparison, under the owner's
+    instruction to resolve them "without optimizing against observed development results".
+  - **Proposed by the assistant, and in force unless the owner vetoes it before C2:** extending
+    the rule to the group of all conventional baselines as the headline, and the secondary
+    M4-vs-A2 comparison.
+  - An independent review made two passes and found 3 rules in the drafts that favored Muse:
+    - unequal censoring of seconds and dollars;
+    - a break-even computed from successes only;
+    - a time-censored Muse trial that truncated E₁.
+
+    All 3 were fixed before the freeze, and the review's counterexamples are now tests.
+- Decision: `FREEZE.md` §4, implemented in `src/mylonite/analysis.py` and checked in
+  `tests/test_analysis.py`. In brief:
+  - outcomes are found, failed or censored, and each comparison is truncated at the smallest
+    cost spent by a censored trial (a common scale);
+  - exact two-sided Mann–Whitney with mid-ranks;
+  - Â₁₂ with ties counting one half;
+  - Muse errors are failures, with no re-roll; errored baseline trials are left out; missing
+    trials stop the analysis; error rates are flagged, never excluded;
+  - Muse comparisons are unpaired, because the seed streams share nothing; M3+ and M3+arg are
+    paired and reported seed by seed;
+  - intersection–union for the systematic group (D-034) and for the group of all conventional
+    baselines (the headline);
+  - Holm across target × co-primary metric;
+  - the Kaplan–Meier median;
+  - the break-even from every trial's cost line, against the least favorable baseline;
+  - any VIOLATION on a negative control is a false positive.
+- Consequences:
+  - Every rule is either standard or less favorable to Muse.
+  - The extension to all conventional baselines is new. It follows the re-scope's question
+    (D-026), and the owner can veto it before C2 as a class C change.
+
+## D-037 Minimum held-out scope
+- Date: 2026-11-01. Status: **Accepted** as the owner specified ("two previously unseen
+  concurrency defects, with corrected negative controls and 20 trials per method per target
+  where feasible").
+- Decision: `HELDOUT_PROTOCOL.md`, "Minimum scope v1.0":
+  - 2 drand-chosen mutants of 2 bases written after the freeze, to specifications fixed at the
+    freeze;
+  - the bases double as negative controls;
+  - serially equivalent mutants only;
+  - 20 trials per method per target;
+  - a cut-off of Nov 3, 18:00 ET.
+- Proposed by the assistant, and in force for v1.0 unless the owner vetoes it before C2:
+  - Python per-connection services only (D-020's open "Python-only scope");
+  - operator 2 reduced to "remove `WATCH`";
+  - the first drand round named is binding (no re-roll).
+- Still open:
+  - approval of the $30 model cap;
+  - each external submission (anchor, C2 timestamp, beacon fetch).
+
+## D-038 Amendment policy
+- Date: 2026-11-01. Status: **Accepted** (owner: "necessary security or correctness fixes after
+  freezing must be documented, versioned, and assessed for their effect on evaluation validity.
+  No silent tuning after observing held-out outcomes").
+- Decision: `docs/AMENDMENTS.md`:
+  - **class A:** implementation tooling, before C2 only;
+  - **class B:** security or correctness fixes, with a validity assessment and re-runs for every
+    method. The fixed version is primary before observation, the original after it. A fix
+    during C5 restarts C5;
+  - **class C:** methodological changes. A new freeze version before C2; new bases after C2;
+    never for a held-out set whose outcomes were observed;
+  - an append-only log;
+  - enforcement: a held-out run starts only if `freeze/manifest.py check` passes. That means:
+    - every listed file matches the latest committed version;
+    - nothing unexpected has been added;
+    - the log has only been appended to;
+    - every version after v1.0 is logged.
