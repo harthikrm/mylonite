@@ -105,3 +105,9 @@ none of them changes the frozen version:
   - An independent review made two passes. It found 5 must-fix defects, the most serious being
     a forged C4 record that could choose the site. All are fixed and covered by tests.
 - **New manifest.** `freeze/v1.1/MANIFEST.json`, committed next. Its SHA-256 is appended below.
+- **Manifest.** `freeze/v1.1/MANIFEST.json`, SHA-256
+  `771075b905e9bb398b4de8daef18d3696e50ecc50d89891e0a5d18e74be3ef18`, for commit `d9361b4`
+  (154 files; 123 tests pass, 2 skipped). It is not anchored externally.
+- **Disclosure about this log.** Adding AM-001 replaced the placeholder line "None yet." rather
+  than appending below it. That is the only non-append change to this file. From v1.1 on,
+  `freeze/manifest.py check` enforces appends against the v1.1 text.
