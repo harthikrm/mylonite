@@ -45,6 +45,13 @@ class FlagTest(unittest.TestCase):
         for flag in sandbox.HARDENED:
             self.assertIn(flag, cmd)
 
+    def test_held_out_root_is_one_more_read_only_mount(self):
+        box = sandbox.Sandbox("t", Path("/repo"), target_root=Path("/sealed/heldout"))
+        cmd = box.executor_command("t-exec")
+        mounts = [cmd[i + 1] for i, a in enumerate(cmd) if a == "-v"]
+        self.assertEqual(mounts, ["/repo/src:/app/src:ro", "/repo/fixtures:/app/fixtures:ro",
+                                  "/sealed/heldout:/app/heldout:ro"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -579,3 +579,23 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
     - nothing unexpected has been added;
     - the log has only been appended to;
     - every version after v1.0 is logged.
+
+## D-039 C1b held-out tooling built (AM-001, freeze v1.1)
+- Date: 2026-11-01. Status: **Accepted** (the owner, "Yes, build C1b"; class A, before C2).
+- Decision: the tooling in `experiments/heldout-v1/` and the sandbox's `target_root`
+  (`HELDOUT_PROTOCOL.md`, "C1b as built"; `AMENDMENTS.md` AM-001):
+  - O1, O2, O3 and O5 are implemented. O4 and O6 are recorded as not implemented, before C2.
+  - The serial-equivalence filter runs at C2 for every site and is bound by the salted C2
+    commitment. C4 is deterministic and needs no Docker.
+  - `verify` binds C2, C4, the beacon response and each mutant.
+  - The runner enforces `FREEZE.md` §6.
+  - C6 covers helper-function sites.
+- Consequences:
+  - The next step is C2: two bases written to the fixed specifications.
+  - It needs the owner's approval for the C2 timestamp and the beacon fetch, and the $30 cap is
+    confirmed at C5.
+  - Disclosed weaknesses:
+    - the strata are syntactic;
+    - the dialect can hide a site;
+    - C6 caps each pair at 5,000 schedules;
+    - the BLS signature is not checked by the tooling.

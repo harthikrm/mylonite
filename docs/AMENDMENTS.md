@@ -64,4 +64,44 @@ none of them changes the frozen version:
 
 ## Log
 
-None yet.
+### AM-001: C1b held-out tooling (class A, freeze v1.1)
+
+- **When.** 2026-11-01, ET. After C1 (freeze v1.0, `da3ca57`) and before C2: no held-out base,
+  mutant or contract exists.
+- **Approval.** The owner, 2026-11-01: "Yes, build C1b". This answered "Go ahead with the
+  minimum held-out evaluation under the $30 cap?". Model spend still needs `--approved-cap 30`
+  at C5. Each external submission (anchor, C2 timestamp, beacon fetch) still needs its own
+  approval.
+- **What changed.**
+  - `src/mylonite/sandbox.py`: an optional `target_root`, mounted read-only at `/app/heldout`.
+    This is the configurable target root the protocol names. It is None by default.
+  - `tests/test_sandbox.py`: one test.
+  - New: `experiments/heldout-v1/heldout.py`, `run_heldout.py`, `c6_extended.py` and
+    `tests/test_heldout.py`.
+  - `docs/HELDOUT_PROTOCOL.md`: "C1b as built".
+- **Why.** This implements C1b of the minimum scope (`FREEZE.md` §5, `HELDOUT_PROTOCOL.md`).
+- **How the frozen text was implemented.** Each choice is disclosed in `HELDOUT_PROTOCOL.md`.
+  None changes a method, the prompt, a budget, verification or an analysis rule.
+  - **O4 and O6 are not implemented,** recorded before C2 as the protocol requires:
+    - O4 would need a Lua-to-Python translation;
+    - O6 is never serially equivalent.
+  - **The O2 rewrite also removes the retry loop,** which could no longer retry.
+  - **O3 excludes pipelines with an explicit `multi()`.** With one, redis-py would still send
+    MULTI/EXEC.
+  - **C2's minimums count live sites:** serially equivalent and changing the command stream.
+  - **The C4 filter stays the frozen one** (serial equivalence). It is run at C2 for every site
+    and bound by the C2 commitment, so C4 is deterministic.
+  - **The beacon's randomness** must be SHA-256 of its signature. C6 compares the committed
+    response with drand's public record.
+- **Validity assessment.**
+  - The sandbox change adds a mount only when `target_root` is set.
+  - Pilot regression after the change: 30/30 trials and all 6,766 events identical
+    (`runs/d1gate-regression-20261101-034950/`).
+  - The prompt fingerprint is unchanged.
+  - No held-out outcome exists, so none can be affected.
+- **Evidence.**
+  - 123 tests pass (2 skipped).
+  - Toy smokes and two rehearsals in scratch clones, listed in `HELDOUT_PROTOCOL.md` (not data).
+  - An independent review made two passes. It found 5 must-fix defects, the most serious being
+    a forged C4 record that could choose the site. All are fixed and covered by tests.
+- **New manifest.** `freeze/v1.1/MANIFEST.json`, committed next. Its SHA-256 is appended below.

@@ -74,6 +74,94 @@ in the seeded order is used, and every discard is reported.
 - Results go in `experiments/heldout-v1/results/`.
 - The sealed files themselves stay outside the repository.
 
+**C1b as built (2026-11-01; AM-001, freeze v1.1).** Built before any base exists. An
+independent review made two passes. The first found 4 must-fix defects. The second found 1
+more, which would have let the author choose the mutated site by claiming false filter
+discards. All were fixed before this version was committed.
+
+- **`experiments/heldout-v1/heldout.py`.** Its docstring states the base dialect, which is the
+  only forms the operators recognize. It contains:
+  - site enumeration and the guarded/unguarded classifier;
+  - the mutation of exactly one site;
+  - the C4 selection rules;
+  - the serial-equivalence filter: 150 random serial workloads, plus every M3+ frontier setup
+    followed by each catalog call, run as an operation so its return value is compared;
+  - the C2 checks;
+  - the salted commitments;
+  - `verify`.
+- **Operators.** O1, O2, O3 and O5 are implemented. **Two are not, and this is recorded here
+  before C2, as the protocol requires:**
+  - **O4** (a check in a server-side script moves to the client) would need a Lua-to-Python
+    translation, which is not mechanical enough to trust;
+  - **O6** (a state write moves before its guard) changes serial behavior by construction, so
+    the filter would discard every such mutant.
+- **Live sites.** A site counts toward C2's minimums only if its mutant is serially equivalent
+  to the base **and** changes the store command stream on at least one equivalence workload. A
+  base therefore needs live sites of at least 3 of the 4 implemented kinds, and at least 3 live
+  sites in each stratum. C4 keeps the frozen filter, serial equivalence alone, and records
+  whether the chosen mutant changes the command stream. Excluding pipelines with an explicit
+  `multi()` from O3 removes the one known case where it would not.
+- **The filter is run at C2 and bound by the C2 commitment.**
+  - `check-bases` runs the serial-equivalence filter on every site's mutant, before round R can
+    be known.
+  - `commit-c2` puts every site and its result inside the salted C2 manifest. It refuses unless
+    `check-bases` passed for the current sources, and unless R is scheduled at least 6 hours
+    later (from the chain's saved info: genesis + (R − 1) × period).
+  - C4 applies those results and runs nothing. So the choice is deterministic, and no discard
+    can be claimed after R is known.
+- **No free input at C4.**
+  - `generate` reads round R from `experiments/heldout-v1/sealed/c2_commitment.json` as
+    committed at HEAD.
+  - It reads the randomness from the saved drand response for R, after checking three things:
+    the round, the format, and that the randomness is SHA-256 of the response's signature.
+    The value is lowercased.
+  - It refuses unless the sealed tree is exactly the committed bases, and refuses to run twice.
+- **The commitments bind everything mounted.** Every file under `heldout/` is hashed, and
+  anything other than `heldout/__init__.py` and each target's three files is refused, including
+  `__pycache__` and any symbolic link.
+- **`verify`.** Run before C5 and C6. It checks:
+  - C2 still binds the bases, and C4 binds the whole tree;
+  - the C4 record is for the round named at C2, with the committed beacon response;
+  - replaying the C4 rules, with the C2-committed filter results, reproduces the record;
+  - every mutant is exactly `mutate(base, chosen site)` with its derived spec.
+- **`run_heldout.py`.** The runner, with every rule listed in its docstring.
+- **`c6_extended.py`.** The C6 extended search. A site in a helper function is explored through
+  the catalog operations that call it.
+- **`Sandbox(..., target_root=)`.** Mounts the sealed `heldout/` read-only at `/app/heldout`.
+- **Tests:** `tests/test_heldout.py` runs on toy code that is not a base.
+- **Checks run, on toy sealed roots in a scratch directory (not data):**
+  - the C2 checks, generation, and a full runner pass;
+  - a detectable mutant, verified by every conventional method against its base;
+  - a faulty "control" that stopped the run at its first VIOLATION;
+  - C6, both when it excludes a mutant and when it shows one buggy;
+  - a C2 → C4 rehearsal in a scratch clone, including a refused second generation and a caught
+    one-line tamper;
+  - the pilot regression after the sandbox change: 30/30 trials and 6,766 events identical.
+
+**Disclosed, not prevented:**
+- The strata are syntactic and per function. An author could move a site between strata by
+  refactoring.
+- Counters written outside the dialect, for example with `+=`, are not sites.
+- C6 caps each pair at 5,000 schedules.
+- Muse's crash-rule re-runs spend from the cap, although the analysis uses first attempts.
+
+**What a base must also have,** for the tooling to run it:
+- an `__init__.py`;
+- `connect(host, port)`, returning a per-connection redis-py client with
+  `decode_responses=True`;
+- one function per catalog operation, taking the client first;
+- a contract that uses the oracle's existing invariant kinds (`counter_conserved`,
+  `non_negative`, `item_quantity_conserved`). A new kind would change the oracle, which is
+  class C.
+
+**The beacon response.** The drand response for round R is saved verbatim as
+`<sealed root>/private/drand.json`, and committed at C4 as
+`experiments/heldout-v1/sealed/drand_round_<R>.json`. The endpoint and chain are confirmed at
+fetch time; the fetch needs the owner's approval. The tooling checks that the randomness is
+SHA-256 of the signature, but not the BLS signature itself. **C6 adds a step:** compare the
+committed response with drand's public record for R, and report the result. Anyone can repeat
+that comparison.
+
 **Steps and schedule.** Each step is a commit; the next step records its hash.
 
 | Step | What | By (ET) |

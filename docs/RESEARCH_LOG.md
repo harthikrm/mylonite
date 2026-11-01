@@ -444,3 +444,21 @@ and a human read of REINS.
 - **Lesson.** The first draft's claim that every rule was "standard or less favorable to Muse"
   was wrong twice in ways that only counterexamples exposed. Directional claims about
   statistical rules need adversarial tests, not argument.
+
+## 2026-11-01: C1b held-out tooling (AM-001, freeze v1.1; no model calls)
+
+- **Built.** The mutation tooling, the held-out runner, the C6 script, and a sandbox mount for
+  sealed targets. Only `sandbox.py` changed in `src/`.
+- **FACT:** the pilot regression after the sandbox change is identical in all 6,766 events.
+- **FACT:** toy smokes, which are not data, pass:
+  - the C2 checks;
+  - a detectable mutant, verified by every conventional method;
+  - a faulty control that stopped the run;
+  - C6 in both directions;
+  - two rehearsals of C2 → C4 that caught tampering, a forged discard and a symlink.
+- **Review.** An independent reviewer made two passes and found 5 must-fix defects. The worst:
+  filter discards were self-reported in a private record, so the author could have chosen the
+  mutated site, and `verify` would have passed it. The fix moves the filter to C2, before the
+  beacon, and binds it in the salted commitment.
+- **Lesson.** A commitment scheme needs every input to the selection committed before the
+  randomness exists, not only the files. Any value derived later is a choice.

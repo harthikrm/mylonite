@@ -39,12 +39,16 @@ def docker(*args, stdin=None, timeout=300):
 
 
 class Sandbox:
-    def __init__(self, name, repo_root, executor_image=EXECUTOR_IMAGE):
+    def __init__(self, name, repo_root, executor_image=EXECUTOR_IMAGE, target_root=None):
+        """``target_root``: a directory outside the repository holding held-out targets
+        (HELDOUT_PROTOCOL.md), mounted read-only at /app/heldout, so its modules import as
+        ``heldout.<target>.<module>``. None for every other target."""
         self.name = name
         self.network = f"{name}-net"
         self.store = f"{name}-valkey"
         self.repo = Path(repo_root).resolve()
         self.executor_image = executor_image
+        self.target_root = Path(target_root).resolve() if target_root else None
         self.services = []
 
     def build_executor_image(self):
@@ -79,15 +83,20 @@ class Sandbox:
         self.services = []
         subprocess.run(["docker", "network", "rm", self.network], capture_output=True)
 
+    def mounts(self):
+        """Every bind mount an executor container gets; all read-only."""
+        out = ["-v", f"{self.repo / 'src'}:/app/src:ro", "-v", f"{self.repo / 'fixtures'}:/app/fixtures:ro"]
+        if self.target_root:
+            out += ["-v", f"{self.target_root}:/app/heldout:ro"]
+        return out
+
     def run_executor(self, request, timeout=1800):
         """Run one executor container on the internal network; JSON in on stdin, JSON out on stdout."""
         container = f"{self.name}-exec-{uuid.uuid4().hex[:8]}"
         request = dict(request, store=[self.store, 6379])
         cmd = ["run", "--rm", "-i", "--name", container, "--network", self.network, *HARDENED,
                "--tmpfs", "/tmp:rw,size=16m,noexec", "--user", "65534:65534",
-               "-v", f"{self.repo / 'src'}:/app/src:ro",
-               "-v", f"{self.repo / 'fixtures'}:/app/fixtures:ro",
-               self.executor_image]
+               *self.mounts(), self.executor_image]
         try:
             out = docker(*cmd, stdin=json.dumps(request), timeout=timeout)
         except subprocess.TimeoutExpired:
@@ -100,8 +109,7 @@ class Sandbox:
     def executor_command(self, container):
         return ["docker", "run", "--rm", "-i", "--name", container, "--network", self.network,
                 *HARDENED, "--tmpfs", "/tmp:rw,size=16m,noexec", "--user", "65534:65534",
-                "-v", f"{self.repo / 'src'}:/app/src:ro",
-                "-v", f"{self.repo / 'fixtures'}:/app/fixtures:ro", self.executor_image]
+                *self.mounts(), self.executor_image]
 
     def session(self, target, delta_q_ms=300, round_timeout_s=10):
         return ExecutorSession(self, target, delta_q_ms, round_timeout_s)
