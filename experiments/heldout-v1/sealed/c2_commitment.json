@@ -1,0 +1,11 @@
+{
+ "commitment_sha256": "0955ce74aca5e001c6afc7a5e8dae69a83ee4b977d9439278fdb74376acb2f9d",
+ "files": 7,
+ "names": [
+  "alpha",
+  "beta"
+ ],
+ "round": 6605131,
+ "round_scheduled_utc": "2026-11-02T02:02:30Z",
+ "step": "c2"
+}
