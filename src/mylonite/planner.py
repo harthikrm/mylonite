@@ -13,6 +13,7 @@ sent, and tests/test_contamination.py checks that nothing outside the view can r
 
 import ast
 import hashlib
+import http.client
 import json
 import os
 import time
@@ -324,9 +325,19 @@ def call_muse(api_key, body, timeout=600):
         with urllib.request.urlopen(request, timeout=timeout) as response:
             payload = json.loads(response.read())
     except urllib.error.HTTPError as exc:  # surface the API's error body, never the key
-        raise ModelAPIError(exc.code, repr(exc.read()[:2000])) from None
-    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
+        try:
+            detail = repr(exc.read()[:2000])
+        except (OSError, http.client.HTTPException) as unread:
+            detail = f"error body unreadable: {type(unread).__name__}: {unread}"
+        raise ModelAPIError(exc.code, detail) from None
+    except (OSError, http.client.HTTPException, json.JSONDecodeError, UnicodeDecodeError) as exc:
+        # A transport error at any phase (AM-002). urllib wraps an OSError as URLError only
+        # while sending; a reset while waiting for or reading the response arrives bare, as
+        # ConnectionResetError, RemoteDisconnected or IncompleteRead. Not ValueError: the one
+        # putheader raises quotes the Authorization header.
         raise ModelAPIError(None, f"{type(exc).__name__}: {exc}") from None
+    if not isinstance(payload, dict):  # a body that is JSON but not a response object
+        raise ModelAPIError(None, f"the response body is a JSON {type(payload).__name__}, not an object")
     meta = {"latency_s": round(time.monotonic() - started, 2), "usage": payload.get("usage"),
             "model": payload.get("model"), "response": payload}
     try:

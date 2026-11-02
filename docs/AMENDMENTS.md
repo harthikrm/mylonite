@@ -111,3 +111,100 @@ none of them changes the frozen version:
 - **Disclosure about this log.** Adding AM-001 replaced the placeholder line "None yet." rather
   than appending below it. That is the only non-append change to this file. From v1.1 on,
   `freeze/manifest.py check` enforces appends against the v1.1 text.
+
+### AM-002: model-response errors reach the retry rule (class B, freeze v1.2)
+
+- **When.** 2026-11-02, ET. During C5: after run 1 stopped (D-043) and its results were
+  committed and then examined to find the cause. So held-out outcomes have been observed.
+- **Approval.** The owner, 2026-11-02: "Yes, fix and restart". This answered "Apply the fix and
+  restart C5?", which named AM-002, freeze v1.2 and a restart with `--approved-cap 30`.
+- **The defect.**
+  - `planner.call_muse` turned only `URLError`, `TimeoutError` and JSON errors into a
+    retryable `ModelAPIError`.
+  - Python's `urllib` wraps an `OSError` as `URLError` only while it sends the request. A
+    connection reset or close while waiting for the response, or while reading it, arrives
+    bare: `ConnectionResetError`, `RemoteDisconnected` or `IncompleteRead`.
+  - So the frozen rule, up to 3 attempts on transport errors (`run_pilot.LiveModel`, and the
+    held-out config's notes), never applied to these errors. The trial ended in error, and the
+    failed attempt was not logged.
+  - **The same escape, found by the review:**
+    - a body that is not UTF-8 (`UnicodeDecodeError`);
+    - a body that is JSON but not an object (`AttributeError`).
+
+    The frozen code already treats an undecodable body (`JSONDecodeError`) as a transport
+    error.
+- **Evidence.**
+  - C5 run 1 (`f82681e`) has 3 records ending in `ConnectionResetError: [Errno 54]`. Each one
+    had a model request in flight: time the logged calls and executions do not account for,
+    and no `failed_attempt` entry anywhere in the run (D-043).
+  - `tests/test_transport.py`: a local server fails the request at each phase, over a real
+    socket on 127.0.0.1.
+    - Against the old `call_muse`: 8 errors. The reset before the response raises the run's
+      exact `ConnectionResetError: [Errno 54]`.
+    - With the fix: all 6 tests pass, and 30 repeated runs all passed.
+- **What changed.**
+  - `src/mylonite/planner.py`, `call_muse`:
+    - `OSError`, `http.client.HTTPException` and `UnicodeDecodeError` are retryable transport
+      errors. `URLError` and `TimeoutError`, which are subclasses of `OSError`, already were;
+    - a JSON body that is not an object is one too;
+    - an HTTP error whose body cannot be read keeps its status.
+    - `ValueError` is deliberately not caught. The one `putheader` raises for an invalid
+      header value quotes the Authorization header, so it would put the key into a trial's
+      status.
+  - `tests/test_transport.py`, new: 6 tests. They cover:
+    - each failure phase, with its exception type;
+    - a timeout while reading;
+    - 429 still retried, and 400 still not;
+    - a 503 with an unreadable body;
+    - `LiveModel` retrying a reset after 5 s.
+  - Nothing else. The prompt, the schema, the parameters and the retry rule itself are
+    unchanged.
+- **Review.** An independent reviewer reported no must-fix defect. It ran about 30 failure
+  scenarios on 127.0.0.1, including TLS truncation and resets, chunked-body errors and malformed
+  status lines.
+  - With the fix, every scenario became a retryable `ModelAPIError` with no status. HTTP
+    errors keep their status.
+  - For connection refused, TLS handshake and certificate failures, timeouts, `JSONDecodeError`
+    and 429/500/401, the messages are byte-identical to before.
+  - The key appeared in no message.
+  - Its should-fix items are done: the two escapes above, and the test gaps (exception types,
+    the server's read loop, server-thread errors, more cases).
+- **Validity assessment.**
+  - **The changed lines run only when a call raises, or when the body is not a JSON object.**
+    A successful call, and every error the old code already wrapped, behave as before.
+  - **Pilot, D1 and the A2 ablation:** no recorded run has such an error, so none is affected.
+  - **Pilot regression after the change:** 30/30 trials and all 6,766 events are identical,
+    on the first version of the fix and on the final one
+    (`runs/d1gate-regression-20261102-113604/`, `-114315/`). It replays recorded answers, so it does not
+    exercise `call_muse` itself. It shows that nothing else changed.
+  - **The prompt fingerprint is unchanged:** `3da3aa34…`. 129 tests pass, 2 skipped.
+  - **C5 run 1, affected:**
+    - `beta_m` M4 seed 8, attempt 1. The analysis uses Muse's first attempt, so this counts as
+      an M4 failure that a retry might have avoided;
+    - `beta_m` A2 seed 10, both attempts;
+    - through the stop, every `not_run` trial: 60 on `beta_m`, and all 200 controls.
+
+    No answer was received for the failed requests, so they cannot be replayed from the logs.
+  - **C5 run 1, unaffected:** every other trial received every answer it requested, and so
+    never ran the changed code.
+  - **The crash rule is slightly coarser.** Every model transport failure is now named
+    `ModelAPIError`, as HTTP errors already were. So two different model failures in a row,
+    each after 3 attempts, now count as "the same exception type" and stop the run.
+- **Remedy (class B, during C5).**
+  - C5 restarts from scratch under v1.2, with the same sealed targets, seeds and config.
+  - Run 1 stays primary for every trial it completed. The restart is reported beside it,
+    labeled post-observation.
+  - For trials run 1 did not complete, the restart is the only data, also labeled
+    post-observation.
+- **Disclosures** (none changes a method):
+  - **`OSError` is broad.** A local failure, such as too many open files or
+    `http.client.InvalidURL`, is also retried. It is still bounded at 3 attempts and 20 s of
+    waits, and then the trial ends in error.
+  - **Unbilled failures.** A request that fails after the API processed it may have been
+    billed. No usage comes back, so the cap's tally does not count it. This was true before,
+    for 5xx errors.
+  - **Not changed, pre-existing:**
+    - `load_api_key` does not strip the key. A key with a trailing newline would fail every
+      call in `putheader`. Run 1's 143 successful calls show the current key has none.
+    - An `HTTPError` is not closed explicitly.
+- **New manifest.** `freeze/v1.2/MANIFEST.json`, committed next. Its SHA-256 is appended below.
