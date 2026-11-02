@@ -664,3 +664,25 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
   - the v1.0 and v1.1 manifest anchors, which are still unapproved.
 - Next: after R is published, fetch it (approved), then `generate`, `commit-c4` and `verify`.
   C5 waits for the owner's `--approved-cap 30`.
+
+## D-042 C4 done: both bases yielded a mutant
+- Date: 2026-11-02 UTC (evening of Nov 1 ET). Status: **Done.** Owner approval: "Approve all
+  three", item 3, the round-R fetch.
+- **Beacon.** One GET of `https://api.drand.sh/public/6605131` at 02:06:13Z, about 4 minutes
+  after the round's scheduled time. HTTP 200, 520 bytes, saved verbatim with its headers in the
+  sealed private directory.
+  - Checked by `heldout.beacon`: the round is R, and the randomness is the SHA-256 of the
+    signature.
+  - **Not checked here:** the BLS signature against the chain's public key (no BLS library is
+    installed), and a second drand relay. Anyone can check both later, since the round is
+    public.
+- **`generate`:** a mutant was written for both α and β. The choice record stays in the sealed
+  private directory. It was not printed, and nobody has opened a mutant.
+- **C4 commit:** `76264cf`, at 2026-11-02T02:12:57Z.
+  - `sealed/drand_round_6605131.json`: the beacon response.
+  - `sealed/c4_commitment.json`: `7dfdb06b…`, 13 files, names `alpha`, `beta`, `alpha_m`,
+    `beta_m`.
+- **Checks:** `heldout.py verify` reports no problems. It replays the choice from the committed
+  randomness and the C2-bound filter results, and checks each mutant against its base. The
+  freeze check matches v1.1 (122 files).
+- Next: C5 needs the owner's `--approved-cap 30`, and must start before Nov 3, 18:00 ET.

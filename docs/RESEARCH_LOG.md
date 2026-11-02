@@ -497,3 +497,13 @@ and a human read of REINS.
 - So the C2 → R ordering has an external witness: a signed time 6 h before the round. The OTS
   Bitcoin attestations come later.
 - Next: C4 once R is out, then the owner's go for C5.
+
+## 2026-11-02 UTC: C4 done (mutants drawn from round 6605131)
+
+- FACT: round 6605131 was fetched once at 02:06:13Z. Its randomness is the SHA-256 of its
+  signature. The BLS signature itself was not verified here.
+- FACT: `generate` wrote a mutant for both bases. C4 commit `76264cf` binds the bases, both
+  mutants and the beacon response, and `verify` reports no problems.
+- The choice is a function of committed inputs only, so anyone can replay it at C6. Neither the
+  choice nor the mutants have been looked at.
+- Next: the owner's go for C5 (cap $30).
