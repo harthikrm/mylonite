@@ -507,3 +507,17 @@ and a human read of REINS.
 - The choice is a function of committed inputs only, so anyone can replay it at C6. Neither the
   choice nor the mutants have been looked at.
 - Next: the owner's go for C5 (cap $30).
+
+## 2026-11-02: C5 stopped by the crash rule (harness defect found)
+
+- FACT: C5 ran 05:14–08:24Z and stopped after a model trial and its re-run both died with
+  `ConnectionResetError`. 442 records, $4.58, committed in `f82681e` before anything was
+  examined.
+- FACT: `alpha_m` is complete. `beta_m` is half done, and no control trial ran.
+- FACT: the cause is the model client. A connection reset during the response escapes the
+  retryable error type, so the pre-registered retry rule never ran. Earlier runs never hit it.
+- **Lesson.** The retry rule was written in terms of "transport errors", but the code listed the
+  exception types it thought of. In Python, a connection reset is an `OSError` that `urllib`
+  wraps only on the send side. A rule stated by category needs a test that injects a failure at
+  each phase of the request.
+- Next: the owner decides on AM-002 (class B) and a restart.

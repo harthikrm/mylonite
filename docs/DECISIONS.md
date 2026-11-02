@@ -686,3 +686,51 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
   randomness and the C2-bound filter results, and checks each mutant against its base. The
   freeze check matches v1.1 (122 files).
 - Next: C5 needs the owner's `--approved-cap 30`, and must start before Nov 3, 18:00 ET.
+
+## D-043 C5 stopped by the crash rule; the cause is a harness defect (class B, not yet fixed)
+- Date: 2026-11-02. Status: **Stopped; the remedy awaits the owner.** Owner approval for the
+  run: "Yes, start C5" (`--approved-cap 30`).
+- **The run.**
+  - Started 05:14:32Z at `b90716b`. Its pre-flight passed: clean tree, freeze v1.1, unit tests,
+    `verify`.
+  - Stopped 08:24:47Z by the frozen rule "a crash-rule re-run that fails with the same error".
+  - Results committed unexamined in `f82681e`: `experiments/heldout-v1/results/20261101-231428/`.
+- **Records:** 442, for 440 planned trials plus 2 crash-rule re-runs.
+  - `alpha_m`: all 120 trials complete.
+  - `beta_m`: 62 records complete (60 trials plus 2 re-runs), 60 `not_run`.
+  - The bases, which are the negative controls: all 200 `not_run`.
+  - Model spend: $4.5772 for 143 answers, all `muse-spark-1.3`.
+- **The stop.** Three records ended in `ConnectionResetError: [Errno 54]`, all model trials on
+  `beta_m`:
+  - M4 seed 8, attempt 1 (its re-run succeeded);
+  - A2 seed 10, attempts 1 and 2. The second triggered the stop.
+- **Evidence that each reset hit an in-flight model request** (trial records and sealed logs,
+  metadata only):
+  - M4/8 attempt 1: 54 s, with 0 model calls recorded, 0 executions and no events.
+  - A2/10: about 110 s and 53 s that the logged calls and executions don't account for, after
+    rounds 3 and 2.
+  - The model log has no `failed_attempt` entry in the whole run.
+- **The defect.** `planner.call_muse` turns `URLError`, `TimeoutError` and JSON errors into a
+  retryable `ModelAPIError`.
+  - Python's `urllib` (3.14.5, checked) wraps an `OSError` as `URLError` only while it sends the
+    request. A reset while waiting for or reading the response raises a bare
+    `ConnectionResetError`.
+  - So the pre-registered rule, "up to 3 attempts on transport errors", was never applied to
+    these resets. The trials ended in error instead.
+  - FACT: no earlier run or document records such an error. The pilot, D1 and A2 results are
+    unaffected.
+- **What the frozen rules require.**
+  - `FREEZE.md` §6: report rather than patch. Completed trials are kept and reported. Verdicts
+    are computed only for targets whose conventional trials are all complete; today that is
+    only `alpha_m`.
+  - `AMENDMENTS.md` class B: a fix restarts C5 from scratch under a new version. Investigating
+    the stop counts as observing outcomes. So this run stays primary for every trial it
+    completed, and the restart is reported beside it, labeled post-observation.
+- **Proposed remedy, not applied.**
+  - AM-002, class B: `call_muse` also wraps `OSError` and `http.client.HTTPException` as
+    retryable transport errors;
+  - a unit test of a reset during the response;
+  - the pilot regression replayed;
+  - a validity assessment, and freeze v1.2;
+  - then C5 restarted from scratch with `--approved-cap 30`, a new model spend.
+- Not done: no analysis or C6 step has run. Nobody has opened a mutant or a model answer.
