@@ -1,0 +1,11 @@
+{
+ "commitment_sha256": "7dfdb06b4bbc6b24e940ba2c6ff248aa8fd237a4c7b6455862d6d66e372c6830",
+ "files": 13,
+ "names": [
+  "alpha",
+  "beta",
+  "alpha_m",
+  "beta_m"
+ ],
+ "step": "c4"
+}
