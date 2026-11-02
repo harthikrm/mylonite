@@ -208,3 +208,6 @@ none of them changes the frozen version:
       call in `putheader`. Run 1's 143 successful calls show the current key has none.
     - An `HTTPError` is not closed explicitly.
 - **New manifest.** `freeze/v1.2/MANIFEST.json`, committed next. Its SHA-256 is appended below.
+- **Manifest.** `freeze/v1.2/MANIFEST.json`, SHA-256
+  `b44b78c6deecf254d78185f68aa739826c8196a0bec6aa73aebfb6c7f90e45ec`, for commit `e19d818`
+  (174 files; 129 tests pass, 2 skipped). It is not anchored externally.
