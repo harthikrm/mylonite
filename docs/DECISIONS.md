@@ -734,3 +734,60 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
   - a validity assessment, and freeze v1.2;
   - then C5 restarted from scratch with `--approved-cap 30`, a new model spend.
 - Not done: no analysis or C6 step has run. Nobody has opened a mutant or a model answer.
+
+## D-044 C5 run 2 complete: all 440 trials, no stop (post-observation, AM-002)
+- Date: 2026-11-03 UTC (evening of Nov 2 ET). Status: **Done.** Owner approval: "Yes, fix and
+  restart", for AM-002, freeze v1.2 and a restart with `--approved-cap 30`. This settles the
+  remedy D-043 proposed.
+- **The run.**
+  - Started 17:46:39Z at `3bb8957`. Its pre-flight passed: clean tree, freeze v1.2, unit tests,
+    `verify`.
+  - Finished 2026-11-03T05:30:20Z with `stopped: null`, after 11 h 44 min.
+  - Results committed unexamined in `8e249c3`: `experiments/heldout-v1/results/20261102-114636/`.
+- **Records:** 440, one per planned trial. All are attempt 1, so no trial errored and none was
+  re-run.
+
+  | target | verified | censored:executions | censored:time | search_plan_exhausted |
+  |---|---|---|---|---|
+  | `alpha_m` | 68 | 45 | 0 | 7 |
+  | `beta_m` | 118 | 2 | 0 | 0 |
+  | `alpha` (control) | 0 | 80 | 3 | 17 |
+  | `beta` (control) | 0 | 80 | 6 | 14 |
+
+  - "verified" is the runner's verification of a witness. Whether a witness is the planted bug
+    is C6's decision, which has not been made.
+  - No stop rule fired. So no execution or stress run on a control returned VIOLATION, no
+    corrected variant returned one during verification, and no soundness problem, contamination
+    refusal or A2 payload refusal occurred.
+- **Model.** $20.4367 for 371 answers, all `muse-spark-1.3`, with 0 unexpected answers.
+  - By target: `alpha_m` $2.88 (95 calls), `beta_m` $2.53 (76), `alpha` $7.61 (100), `beta`
+    $7.42 (100).
+  - FACT: on each control, M4 made 100 calls in 20 trials, 5 per trial. This is why the run cost
+    about twice the $10–12 estimated from run 1, which had run no control.
+  - C5 total over both runs: $25.01. Each run was under its $30 cap, and so is the total.
+- **Retries** (model-log metadata only): 4 `failed_attempt` entries, all followed by a
+  successful answer.
+  - `alpha/M4/12`, round 4: `ConnectionResetError`, once.
+  - `alpha/M4/13`, round 4: `ConnectionResetError`, twice; the third attempt succeeded.
+  - `beta/M4/16`, round 5: HTTP 503, once. v1.1 already retried this.
+  - INFERENCE (from the code path, not tested on these calls): the resets surfaced as bare
+    `ConnectionResetError`, not `URLError`, so they happened after the request was sent. Under
+    v1.1 both alpha trials would have ended in error, and `alpha/M4/13`'s re-run could have
+    stopped the run again.
+- **Checks after the commit:**
+  - `heldout.py verify` reports no problems;
+  - the freeze check matches v1.2 (125 files);
+  - `freeze/v1.2/MANIFEST.json` verifies against `e19d818`.
+- **How the two runs combine (AM-002).** Every run-2 record is post-observation.
+  - Run 1 stays primary for every trial it completed: all 120 on `alpha_m`, and 59 on `beta_m`.
+  - Run 2 is the only data for the other 61 `beta_m` trials (the 60 `not_run` and A2 seed 10)
+    and all 200 control trials.
+  - `beta_m` M4 seed 8: run 1's first attempt errored, and its re-run was verified. AM-002
+    counts the first attempt as an M4 failure that a retry might have avoided. The analysis
+    must state how it treats this trial. Run 2's seed 8 is reported beside it.
+  - Run 2 also re-ran every trial run 1 completed. Disagreement between the two runs on the
+    same trial is a measure of run-to-run variation, not a correction of run 1.
+  - With both runs, every target now has all its conventional trials, which is what `FREEZE.md`
+    §6 requires before a verdict.
+- Not done: C6 and the analysis have not run, and per-method results have not been tabulated.
+  Nobody has opened a mutant or a model answer.

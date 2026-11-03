@@ -521,3 +521,21 @@ and a human read of REINS.
   wraps only on the send side. A rule stated by category needs a test that injects a failure at
   each phase of the request.
 - Next: the owner decides on AM-002 (class B) and a restart.
+
+## 2026-11-03 UTC: C5 run 2 complete (restart under freeze v1.2)
+
+- FACT: run 2 ran 17:46Z–05:30Z under v1.2, with no stop. 440 records, all first attempts,
+  $20.44 for 371 answers. Committed in `8e249c3` before anything was examined; `verify` and the
+  freeze check pass.
+- FACT: the controls produced no verified witness, and no execution on a control returned
+  VIOLATION (that would have stopped the run).
+- FACT: the fix was exercised. 3 model calls hit `ConnectionResetError` and were retried to an
+  answer; 1 hit a 503.
+- FACT: the controls cost $15.03 of the $20.44. M4 ran all 5 rounds on every control trial,
+  where it can stop early only by finding something. The estimate had been projected from run 1,
+  which ran no control.
+- **Lesson.** A cost estimate taken from the targets that ran first is biased when the rest
+  differ in kind. With no bug to find, a control is the most expensive trial for an adaptive
+  method.
+- Next: the owner's go for C6, then the analysis. Run 1 is primary where complete; run 2 fills
+  the rest and is labeled post-observation.
