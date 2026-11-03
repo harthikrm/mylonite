@@ -1,0 +1,18 @@
+{
+ "trials": [
+  30,
+  30
+ ],
+ "same_trials": true,
+ "differ": {
+  "status": [],
+  "e1_executions": [],
+  "executions": [],
+  "witness": [],
+  "counters": [],
+  "model_calls": [],
+  "model_usd": [],
+  "tokens": [],
+  "unverified_violations": []
+ }
+}

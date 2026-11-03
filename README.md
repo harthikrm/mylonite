@@ -225,7 +225,9 @@ python3 experiments/2026-10-29-pilot/run_pilot.py --replay-model experiments/202
     `docker build -t mylonite-exec:dev -f docker/executor.Dockerfile docker`, the same command
     `Sandbox.build_executor_image` runs.
   - It writes a new results directory under `experiments/2026-10-29-pilot/results/`.
-  - A record of one such replay: [experiments/2026-11-03-pilot-replay/](experiments/2026-11-03-pilot-replay/README.md).
+  - At `cc37224`, all 30 trials matched the original on status, E₁, executions, witness, counters,
+    tokens and model cost. Record:
+    [experiments/2026-11-03-pilot-replay/](experiments/2026-11-03-pilot-replay/README.md).
 - **The demo video** has not been made yet. The pilot replay and the D1 gate are the replayable
   demonstrations.
 - **Not reproducible yet:**

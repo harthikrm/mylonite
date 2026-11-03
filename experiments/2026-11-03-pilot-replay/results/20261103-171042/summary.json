@@ -1,0 +1,174 @@
+{
+ "d2-loyalty-points": {
+  "M1": {
+   "trials": 5,
+   "verified": 5,
+   "statuses": [
+    "verified"
+   ],
+   "e1_executions": [
+    9,
+    5,
+    7,
+    5,
+    1
+   ],
+   "median_e1_censored_at_budget_plus_1": 5,
+   "success_at": {
+    "100": 5,
+    "300": 5,
+    "1000": 5
+   },
+   "method_s": [
+    0.094,
+    0.053,
+    0.092,
+    0.033,
+    0.006
+   ],
+   "model_usd_total": 0.0
+  },
+  "M3+": {
+   "trials": 5,
+   "verified": 5,
+   "statuses": [
+    "verified"
+   ],
+   "e1_executions": [
+    8,
+    8,
+    8,
+    8,
+    8
+   ],
+   "median_e1_censored_at_budget_plus_1": 8,
+   "success_at": {
+    "100": 5,
+    "300": 5,
+    "1000": 5
+   },
+   "method_s": [
+    0.079,
+    0.078,
+    0.048,
+    0.045,
+    0.068
+   ],
+   "model_usd_total": 0.0
+  },
+  "M4": {
+   "trials": 5,
+   "verified": 5,
+   "statuses": [
+    "verified"
+   ],
+   "e1_executions": [
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "median_e1_censored_at_budget_plus_1": 1,
+   "success_at": {
+    "100": 5,
+    "300": 5,
+    "1000": 5
+   },
+   "method_s": [
+    11.795,
+    14.412,
+    14.862,
+    14.14,
+    10.433
+   ],
+   "model_usd_total": 0.07079
+  }
+ },
+ "d3-inventory": {
+  "M1": {
+   "trials": 5,
+   "verified": 0,
+   "statuses": [
+    "censored:executions"
+   ],
+   "e1_executions": [
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "median_e1_censored_at_budget_plus_1": 1001,
+   "success_at": {
+    "100": 0,
+    "300": 0,
+    "1000": 0
+   },
+   "method_s": [
+    7.107,
+    7.308,
+    10.136,
+    9.912,
+    9.975
+   ],
+   "model_usd_total": 0.0
+  },
+  "M3+": {
+   "trials": 5,
+   "verified": 5,
+   "statuses": [
+    "verified"
+   ],
+   "e1_executions": [
+    211,
+    246,
+    211,
+    211,
+    775
+   ],
+   "median_e1_censored_at_budget_plus_1": 211,
+   "success_at": {
+    "100": 0,
+    "300": 4,
+    "1000": 5
+   },
+   "method_s": [
+    1.373,
+    1.947,
+    1.853,
+    1.872,
+    6.069
+   ],
+   "model_usd_total": 0.0
+  },
+  "M4": {
+   "trials": 5,
+   "verified": 5,
+   "statuses": [
+    "verified"
+   ],
+   "e1_executions": [
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "median_e1_censored_at_budget_plus_1": 1,
+   "success_at": {
+    "100": 5,
+    "300": 5,
+    "1000": 5
+   },
+   "method_s": [
+    11.275,
+    13.817,
+    11.07,
+    12.687,
+    12.586
+   ],
+   "model_usd_total": 0.0808
+  }
+ }
+}
