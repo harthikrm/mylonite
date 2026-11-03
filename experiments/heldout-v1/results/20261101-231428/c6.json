@@ -1,0 +1,12 @@
+{
+ "shown_in_c5": {
+  "alpha_m": true,
+  "beta_m": true
+ },
+ "extended": {},
+ "shown_buggy": [
+  "alpha_m",
+  "beta_m"
+ ],
+ "excluded": []
+}
