@@ -1,6 +1,6 @@
 # Hackathon submission text (draft)
 
-**Status: draft for the owner. Not submitted, and nothing is public.** The portal's form fields are
+**Status: draft for the owner. Not submitted.** The repository is public at <https://github.com/harthikrm/mylonite> (D-046). The portal's form fields are
 not visible in advance (`HACKATHON_COMPLIANCE.md` §1), so the text comes in sections to paste in
 as the form asks. `[TODO]` marks what only the owner can fill in. Every number is tied to a
 results file under "Sources". An independent fact-check (an AI agent, not a person) found 20
@@ -260,7 +260,7 @@ eligibility. "Single developer" above must match this list.]`
 
 - [x] README.md rewritten (`cc37224`, `619c32e`). Its first screen shows Muse's role, and it
       was fact-checked against the sources.
-- [ ] Public repository: needs the owner's approval and a license (Apache-2.0 proposed, D-016).
+- [x] Public repository: <https://github.com/harthikrm/mylonite>, Apache-2.0 (D-046).
       The full-history secret scan is done (`8644b99`): 0 hits, see
       `experiments/2026-11-03-secret-scan/`. The author email becomes public on push.
 - [ ] The license of each dependency listed above. Three are known from package metadata:

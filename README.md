@@ -29,8 +29,8 @@ Team **MetaMorphic**, Meta AI Developer Hackathon, *Push the Frontier*. Built Oc
 2026 (the team's building period); the submission deadline is Nov 4.
 **Status:**
 - built and evaluated;
-- the repository is local, and not yet public;
-- the license is to be decided (Apache-2.0 proposed, D-016).
+- the repository is public at <https://github.com/harthikrm/mylonite>;
+- it is licensed under Apache-2.0 ([LICENSE.md](LICENSE.md)).
 
 ## The problem
 
@@ -284,5 +284,5 @@ repository's code and documents, under the developer's direction and approval.
 
 ## License
 
-To be decided before publication. Apache-2.0 is proposed; see
-[docs/DECISIONS.md](docs/DECISIONS.md), D-016.
+Apache License 2.0: [LICENSE.md](LICENSE.md) (D-016, D-046). Third-party components keep their
+own licenses; see "Used, not built".

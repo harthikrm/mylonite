@@ -837,3 +837,27 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
     execution 1 with one call, from the same 3,078-token prompt). The p-values therefore measure
     repeatability on these two targets, not breadth.
 - Not done: publication of the sealed directory, and the OTS anchors (both need the owner).
+
+## D-046 The repository is published on GitHub under Apache-2.0
+- Date: 2026-11-03 ET. Status: **Done** once the push succeeds. Owner approval: "Yes, publish
+  it", answering "Publish the repository on GitHub under Apache-2.0?".
+- **This settles D-016:** Apache-2.0. The text is GitHub's `licenses/apache-2.0` template,
+  unmodified, in `LICENSE.md`.
+  - It is named `.md` because `freeze/manifest.py check` allows a new Markdown file but no other
+    new file outside a new experiment directory. GitHub recognizes `LICENSE.md`.
+- **Where:** <https://github.com/harthikrm/mylonite>, public, branch `main`, and the tag `freeze-v1.0`. It is the account the
+  `gh` CLI is logged in to.
+- **Before the push:**
+  - the full-history secret scan found no secret (`8644b99`, `experiments/2026-11-03-secret-scan/`);
+  - it was re-run at the pushed commit;
+  - the freeze check passes at the pushed commit.
+- **Made public with it:**
+  - the author and committer email on every commit. Rewriting history to change it would break
+    every cited commit id;
+  - local paths in 5 files.
+- **Not published, by separate decision:**
+  - the sealed held-out directory (`HELDOUT_PROTOCOL.md` C6, still awaiting the owner);
+  - the raw run logs under `runs/`;
+  - the API key.
+- Not done: OTS anchors; licenses still to confirm for Valkey, the Python base image and the
+  .NET images.
