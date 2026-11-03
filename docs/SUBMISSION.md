@@ -258,11 +258,13 @@ eligibility. "Single developer" above must match this list.]`
 
 ## Still to do before submitting
 
-- [ ] **README.md is out of date.** It still says no application code exists. The README's first
-      screen must show Muse's role (judging stage 1).
+- [x] README.md rewritten (`cc37224`, `619c32e`). Its first screen shows Muse's role, and it
+      was fact-checked against the sources.
 - [ ] Public repository: needs the owner's approval, a full-history secret scan, and a license
       (Apache-2.0 proposed, D-016).
-- [ ] The license of each dependency listed above.
+- [ ] The license of each dependency listed above. Three are known from package metadata:
+      `redis` (MIT), `grpcio` (Apache-2.0) and `typing-extensions` (PSF-2.0). Still to confirm:
+      Valkey, `python:3.13-slim`, and the .NET images.
 - [ ] 3-minute demo video, showing Muse's role in the first 30 seconds.
 - [ ] Team members named; track confirmed.
 - [ ] Owner's decisions:
