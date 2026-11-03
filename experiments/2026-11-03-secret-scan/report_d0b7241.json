@@ -1,0 +1,65 @@
+{
+ "objects": {
+  "blob": 313,
+  "tree": 216,
+  "commit": 49
+ },
+ "reachable_objects": 539,
+ "key_needles_checked": [
+  "key: full",
+  "key: first 16",
+  "key: last 16",
+  "key: middle 16",
+  "key: base64",
+  "key: base64 Bearer"
+ ],
+ "key_hits": [],
+ "pattern_hits": {
+  "assigned secret": {
+   "count": 3,
+   "distinct_objects": 3,
+   "examples": [
+    {
+     "object": "0fbbfb46e2",
+     "kind": "blob",
+     "reachable": true,
+     "paths": [
+      "src/mylonite/methods.py"
+     ],
+     "preview": "toke\u2026(28 chars)"
+    },
+    {
+     "object": "40cd588ab2",
+     "kind": "blob",
+     "reachable": true,
+     "paths": [
+      "src/mylonite/methods.py"
+     ],
+     "preview": "toke\u2026(28 chars)"
+    },
+    {
+     "object": "f1c18c8722",
+     "kind": "blob",
+     "reachable": true,
+     "paths": [
+      "src/mylonite/methods.py"
+     ],
+     "preview": "toke\u2026(28 chars)"
+    }
+   ]
+  }
+ },
+ "patterns_with_no_hits": [
+  "Meta Model API key (LLM_...)",
+  "AWS access key",
+  "GitHub token",
+  "OpenAI/Anthropic-style key",
+  "Stripe live key",
+  "Slack token",
+  "Google API key",
+  "private key block",
+  "JWT",
+  "Bearer token value",
+  "URL with credentials"
+ ]
+}
