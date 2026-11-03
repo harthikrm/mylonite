@@ -1,0 +1,116 @@
+{
+ "commit": "cac2654aebb46032df06057a39d1945117cf32a8",
+ "dirty": false,
+ "shown_buggy": [
+  "alpha_m",
+  "beta_m"
+ ],
+ "excluded": [],
+ "controls": [
+  "alpha",
+  "beta"
+ ],
+ "files": {
+  "experiments/heldout-v1/results/20261101-231428/c6.json": "701d246e7aeee3117e84c153d86b5175ee6e8ce723b3e55d1e32ac8bb20139d1",
+  "experiments/heldout-v1/results/20261101-231428/manifest.json": "a071fdcb59d22f07c0e33411874c95c6723613a0e4f9d724d0d9194bb1e46725",
+  "experiments/heldout-v1/results/20261101-231428/trials.json": "c63703feb2dca7f14146b34abf31514fbfa6e408db18c22b028d5dd53587f5ac",
+  "experiments/heldout-v1/results/20261101-231428/trials.jsonl": "2b3fcc3a4c92413760189d8d2960762f3926b9e258ecf3679ecbe52189939337",
+  "experiments/heldout-v1/results/20261102-114636/c6.json": "701d246e7aeee3117e84c153d86b5175ee6e8ce723b3e55d1e32ac8bb20139d1",
+  "experiments/heldout-v1/results/20261102-114636/manifest.json": "d6611017cbc4c44705ff02d9fcb752e55c285c08a3bd99f2ca92d3defeb57f03",
+  "experiments/heldout-v1/results/20261102-114636/trials.json": "4ae650b9807c6dc4e15b7f1b5ff134148b9a4e776acceb7bb15cb946141d9805",
+  "experiments/heldout-v1/results/20261102-114636/trials.jsonl": "9b5eee244effa329cdaabf8fac3c2605cc2fb843935031633dc71b4bc5f1ae73"
+ },
+ "sources": {
+  "primary": {
+   "alpha_m|run1": 120,
+   "alpha|run2": 100,
+   "beta_m|run1": 60,
+   "beta_m|run2": 60,
+   "beta|run2": 100
+  },
+  "run2": {
+   "all|run2": 440
+  },
+  "a2_seed10_from_run2": {
+   "alpha_m|run1": 120,
+   "alpha|run2": 100,
+   "beta_m|run1": 59,
+   "beta_m|run2": 61,
+   "beta|run2": 100
+  }
+ },
+ "run_to_run": {
+  "alpha_m|A2": {
+   "both_completed": 20,
+   "same_status": 14,
+   "both_verified": 10,
+   "same_e1_when_both_verified": 0
+  },
+  "alpha_m|M0": {
+   "both_completed": 20,
+   "same_status": 19,
+   "both_verified": 0,
+   "same_e1_when_both_verified": 0
+  },
+  "alpha_m|M1": {
+   "both_completed": 20,
+   "same_status": 20,
+   "both_verified": 0,
+   "same_e1_when_both_verified": 0
+  },
+  "alpha_m|M3+": {
+   "both_completed": 20,
+   "same_status": 20,
+   "both_verified": 17,
+   "same_e1_when_both_verified": 17
+  },
+  "alpha_m|M3+arg": {
+   "both_completed": 20,
+   "same_status": 20,
+   "both_verified": 17,
+   "same_e1_when_both_verified": 17
+  },
+  "alpha_m|M4": {
+   "both_completed": 20,
+   "same_status": 20,
+   "both_verified": 20,
+   "same_e1_when_both_verified": 20
+  },
+  "beta_m|A2": {
+   "both_completed": 10,
+   "same_status": 9,
+   "both_verified": 9,
+   "same_e1_when_both_verified": 0
+  },
+  "beta_m|M0": {
+   "both_completed": 10,
+   "same_status": 10,
+   "both_verified": 10,
+   "same_e1_when_both_verified": 0
+  },
+  "beta_m|M1": {
+   "both_completed": 10,
+   "same_status": 10,
+   "both_verified": 8,
+   "same_e1_when_both_verified": 8
+  },
+  "beta_m|M3+": {
+   "both_completed": 10,
+   "same_status": 10,
+   "both_verified": 10,
+   "same_e1_when_both_verified": 10
+  },
+  "beta_m|M3+arg": {
+   "both_completed": 10,
+   "same_status": 10,
+   "both_verified": 10,
+   "same_e1_when_both_verified": 10
+  },
+  "beta_m|M4": {
+   "both_completed": 10,
+   "same_status": 9,
+   "both_verified": 9,
+   "same_e1_when_both_verified": 7
+  }
+ }
+}

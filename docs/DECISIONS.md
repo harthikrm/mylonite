@@ -791,3 +791,49 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
     §6 requires before a verdict.
 - Not done: C6 and the analysis have not run, and per-method results have not been tabulated.
   Nobody has opened a mutant or a model answer.
+
+## D-045 C6 and the held-out analysis: M4 better on E₁, worse on seconds and dollars
+- Date: 2026-11-03 ET. Status: **Done.** Owner approval: "Yes, run both", answering "Go ahead
+  with C6 and then the analysis?".
+- **C6** (`0cf4fb6`). `c6_extended.py` was run on each C5 run. Both mutants were shown buggy by
+  C5's own verified witnesses, so no extended search ran. Nothing is excluded.
+  - Beacon: round 6605131 from api.drand.sh (byte-identical to the C3 fetch) and
+    drand.cloudflare.com equals the committed response in every field. BLS not verified.
+  - Reveal: both mutants are O1. `alpha_m` is `reserve` line 80 (`HINCRBY` → `HGET` + `HSET`,
+    guarded). `beta_m` is `discard` line 79 (`DECRBY` → `GET` + `SET`, unguarded).
+- **Correction to D-044.** D-044 said run 2 is the only data for `beta_m` A2 seed 10. That trial
+  ended in run 1, twice in error, before the stop. Under `FREEZE.md` §4 rule 3 an errored Muse
+  trial is a failure from its first attempt, so it is a completed trial and run 1 is primary for
+  it. That is the reading less favorable to Muse. The other reading is reported as a
+  sensitivity analysis and changes no verdict.
+- **The driver** (`cac2654`): `experiments/heldout-v1-analysis/analyze_heldout.py`, written after
+  outcomes were observed. It calls the frozen `analyze` as the config names it, and was
+  committed before its first run. It is in a new experiment directory, so the freeze check
+  still passes.
+- **Results** (`experiments/heldout-v1-analysis/RESULTS.md`; primary, confirmatory, Holm):
+  - M4 against the conventional and systematic groups:
+    - **better on E₁** on both mutants (median 1 against 764 and 97 for M3+);
+    - **worse on method-seconds and dollars** on both.
+  - A2 against both groups: no significant difference on E₁ for `alpha_m`, worse on E₁ for
+    `beta_m`, and worse on seconds and dollars on both.
+  - Negative controls: 0 false positives in 200 trials.
+  - Break-even for M4: an execution would have to cost more than 0.055 s (`alpha_m`) or 0.62 s
+    (`beta_m`). Measured: 0.009 s.
+  - Run 2 alone gives the same confirmatory verdicts.
+- **Found at the reveal and not disclosed before:**
+  - the generator rewrites the whole mutant through `ast.unparse`, so a mutant's formatting
+    differs from its base's;
+  - in each mutant the mutated lines are the only non-transactional read-then-write of a
+    counter, which a source reader can spot.
+- **Independent review.** It recomputed everything without `analysis.py` and found nothing
+  that must change. Every count, median, p-value, Holm value and break-even reproduced.
+  - Two places where the frozen code differs from the frozen text, with no effect here, and not
+    fixed (a fix would be class B):
+    - `cost_lines` gives a baseline stopped by the time budget a finite bound, where rules 1
+      and 10 say infinite. No mutant trial hit the time budget.
+    - `false_positives` scans only the selected records. All 882 have 0 corrected-variant
+      VIOLATIONs.
+  - Disclosed in RESULTS.md: M4's trials are near-replicates (35 of 39 found the bug at
+    execution 1 with one call, from the same 3,078-token prompt). The p-values therefore measure
+    repeatability on these two targets, not breadth.
+- Not done: publication of the sealed directory, and the OTS anchors (both need the owner).

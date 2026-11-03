@@ -539,3 +539,23 @@ and a human read of REINS.
   method.
 - Next: the owner's go for C6, then the analysis. Run 1 is primary where complete; run 2 fills
   the rest and is labeled post-observation.
+
+## 2026-11-03: C6 and the held-out analysis
+
+- FACT: C6 showed both mutants buggy from C5's own witnesses; nothing is excluded. The beacon
+  matches drand's public record on two relays.
+- FACT (primary, confirmatory, Holm): M4 is better than the conventional and systematic groups
+  on E₁ on both mutants (median 1, against M3+'s 764 and 97). It is worse on method-seconds and
+  dollars on both. A2 is never better. The controls had 0 false positives in 200 trials.
+- FACT: executions cost about 9 ms here. M4 would need them to cost 6× (`alpha_m`) or 68×
+  (`beta_m`) more to be faster than the best baseline.
+- HYPOTHESIS, consistent with A2's results but not measured directly: M4's advantage in
+  executions comes from reading the mutated line. Both mutants are the same lost-update
+  operator, with no decoys, and the mutated lines are the only non-transactional
+  read-then-write in each file.
+- **Lesson.** With a near-deterministic model, 20 trials on one target are 20 replicates of one
+  plan. The test then measures repeatability, so breadth has to come from more targets, not
+  more seeds. The generator's `ast.unparse` reformatting also went unnoticed until the reveal:
+  look at a toy mutant's full diff, not only the changed line.
+- Next: the owner decides on publishing the sealed directory, the OTS anchors, and the
+  submission text.
