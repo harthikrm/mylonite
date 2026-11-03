@@ -260,8 +260,9 @@ eligibility. "Single developer" above must match this list.]`
 
 - [x] README.md rewritten (`cc37224`, `619c32e`). Its first screen shows Muse's role, and it
       was fact-checked against the sources.
-- [ ] Public repository: needs the owner's approval, a full-history secret scan, and a license
-      (Apache-2.0 proposed, D-016).
+- [ ] Public repository: needs the owner's approval and a license (Apache-2.0 proposed, D-016).
+      The full-history secret scan is done (`8644b99`): 0 hits, see
+      `experiments/2026-11-03-secret-scan/`. The author email becomes public on push.
 - [ ] The license of each dependency listed above. Three are known from package metadata:
       `redis` (MIT), `grpcio` (Apache-2.0) and `typing-extensions` (PSF-2.0). Still to confirm:
       Valkey, `python:3.13-slim`, and the .NET images.
