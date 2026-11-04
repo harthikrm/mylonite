@@ -1,8 +1,24 @@
 # Threat Model
 
-Status: **Phase 0 draft.** Nothing described here is implemented yet. Every control below is a
-requirement for Phase 1, and the [security acceptance checklist](#security-acceptance-checklist)
-at the end is the gate for running any third-party code.
+Status: **written in Phase 0, before any implementation**, as the requirements for Phase 1. The
+[security acceptance checklist](#security-acceptance-checklist) at the end is the gate for
+running any third-party code.
+
+> **Updated 2026-11-04 (status only; the rest of this document is unchanged).**
+> - **Implemented since:** the Docker sandbox in §6, in `src/mylonite/sandbox.py`. It provides:
+>   - an `--internal` network;
+>   - a read-only root, all capabilities dropped, and `no-new-privileges`;
+>   - non-root users;
+>   - pids, CPU and memory limits;
+>   - read-only mounts.
+>
+>   `tests/test_sandbox.py` asserts the flags and the mounts.
+> - **The §8 checklist** was recorded only for the no-model runs of the third-party D1 cart
+>   (D-032: `experiments/2026-10-29-d1-baselines/SECURITY_CHECK.md`, and the `pre_run/`
+>   records of the D1 experiments). The model runs used only our own code: the fixtures and
+>   the held-out services.
+> - **The checkboxes below were not updated item by item.** An unchecked box means "not
+>   re-audited here", not "missing".
 
 > **Updated 2026-10-28 (`PHASE0_REVIEW.md` R10, approved as A7).**
 > - The executor, proxy, and oracle run as a container **inside** the target's internal network.

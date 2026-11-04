@@ -23,7 +23,7 @@ Mylonite uses Muse Spark to choose which requests to race against a Redis-backed
 proves every bug with a replayable schedule, and it measures, against strong non-AI baselines,
 when the model's choice is worth its cost.
 
-## Short description (about 130 words)
+## Short description (177 words; trim it if the form sets a limit)
 
 Two correct request handlers can still lose data when they run at the same moment against a
 shared Redis or Valkey key. Unit tests and race detectors miss this kind of bug: there is no
@@ -72,7 +72,9 @@ Mylonite's runtime. In each trial, Muse gets up to 5 planning rounds.
   through the proxy: the hinted order first, then other orders, up to 50 per experiment. A
   contract oracle in plain code decides.
 - **Verification:** each violation is replayed 20 times with an identical trace hash, and it
-  must not occur in the corrected version of the service.
+  must not be observed in the corrected version of the service.
+  - That check covers every order when there are at most 5,000, and 7,000 orders otherwise. It
+    was the bounded one for 42 of the 183 verified held-out witnesses.
 
 ### What we built during the hackathon
 
@@ -110,6 +112,7 @@ We wrote the plan before the results, and the evaluation could make Muse look ba
   a false positive.
 - **Scale:** 20 trials per method per target.
 - **Spend:** $25.01 of Muse calls over both held-out runs, and $25.45 including development.
+  These are recorded from the usage the API returned.
 
 ### Results on the held-out bugs
 
@@ -117,13 +120,16 @@ These are the only effectiveness claims. Both bugs turned out to be lost updates
 
 | | `alpha_m` (guarded site) | `beta_m` (unguarded site) |
 |---|---|---|
-| Muse with source (M4), median E₁ | **1**: 20 of 20 found at execution 1 | **1**: 15 of 20 at execution 1, 4 later (38–88), 1 failed |
+| Muse with source (M4), median E₁ | **1**: 20 of 20 found at execution 1 | **1**: 15 of 20 at execution 1, 4 later (38–88), 1 failed (a harness error, counted as a failure) |
 | Best conventional method, median E₁ | 764 (M3+, 17 of 20 found) | 97 (M3+, 20 of 20) |
 | M4 against the conventional baselines, E₁ | **better** (Holm p = 8.7e-11) | **better** (p = 2.0e-5) |
 | M4, method-seconds and dollars | **worse** (p = 1.0e-7) | **worse** (p = 8.7e-11) |
 | Muse without source (A2) | no significant difference on E₁; worse on seconds and dollars | worse on every metric |
 
-- **Controls:** 200 trials on the correct bases gave 0 false positives.
+- **Controls:** 200 trials on the correct bases gave 0 false positives. Five methods ran on
+  them; A2 was not run on the controls.
+- **A2 on `alpha_m`:** its median E₁ (401) was below M3+'s (764), but it found the bug in fewer
+  trials (13 against 17). The difference is not significant.
 - **The cost of a find:** M4's median is 42–60 s and $0.03–0.05. The systematic search's is
   1–7 s, at under $0.001.
 - **Break-even:** by the frozen formula, M4 would be faster than every baseline only if one
@@ -137,7 +143,8 @@ These are the only effectiveness claims. Both bugs turned out to be lost updates
 These were known while the rules were written, so they are never pooled with the held-out
 results.
 - **The real OpenTelemetry cart (#3824):** reproduced under control and replayed 20 out of 20
-  times. With no schedule control, 942 of 1,000 natural races lost an update.
+  times. With no schedule control, 942 and 927 of 1,000 natural races lost an update, in two
+  sessions (Oct 28 and Nov 1).
   - Stress testing found the bug in a median of 7 executions (n = 5, exploratory), at 5–9 ms
     each.
   - We did not run Muse there:
@@ -149,7 +156,8 @@ results.
 - **Two Python fixtures, written by us** (n = 5 each):
   - **Executions:** Muse with source found each bug on its first execution in every trial. The
     best conventional medians were 5 (random search) and 211 (systematic search). Without the
-    source, Muse also found the simpler fixture's bug on its first execution.
+    source, Muse also found the simpler fixture's bug on its first execution, and needed a
+    median of 71 on the harder one.
   - **Wall-clock:** a conventional method won on every development target. M4's median was
     12.6–14.2 s per find. The best conventional method's was under 2 s (0.05 s and 1.7 s).
 
@@ -204,8 +212,12 @@ results.
     finished. The restart supplies the rest, labeled post-observation: 60 trials on `beta_m`,
     and all 200 control trials.
   - On the restart alone, every confirmatory verdict is the same, and two secondary ones change.
-- **Verification depth:** for 26 of A2's 32 verified witnesses, the corrected-variant check was
-  bounded rather than exhaustive, as the frozen rule allows.
+- **Verification depth:** the corrected-variant check was bounded rather than exhaustive for
+  42 of the 183 verified held-out witnesses, as the frozen rule allows:
+  - A2: 26 of 32;
+  - M1: 9 of 18;
+  - M0: 6 of 20;
+  - M4: 1 of 39.
 - **Untested conditions:** our timings are on fast, local targets. Slow or remote targets are
   where the break-even says Muse could win, if its execution advantage carries over, and we did
   not test them.
@@ -222,14 +234,17 @@ results.
 
 - **Meta:** Muse Spark (`muse-spark-1.3`) through the Meta Model API, using structured output,
   `reasoning_effort` and automatic prompt caching.
-- **Used, not built** `[TODO: license of each]`:
+- **Used, not built** (licenses from upstream, read 2026-11-04; the images are pulled, not
+  redistributed, and their bundled OS packages carry their own licenses):
   - the OpenTelemetry Demo (Apache-2.0), pinned at tag `3.1.0` and not vendored. Its
     upstream NuGet packages are pinned by version, not hash. The corrected build uses PR
     #3825's cart change;
-  - Valkey 9.0.4, pinned by image digest;
-  - `python:3.13-slim`, pinned by digest;
-  - .NET SDK 10.0.401 and runtime-deps 10.0.12-alpine3.23 images;
-  - Python packages `redis` 8.1.0, `grpcio` 1.84.0 and `typing-extensions` 4.15.0;
+  - Valkey 9.0.4 (BSD-3-Clause), pinned by image digest;
+  - `python:3.13-slim` (CPython: PSF License; Debian base packages), pinned by digest;
+  - .NET SDK 10.0.401 and runtime-deps 10.0.12-alpine3.23 images (.NET: MIT; Alpine base
+    packages);
+  - Python packages `redis` 8.1.0 (MIT), `grpcio` 1.84.0 (Apache-2.0) and
+    `typing-extensions` 4.15.0 (PSF-2.0);
   - Docker;
   - the drand beacon, FreeTSA and the OpenTimestamps calendars.
 - **Libraries:** the host-side harness uses the Python standard library only.
@@ -252,7 +267,7 @@ eligibility. "Single developer" above must match this list.]`
 | Freeze, lateness, gate F, deviations | `docs/FREEZE.md` §1, §5, §8; `docs/HELDOUT_PROTOCOL.md` "Minimum scope" |
 | Beacon, timestamps, sealing | `docs/DECISIONS.md` D-041, D-042; `experiments/heldout-v1/sealed/` |
 | OTel cart: 20/20 replay, 942 of 1,000 | `experiments/2026-10-28-d1-gate/README.md` |
-| OTel cart: stress median 7, 5–9 ms, Python-only view, 230–420× | `experiments/2026-10-29-d1-baselines/RESULTS.md`, `experiments/2026-11-01-d1-recheck/RESULTS.md` §3, §7 |
+| OTel cart: stress median 7, 5–9 ms, Python-only view, 230–420× | `experiments/2026-10-29-d1-baselines/RESULTS.md`, `experiments/2026-11-01-d1-recheck/RESULTS.md` §4, §5, §7 |
 | Fixtures: executions, A2 on D2, wall-clock | `experiments/2026-10-29-pilot/RESULTS.md`, `experiments/2026-10-28-a2-no-source/RESULTS.md`, `experiments/2026-10-30-m0-d2-d3/RESULTS.md` §3 |
 | Dependencies | `docker/*.Dockerfile`, `docker/*.lock`, `targets/d1-otel-cart/Dockerfile` |
 
@@ -263,9 +278,10 @@ eligibility. "Single developer" above must match this list.]`
 - [x] Public repository: <https://github.com/harthikrm/mylonite>, Apache-2.0 (D-046).
       The full-history secret scan is done (`8644b99`): 0 hits, see
       `experiments/2026-11-03-secret-scan/`. The author email becomes public on push.
-- [ ] The license of each dependency listed above. Three are known from package metadata:
-      `redis` (MIT), `grpcio` (Apache-2.0) and `typing-extensions` (PSF-2.0). Still to confirm:
-      Valkey, `python:3.13-slim`, and the .NET images.
+- [x] The license of each dependency listed above. The Python packages come from package
+      metadata. The images were read upstream on 2026-11-04: Valkey `COPYING` at `9.0.4`
+      (BSD-3-Clause), the Python docs and Docker Hub page (PSF), and `dotnet/runtime` and
+      `dotnet/sdk` (MIT). Their bundled OS packages were not reviewed one by one.
 - [ ] 3-minute demo video, showing Muse's role in the first 30 seconds. The script, shot list
       and recording commands are drafted and fact-checked in `docs/VIDEO_SCRIPT.md`; it is not
       recorded yet.

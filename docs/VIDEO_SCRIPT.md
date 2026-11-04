@@ -49,8 +49,8 @@ Demo's cart (issue #3824), still open when last checked on Nov 1."
 > before both writes. Muse never runs code, and never decides what counts as a bug.
 
 **Captions:**
-- from 0:15: "`muse-spark-1.3` · Standard mode · `reasoning_effort` medium · the only model
-  Mylonite calls";
+- from 0:15: "Recorded Muse response, from the Oct 28 pilot (no live call) · `muse-spark-1.3` ·
+  Standard mode · `reasoning_effort` medium · the only model Mylonite calls";
 - at about 0:28: "This experiment found the bug on execution 1 (next)."
 
 ### 0:35–1:06 · It runs
@@ -103,20 +103,21 @@ Demo's cart (issue #3824), still open when last checked on Nov 1."
   |---|---|---|
   | Muse with the source: median executions to the bug | **1** | **1** |
   | Best non-AI method | 764 | 97 |
-  | Muse without the source | 401 | 137 |
+  | Muse without the source | 401 (not significant) | 137 |
   | Muse: median seconds per find | 41.8 | 59.9 |
   | Systematic search: median seconds | 5.8–6.5 | 1.0 |
   | Muse would be faster only if one execution took more than | 0.055 s | 0.62 s |
 
-  Footer: "One execution measured ≈ 0.009 s. Without the source, Muse was no better than
-  conventional search on `alpha_m`, and worse on `beta_m`. 200 control trials: 0 false alarms."
+  Footer: "One execution measured ≈ 0.009 s. Without the source, Muse was not significantly
+  better on `alpha_m` (it found the bug in 13 of 20 trials, against 17), and worse on `beta_m`.
+  200 control trials: 0 false alarms."
 
 > The result is mixed. Muse needed a median of one execution to find each bug. The best
 > conventional method needed 764 and 97. But an execution takes about 9 milliseconds, while
 > Muse's median find took 42 to 60 seconds. The systematic search took 1 to 6.5 seconds, so it
 > was faster and cheaper. Muse would win on time only above 55 milliseconds per execution on one
-> bug, and 620 on the other. Without the source, Muse was no better. 200 control trials gave zero
-> false alarms.
+> bug, and 620 on the other. Without the source, Muse was not significantly better. 200 control
+> trials gave zero false alarms.
 
 ### 2:09–2:33 · What it means, and the limits
 
@@ -126,7 +127,8 @@ Demo's cart (issue #3824), still open when last checked on Nov 1."
   Muse;
 - Muse repeats nearly the same plan, so 20 trials measure reliability on one bug, not breadth;
 - the method freeze was 5 hours late;
-- one restart after a harness defect, under a pre-registered rule;
+- one restart after a harness defect, under a pre-registered rule. It is post-observation,
+  and it supplies 60 `beta_m` trials and all 200 controls;
 - slow or remote targets not tested.
 
 > Our hypothesis: Muse spots the one non-atomic counter update in each service; the no-source
@@ -175,10 +177,23 @@ Demo's cart (issue #3824), still open when last checked on Nov 1."
 - **Rehearse in one clone, record in another.** Each clone allows one take of the replay. The
   replay refuses to run on a modified tree, and it leaves its own results folder behind. The
   rehearsal also pulls the Valkey image, which would otherwise slow the first take on camera.
-  - Before a retake, re-clone. Or reset the clone: preview with `git clean -n`, then run
+  - Use two folder names, for example `mylonite-rehearse` and `mylonite-rec` (command 1 takes
+    the name).
+  - Run one replay at a time. Every replay uses the same sandbox name, and starting one removes
+    the other's Valkey.
+  - Before a retake, re-clone. Or reset the clone: preview with
+    `git clean -nd experiments/2026-10-29-pilot/results/`, then run
     `git clean -fd experiments/2026-10-29-pilot/results/` (it removes only untracked folders
     there) and `git checkout -- experiments/heldout-v1-analysis/inputs.json`.
-  - Don't commit anything from the recording clone.
+  - If the replay prints "refusing a non-smoke run on a dirty tree: commit first", reset or
+    re-clone. Don't commit anything from the recording clone.
+- **No key in the recording shell.** Run `unset MODEL_API_KEY` first. A fresh clone has no
+  `.env`, but with a key exported, dropping `--replay-model` from command 2 would make 10 live
+  Muse calls.
+- **First time on a machine:** Docker Desktop must be running. The build pulls the Python base
+  image, and the first replay silently pulls Valkey (about 64 MB). Rehearsing does both.
+- **A terminal at least 120 columns wide.** The first line of command 6 is 223 characters,
+  and it holds two highlighted values. Plan those highlights around the wrap.
 - **Order matters.** Run the replay (command 2) before the analysis (command 6). The analysis
   rewrites `inputs.json`, and the replay then refuses. The freeze check (command 5) passes in
   any order.
@@ -195,7 +210,7 @@ Demo's cart (issue #3824), still open when last checked on Nov 1."
 **1. Clone and build** (off camera):
 
 ```bash
-git clone https://github.com/harthikrm/mylonite.git && cd mylonite
+git clone https://github.com/harthikrm/mylonite.git mylonite-rec && cd mylonite-rec
 ```
 
 ```bash
@@ -204,9 +219,13 @@ docker build -t mylonite-exec:dev -f docker/executor.Dockerfile docker
 
 **2. The replay** (on camera, 0:35). Muse's 10 pilot trials, answered from the recorded
 responses. `sed` keeps the 10 trial lines and drops the 62-line summary that follows them.
-- Checked on 2026-11-03 in fresh clones at `e3e5c80`: about 4 s, 10 of 10 `verified e1=1`.
-- The results match the original pilot on status, E₁, executions, witness, counters, tokens
-  and model dollars.
+- Checked on 2026-11-03 in fresh clones at `e3e5c80`, and on 2026-11-04 from a fresh clone of
+  the public repository at `31a0bb5`: 3.4–4 s, 10 of 10 `verified e1=1`. These checks are not
+  recorded in the repository; the committed record is the 30-trial replay in
+  `experiments/2026-11-03-pilot-replay/`.
+- The results match the original pilot on status, E₁, executions, witness and counters.
+  Tokens and model dollars are copied from the recording, so they match by construction. This
+  checks the harness, not Muse: no new answer is sampled.
 - `method_s` is the recorded model latency plus this run's execution time, so it differs from
   the original by a few milliseconds.
 
@@ -250,7 +269,7 @@ python3 experiments/heldout-v1-analysis/analyze_heldout.py | sed -n 1,13p
 | The `award` handler and its fix | `fixtures/dev/d2_counter/service.py`, `service_fixed.py` |
 | Muse's experiment, the witness, 20/20 replays, 6/6 corrected schedules | `experiments/2026-10-29-pilot/results/20261028-165020/` (`model_calls.jsonl`, `trials.json`, trial `d2-loyalty-points/M4/1`) |
 | Random search on D2: median 5 executions, 0.06 s | same `trials.json` (M1, seeds 1–5) |
-| The replay is identical at the current code | `experiments/2026-11-03-pilot-replay/` (all 30 trials, at `cc37224`); the M4-only checks above (at `e3e5c80`) |
+| The replay is identical at the current code | `experiments/2026-11-03-pilot-replay/` (all 30 trials, at `cc37224`); the M4-only checks above (at `e3e5c80` and `31a0bb5`; not recorded in the repository) |
 | Model and settings | `src/mylonite/planner.py`; `docs/FREEZE.md` |
 | Freeze, its lateness, v1.2, beacon, sealing, restart | `docs/FREEZE.md`; `docs/AMENDMENTS.md` AM-002; `docs/DECISIONS.md` D-041 to D-045 |
 | Medians (1, 764, 97, 401, 137), seconds (41.8, 59.9, 5.8–6.5, 1.0), break-even (0.055 s, 0.62 s), ≈ 0.009 s, 0 false alarms in 200 | `experiments/heldout-v1-analysis/RESULTS.md`, `report_primary.json` |

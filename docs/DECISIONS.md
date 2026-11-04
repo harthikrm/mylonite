@@ -861,3 +861,60 @@ Statuses: **Accepted** (in force), **Proposed** (awaiting team approval), **Reje
   - the API key.
 - Not done: OTS anchors; licenses still to confirm for Valkey, the Python base image and the
   .NET images.
+
+## D-047 Final submission audit: documentation fixes and errata
+- Date: 2026-11-04 ET. Status: **Done locally; not pushed.** Owner request: a final readiness
+  audit ("Do not implement new features, launch new experiments, or change the frozen
+  evaluation results"; low-risk documentation fixes allowed).
+- **How:** three separate AI agents, not people:
+  - one read the live rules pages;
+  - one recomputed every claim from the raw `trials.jsonl` files, with its own exact
+    Mann–Whitney code;
+  - one ran the demo and the README's Reproduce commands from a fresh clone of the public
+    repository at `31a0bb5`.
+
+  The author checked the findings used here against the files.
+- **Result:** no headline number is wrong. `analyze_heldout.py` reproduces all three reports
+  byte for byte. The pilot replay from a fresh public clone matches all 30 trials (`compare.py`,
+  0 differences).
+- **Fixed (README, SUBMISSION, VIDEO_SCRIPT, THREAT_MODEL, HACKATHON_COMPLIANCE):**
+  - **Wording:**
+    - "A2 never better" now reads "never significantly better" (on `alpha_m`: 401 against 764,
+      13 against 17 found).
+    - The controls used 5 methods; A2 was not run on them. All 200 control trials are from
+      run 2.
+    - #3824 was reproduced, not found. D1's verdict is an estimate, since Muse never ran there.
+  - **Replay honesty:** the tokens and dollars in a replay are copied from the recording, so
+    they match by construction. Only held-out run 2 re-sampled Muse.
+  - **Added figures:**
+    - 927 of 1,000 natural races on Nov 1, beside the 942 on Oct 28;
+    - the bounded corrected-variant check: 42 of 183 witnesses (A2 26 of 32, M1 9 of 18, M0 6
+      of 20, M4 1 of 39);
+    - A2 on D3: median 71;
+    - spend "as recorded".
+  - **Licenses:** Valkey (BSD-3-Clause), CPython (PSF), and .NET (MIT), read upstream. The
+    bundled OS packages were not reviewed one by one.
+  - **Reproduce:** Python 3.11 or later. The tests pass on 3.11, 3.12 and 3.14.5, and one
+    fails on 3.9. Also documented: Docker must be running and needs network on first use; the
+    analysis leaves `inputs.json` modified, so run the replay first or restore it.
+  - **Recording safety:** `unset MODEL_API_KEY`; two clone names; one replay at a time.
+  - **Other fixes:**
+    - THREAT_MODEL now gives the implemented status;
+    - SUBMISSION's source sections are corrected to §4, §5 and §7;
+    - SUBMISSION's short description is labeled with its real length, 177 words.
+- **Errata, left unedited in committed records:**
+  - `experiments/heldout-v1-analysis/RESULTS.md` (line 136) and D-045 say every round-1 prompt
+    is 3,078 tokens. That is `alpha_m`'s; `beta_m`'s is 2,461.
+  - The same RESULTS.md (line 129) says "Shown: reading the source is what makes the difference
+    in executions". It is a hypothesis supported by a secondary comparison, as its lines 141–143
+    and the README say.
+  - RESULTS.md line 5 says "freeze v1.2". Run 1, which supplies 180 of the 240 primary mutant
+    trials, ran under v1.1. v1.2 changed only the transport-error retry (AM-002).
+- **Rules re-read** (`HACKATHON_COMPLIANCE.md`):
+  - The deadline is 9:00 PM ET on Nov 4 (02:00 UTC on Nov 5).
+  - The platform's 6-hour window marks entries "late", and so does changing the repository
+    after the deadline.
+  - The public-repository and 3-minute-video requirements remain team-reported.
+- **Side effect:** the audit's `docker build` gave the local `mylonite-exec:dev` a new image ID
+  (`2548d088c117…`, previously `fc531f255610…`), with the same cached layers. No code compares
+  that ID.

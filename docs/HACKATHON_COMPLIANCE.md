@@ -6,6 +6,19 @@ consideration: **Indie Developer**. Team: MetaMorphic. Project: Mylonite.
 Sources were read on 2026-10-27. The rules say organizers "reserve the right to modify these
 terms at any time", so **re-read the rules page on Nov 1 and on Nov 4 before submitting.**
 
+> **Re-read 2026-11-04** (an AI agent read the public pages; the rules text came from the pages'
+> embedded data):
+> - **Unchanged:** the rules are still dated Oct 25, 2026. Checked: the deadline (Nov 4, 9:00 PM ET,
+>   which is 02:00 UTC on Nov 5); the Indie track's limit of four members; one track per project;
+>   the judging weights 30/25/20/25; the original-work and open-source terms.
+> - **Late window:** the platform's page data has a 6-hour grace window that is not in the rules.
+>   The platform marks anything submitted in it "late". It also says that changing the
+>   repository after the deadline marks the project late. **Push nothing after 9:00 PM ET.**
+> - **Still only team-reported:** no public page requires a public repository or a 3-minute
+>   video. The judging criteria mention "the quality of the demo video". The platform's code
+>   has fields for a GitHub repository and a demo video, and checks for YouTube or Loom links.
+>   Which fields are required for this event is not visible without logging in.
+
 How these were read: Meta's docs pages through an automated fetcher that returns a summary of
 each page; the Cerebral Valley rules through plain HTTP GETs of the public HTML. Items marked
 **(re-verify)** matter enough that a human should read the original page once.

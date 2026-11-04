@@ -3,8 +3,9 @@
 **Change the order. Reveal the fault.**
 
 Mylonite tests services that keep shared state in Redis or Valkey for concurrency bugs that unit
-tests and race detectors miss. So far it has found lost updates (on held-out and real targets)
-and a check-then-act race (on a development fixture).
+tests and race detectors miss. So far it has found lost updates on held-out targets, and a
+check-then-act race on a development fixture. It also reproduced a known lost update in a real
+service, the OpenTelemetry Demo's cart (#3824).
 
 **Meta's Muse Spark (`muse-spark-1.3`, Standard mode, `reasoning_effort` medium) is the planner.**
 - **What Muse does:** it reads the service's source and its operation catalog, then proposes
@@ -20,7 +21,7 @@ and a check-then-act race (on a development fixture).
   **764** and **97**.
 - But one execution costs about 9 ms there. So the systematic search was still **faster and
   cheaper**, and Muse lost on time and dollars.
-- No method raised a false alarm on the 200 control trials.
+- None of the 5 methods run on the 200 control trials raised a false alarm.
 
 [Results](#results) · [Limitations](#limitations) · [Reproduce](#reproduce) ·
 [Full held-out report](experiments/heldout-v1-analysis/RESULTS.md)
@@ -97,7 +98,7 @@ means more than half the trials failed.
 
 | Method | `alpha_m` | `beta_m` |
 |---|---|---|
-| **M4: Muse with source** | **1** [1, 1] (20 of 20) | **1** [1, 1] (19 of 20) |
+| **M4: Muse with source** | **1** [1, 1] (20 of 20) | **1** [1, 1] (19 of 20; the 1 failure is a harness error, counted as a failure) |
 | A2: Muse without source | 401 [254, not reached] (13 of 20) | 137 [137, 201] (19 of 20) |
 | M3+: conflict-directed systematic search | 764 [546, 856] (17 of 20) | 97 [82, 127] (20 of 20) |
 | M3+arg: argument-aware M3+ | 764 [546, 856] (17 of 20) | 97 [82, 127] (20 of 20) |
@@ -111,12 +112,16 @@ means more than half the trials failed.
 - **Break-even:** by the frozen formula, M4 would be faster only if one execution cost more than
   0.055 s (`alpha_m`) or 0.62 s (`beta_m`). The measured cost is 0.009 s.
 
-**Muse without source (A2)** was never better than the conventional methods. It was worse on
-time and dollars on both bugs, and also on E₁ on `beta_m`.
+**Muse without source (A2)** was never significantly better than the conventional methods. On
+`alpha_m` its median E₁ was lower (401 against 764), but it found the bug in fewer trials (13
+against 17), and the difference is not significant. It was worse on time and dollars on both
+bugs, and also on E₁ on `beta_m`.
 
-**Negative controls:** 200 trials on the unmutated bases, with 0 false positives.
+**Negative controls:** 200 trials on the unmutated bases, with 0 false positives. The 5 methods
+run on them were M0, M1, M3+, M3+arg and M4; A2 was not run on the controls.
 
-Spend: $25.01 of Muse calls, over two held-out runs. Report:
+Spend: $25.01 of Muse calls, as recorded from the usage the API returned, over two held-out
+runs. Report:
 [experiments/heldout-v1-analysis/RESULTS.md](experiments/heldout-v1-analysis/RESULTS.md).
 
 ### Development targets
@@ -126,12 +131,13 @@ held-out results.
 - **The real OpenTelemetry cart (#3824)** ([gate](experiments/2026-10-28-d1-gate/README.md),
   [baselines](experiments/2026-10-29-d1-baselines/RESULTS.md),
   [re-check](experiments/2026-11-01-d1-recheck/RESULTS.md)):
-  - Reproduced under control and replayed 20 of 20 times. Without schedule control, 942 of 1,000
-    natural races lost an update.
+  - Reproduced under control and replayed 20 of 20 times. Without schedule control, 942 and 927
+    of 1,000 natural races lost an update, in two sessions (Oct 28 and Nov 1).
   - Stress found the bug in a median of 7 executions (n = 5), at 5–9 ms each.
   - Muse did not run there: its source view parses Python only, and the bug is public.
   - By our estimate, even a first-execution find would leave Muse short of break-even by at least
-    230×. Verdict: AI guidance is not valuable on this target.
+    230×. Estimated verdict, since Muse never ran there: AI guidance is not valuable on this
+    target.
 - **Two Python fixtures, written by the developer** ([pilot](experiments/2026-10-29-pilot/RESULTS.md),
   [no-source ablation](experiments/2026-10-28-a2-no-source/RESULTS.md),
   [stress](experiments/2026-10-30-m0-d2-d3/RESULTS.md), n = 5):
@@ -173,7 +179,8 @@ held-out results.
   - The freeze manifests are not anchored externally, so the freeze time is self-asserted. The
     base services' commitment has a FreeTSA timestamp from before the beacon round.
 - **The held-out run was restarted once,** after a harness defect (AM-002). Every `beta_m` cell
-  and all the controls include post-observation trials from the restart. The restart alone gives
+  includes 60 post-observation trials from the restart, and all 200 control trials come from
+  it. The restart alone gives
   the same confirmatory verdicts.
 - **Found at the reveal:** the mutation tool reformats the whole mutant file. Its style is
   uniform, and no method sees a mutant and its base in the same trial.
@@ -190,8 +197,12 @@ held-out results.
 ## Reproduce
 
 **Requirements:**
-- Python 3. The host-side harness uses the standard library only; we ran Python 3.14.
-- Docker, for the sandboxed executor and Valkey.
+- Python 3.11 or later. The host-side harness uses the standard library only.
+  - The unit tests pass on 3.11, 3.12 and 3.14.5. On 3.9, one test fails.
+  - The recorded runs used 3.14.5.
+- Docker, running (Docker Desktop on macOS), for the sandboxed executor and Valkey.
+  - The first build and run need network access, to pull the Python base image and Valkey.
+  - The commands below assume git and a POSIX shell.
 - A Meta Model API key, only for new Muse calls. Copy `.env.example` to `.env`. The key is never
   passed into a sandbox.
 
@@ -214,6 +225,9 @@ python3 experiments/heldout-v1-analysis/analyze_heldout.py
   and no API call. It rewrites the reports in place.
   - The three reports come out byte for byte the same; `git diff` then shows only the commit id
     recorded in `inputs.json`.
+  - That change leaves the tree modified, which blocks the pilot replay below. Run the replay
+    first, or restore the file before it with
+    `git checkout -- experiments/heldout-v1-analysis/inputs.json`.
 
 ```bash
 python3 experiments/2026-10-29-pilot/run_pilot.py --replay-model experiments/2026-10-29-pilot/results/20261028-165020/model_calls.jsonl
@@ -224,12 +238,20 @@ python3 experiments/2026-10-29-pilot/run_pilot.py --replay-model experiments/202
   - It needs a clean tree and the executor image. Build the image first with
     `docker build -t mylonite-exec:dev -f docker/executor.Dockerfile docker`, the same command
     `Sandbox.build_executor_image` runs.
-  - It writes a new results directory under `experiments/2026-10-29-pilot/results/`.
-  - At `cc37224`, all 30 trials matched the original on status, E₁, executions, witness, counters,
-    tokens and model cost. Record:
+  - It writes a new results directory under `experiments/2026-10-29-pilot/results/`. A second run
+    in the same clone then refuses, because the directory is untracked. Remove it first, or use
+    a fresh clone.
+  - Rebuilding the image can give it a new local ID, even when every layer comes from the
+    cache. Each run's manifest records the ID that ran.
+  - Run one replay at a time: every run uses the same sandbox name.
+  - At `cc37224`, all 30 trials matched the original on status, E₁, executions, witness and
+    counters. Tokens and model cost are copied from the recording, so they match by
+    construction. This shows the harness is deterministic given Muse's recorded answers. It
+    does not re-sample Muse: the only re-sampling of Muse is held-out run 2. Record:
     [experiments/2026-11-03-pilot-replay/](experiments/2026-11-03-pilot-replay/README.md).
-- **The demo video** has not been made yet. The pilot replay and the D1 gate are the replayable
-  demonstrations.
+- **The demo video's** script and its recording commands are in
+  [docs/VIDEO_SCRIPT.md](docs/VIDEO_SCRIPT.md). The pilot replay and the D1 gate are the
+  replayable demonstrations.
 - **Not reproducible yet:**
   - re-running the held-out trials needs the sealed held-out directory, which is published only
     with the owner's approval;
@@ -248,15 +270,22 @@ python3 experiments/2026-10-29-pilot/run_pilot.py --replay-model experiments/202
 - the pre-registered analysis;
 - the held-out tooling, the fixtures and the held-out bases.
 
-**Used, not built.** A license marked "to confirm" must be checked before publication.
+**Used, not built.**
 - the Meta Model API (Muse Spark), under Meta's Model API terms;
 - the OpenTelemetry Demo (Apache-2.0), pinned at tag `3.1.0` and not vendored.
   - Its NuGet packages are pinned by version, not by hash.
   - The corrected cart build uses PR #3825's cart change.
 - Python packages, with licenses from their package metadata: `redis` 8.1.0 (MIT), `grpcio`
   1.84.0 (Apache-2.0) and `typing-extensions` 4.15.0 (PSF-2.0);
-- container images, all pinned by digest, licenses to confirm: Valkey 9.0.4, `python:3.13-slim`,
-  and the .NET SDK 10.0.401 and runtime-deps images;
+- container images, all pinned by digest, with licenses from upstream (read 2026-11-04):
+  - Valkey 9.0.4 (BSD-3-Clause, the `COPYING` file at tag `9.0.4`);
+  - `python:3.13-slim` (CPython under the PSF License; its Debian base packages carry their own
+    licenses);
+  - the .NET SDK 10.0.401 and runtime-deps 10.0.12-alpine3.23 images (.NET is MIT; the
+    runtime-deps image is mostly Alpine packages, which carry their own licenses).
+
+  These images are pulled at build or run time, and none of them is redistributed here.
+  Their bundled OS packages were not reviewed one by one;
 - Docker;
 - drand, FreeTSA and OpenTimestamps.
 
