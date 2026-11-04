@@ -266,7 +266,9 @@ eligibility. "Single developer" above must match this list.]`
 - [ ] The license of each dependency listed above. Three are known from package metadata:
       `redis` (MIT), `grpcio` (Apache-2.0) and `typing-extensions` (PSF-2.0). Still to confirm:
       Valkey, `python:3.13-slim`, and the .NET images.
-- [ ] 3-minute demo video, showing Muse's role in the first 30 seconds.
+- [ ] 3-minute demo video, showing Muse's role in the first 30 seconds. The script, shot list
+      and recording commands are drafted and fact-checked in `docs/VIDEO_SCRIPT.md`; it is not
+      recorded yet.
 - [ ] Team members named; track confirmed.
 - [ ] Owner's decisions:
   - publish the sealed held-out directory (the C6 reveal);
